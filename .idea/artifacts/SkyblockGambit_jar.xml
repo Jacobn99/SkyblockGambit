@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SkyblockGambit:jar">
+    <output-path>$USER_HOME$/Desktop/Spigot/plugins</output-path>
+    <root id="archive" name="SkyblockGambit.jar">
+      <element id="module-output" name="SkyblockGambit" />
+    </root>
+  </artifact>
+</component>

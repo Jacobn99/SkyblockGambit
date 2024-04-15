@@ -1,0 +1,12 @@
+name: SkyblockGambit
+version: '1.0-SNAPSHOT'
+main: org.jacobn99.skyblockgambit.SkyblockGambit
+api-version: '1.20'
+
+
+commands:
+  start:
+  debug:
+  t:
+  set_spawn:
+  spawn_villager:
