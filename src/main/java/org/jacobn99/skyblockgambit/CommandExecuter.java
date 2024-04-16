@@ -17,6 +17,7 @@ public class CommandExecuter implements CommandExecutor {
     private GameManager _gameManager;
     private PortalManager _portalManager;
     private ConfigManager _configManager;
+    private CustomVillager _customVillager;
     public CommandExecuter(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         _gameManager = new GameManager(_mainPlugin);
@@ -34,9 +35,10 @@ public class CommandExecuter implements CommandExecutor {
             else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
 
-                ConfigurationSection trades = _mainPlugin.getConfig().getConfigurationSection("Villager1").getConfigurationSection("Trades");
 
-                Bukkit.broadcastMessage(trades.getString("Trade1"));
+//                for(String s : _configManager.GetArguments("Villager1", "Trades", "Trade1")) {
+//                    Bukkit.broadcastMessage(s);
+//                }
 //                for(String s : _configManager.GetArguments("Villager1")) {
 //                    Bukkit.broadcastMessage(s);
 //                }

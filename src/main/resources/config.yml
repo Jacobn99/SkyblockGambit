@@ -1,3 +1,17 @@
-Villager1:
+Villager0:
+  #FORMAT: bargain 1, amount 1, *bargain 2 (optional), *amount 2 (optional), product, amount of product
+  #bargain = item you give in exchange for product
+  #last item is alwaus the product
   Trades:
-    Trade1: DIAMOND_AXE, STONE
+    Trade0: DIAMOND_AXE, 1, STONE, 1, EMERALD, 1
+    Trade1: DIAMOND_PICKAXE, 1, STONE, 1, EMERALD, 1
+    Trade2: DIAMOND, 1, EMERALD, 1
+    Trade3: DIAMOND, 1, STONE, 1, EMERALD, 1
+    Trade4: STICK, 1, EMERALD, 1
+    Trade5: GOLD_INGOT, 10, EMERALD, 15
+Villager1:
+  #FORMAT: bargain 1, amount 1, *bargain 2 (optional), *amount 2 (optional), product, amount of product
+  #bargain = item you give in exchange for product
+  #last item is alwaus the product
+  Trades:
+    Trade0: DIAMOND_AXE, 1, STONE, 1, EMERALD, 1

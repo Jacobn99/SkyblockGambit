@@ -14,6 +14,7 @@ public class GameManager {
     long tickRate;
     ArrayList<Generator> generatorList = new ArrayList();
     List<Portal> portals = new ArrayList();
+    List<CustomVillager> customVillagers = new ArrayList();
     Set<Player> blueTeam = new HashSet();
     Set<Player> redTeam = new HashSet();
     JavaPlugin _mainPlugin;
@@ -129,8 +130,9 @@ public class GameManager {
 //            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
 //            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
 //            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
-            Villager custom1 = SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
-            custom1.addScoreboardTag("custom1");
+
+            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.CARTOGRAPHER);
+            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.FARMER);
 
             spawnLoc = GetRedSpawn();
         }
@@ -142,5 +144,13 @@ public class GameManager {
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
         return villager;
+    }
+
+    private CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
+        CustomVillager custom = new CustomVillager(_mainPlugin,
+                SpawnVillager(loc, profession));
+        custom.SetTrades(preset);
+        customVillagers.add(custom);
+        return custom;
     }
 }
