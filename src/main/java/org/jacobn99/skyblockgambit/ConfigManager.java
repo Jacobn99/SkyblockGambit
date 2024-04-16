@@ -1,13 +1,20 @@
 package org.jacobn99.skyblockgambit;
 
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ConfigManager {
     JavaPlugin _mainPlugin;
+    HashMap<String, ItemStack> _specialItems = new HashMap<>();
     public ConfigManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
+    }
+
+    public void DefineSpecialItems() {
+        //_specialItems.put("REDSTONE_KIT", )
     }
 
     public List<String> GetArguments(String section, String subsection, String element) {

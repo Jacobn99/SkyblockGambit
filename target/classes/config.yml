@@ -1,17 +1,20 @@
 Villager0:
   #FORMAT: bargain 1, amount 1, *bargain 2 (optional), *amount 2 (optional), product, amount of product
   #bargain = item you give in exchange for product
-  #last item is alwaus the product
+  #last item is always the product
   Trades:
-    Trade0: DIAMOND_AXE, 1, STONE, 1, EMERALD, 1
-    Trade1: DIAMOND_PICKAXE, 1, STONE, 1, EMERALD, 1
-    Trade2: DIAMOND, 1, EMERALD, 1
-    Trade3: DIAMOND, 1, STONE, 1, EMERALD, 1
-    Trade4: STICK, 1, EMERALD, 1
-    Trade5: GOLD_INGOT, 10, EMERALD, 15
+    Trade0: EMERALD, 30, SPAWNER, 1
+    Trade1: EMERALD, 15, PIG_SPAWN_EGG, 1
+    Trade2: EMERALD, 20, SKELETON_SPAWN_EGG, 1
+    Trade3: EMERALD, 20, SPIDER_SPAWN_EGG, 1
+    Trade4: EMERALD, 20, CREEPER_SPAWN_EGG, 1
 Villager1:
   #FORMAT: bargain 1, amount 1, *bargain 2 (optional), *amount 2 (optional), product, amount of product
   #bargain = item you give in exchange for product
-  #last item is alwaus the product
+  #last item is always the product
   Trades:
-    Trade0: DIAMOND_AXE, 1, STONE, 1, EMERALD, 1
+    Trade0: EMERALD, 25, BARREL, 1
+    Trade1: EMERALD, 5, PISTON, 1
+    Trade2: EMERALD, 2, SLIME_BALL, 1
+    Trade3: EMERALD, 1, REDSTONE, 4
+    Trade4: EMERALD, 5, DISPENSER, 1

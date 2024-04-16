@@ -3,6 +3,8 @@ package org.jacobn99.skyblockgambit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CommandExecuter implements CommandExecutor {
@@ -69,6 +72,13 @@ public class CommandExecuter implements CommandExecutor {
             }
             else if (label.equalsIgnoreCase("set_spawn")) {
                 Set_Spawn_Command(p, args);
+            }
+            else if (label.equalsIgnoreCase("get_data")) {
+                ItemStack item = new ItemStack(Material.ACACIA_FENCE);
+                Bukkit.broadcastMessage(item.getTranslationKey());
+
+                //Bukkit.getWorld("void_world").dropItem(p.getLocation(), new ItemStack())
+                //Bukkit.broadcastMessage("Item: " + p.getInventory().getItemInMainHand().serialize());
             }
         }
         return false;
