@@ -31,14 +31,13 @@ public class CommandExecuter implements CommandExecutor {
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
-            Player p = (Player)sender;
+            Player p = (Player) sender;
 
             if (label.equalsIgnoreCase("start")) {
                 sender.sendMessage(ChatColor.RED + "start");
                 _gameManager.Start();
                 return true;
-            }
-            else if (label.equalsIgnoreCase("debug")) {
+            } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
 
                 //Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(0));
@@ -77,33 +76,28 @@ public class CommandExecuter implements CommandExecutor {
 //                Chest crate = (Chest) Bukkit.getWorld("void_world").getBlockAt(loc).getState();
 //                _gameManager.CheckChest(crate);
                 return true;
-            }
-            else if (label.equalsIgnoreCase("t")) {
+            } else if (label.equalsIgnoreCase("t")) {
                 T_Command(p, args);
-            }
-            else if (label.equalsIgnoreCase("spawn_villager")) {
+            } else if (label.equalsIgnoreCase("spawn_villager")) {
                 Spawn_Villager_Command(p, args);
-            }
-            else if (label.equalsIgnoreCase("set_spawn")) {
+            } else if (label.equalsIgnoreCase("set_spawn")) {
                 Set_Spawn_Command(p, args);
-            }
-            else if (label.equalsIgnoreCase("get_custom_item")) {
+            } else if (label.equalsIgnoreCase("get_custom_item")) {
                 if (args.length == 1) {
                     int arg = Integer.valueOf(args[0]);
-                    Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(arg));
+                    if (_configManager.GetCustomItem(arg) != null) {
+                        Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(arg));
+                    }
                 }
-            }
-            else if (label.equalsIgnoreCase("add_custom_item")) {
+            } else if (label.equalsIgnoreCase("add_custom_item")) {
                 if (args.length == 1) {
                     int arg = Integer.valueOf(args[0]);
                     _configManager.SetCustomItem(p, arg);
                     Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg));
                 } else {
                     _configManager.AddCustomItem(p);
+                    Bukkit.broadcastMessage("Added an item");
                 }
-
-                //Bukkit.getWorld("void_world").dropItem(p.getLocation(), new ItemStack())
-                //Bukkit.broadcastMessage("Item: " + p.getInventory().getItemInMainHand().serialize());
             }
         }
         return false;

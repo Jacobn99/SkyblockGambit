@@ -7,8 +7,6 @@ public class CustomItems {
     String _item;
 
     public CustomItems(String item) {
-        //_itemFile = new File(_mainPlugin.getDataFolder(), "data.json");
-        //_mainPlugin = mainPlugin;
         _item = item;
     }
 
