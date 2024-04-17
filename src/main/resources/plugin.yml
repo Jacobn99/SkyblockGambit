@@ -10,4 +10,5 @@ commands:
   t:
   set_spawn:
   spawn_villager:
-  get_data:
+  add_custom_item:
+  get_custom_item:

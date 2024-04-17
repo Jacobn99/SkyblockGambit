@@ -15,6 +15,9 @@ import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
     private GameManager _gameManager;
@@ -37,6 +40,17 @@ public class CommandExecuter implements CommandExecutor {
             }
             else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
+
+                //Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(0));
+
+                //Bukkit.broadcastMessage(_configManager.serializeItem(p.getInventory().getItemInMainHand()));
+
+//                File file = new File(_mainPlugin.getDataFolder(), "Fortnite.yml");
+//                try {
+//                    file.createNewFile();
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
 
 
 //                for(String s : _configManager.GetArguments("Villager1", "Trades", "Trade1")) {
@@ -73,9 +87,20 @@ public class CommandExecuter implements CommandExecutor {
             else if (label.equalsIgnoreCase("set_spawn")) {
                 Set_Spawn_Command(p, args);
             }
-            else if (label.equalsIgnoreCase("get_data")) {
-                ItemStack item = new ItemStack(Material.ACACIA_FENCE);
-                Bukkit.broadcastMessage(item.getTranslationKey());
+            else if (label.equalsIgnoreCase("get_custom_item")) {
+                if (args.length == 1) {
+                    int arg = Integer.valueOf(args[0]);
+                    Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(arg));
+                }
+            }
+            else if (label.equalsIgnoreCase("add_custom_item")) {
+                if (args.length == 1) {
+                    int arg = Integer.valueOf(args[0]);
+                    _configManager.SetCustomItem(p, arg);
+                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg));
+                } else {
+                    _configManager.AddCustomItem(p);
+                }
 
                 //Bukkit.getWorld("void_world").dropItem(p.getLocation(), new ItemStack())
                 //Bukkit.broadcastMessage("Item: " + p.getInventory().getItemInMainHand().serialize());
