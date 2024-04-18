@@ -19,17 +19,28 @@ import java.util.List;
 public class ConfigManager {
     JavaPlugin _mainPlugin;
     File _itemFile;
-    HashMap<String, ItemStack> _specialItems = new HashMap<>();
     List<CustomItems> customItemsList;
     public ConfigManager(JavaPlugin mainPlugin) {
         customItemsList = new ArrayList();
         _mainPlugin = mainPlugin;
         _itemFile = new File(_mainPlugin.getDataFolder(), "custom_items.json");
     }
+    public List<CustomItems> GetCustomItemsList() {
+        UpdateCustomItemsList();
+        return customItemsList;
+    }
 
-//    public void DefineSpecialItems() {
-//        //_specialItems.put("REDSTONE_KIT", )
-//    }
+    public int ItemNameToIndex(String name) {
+        List<CustomItems> customItems;
+        customItems = GetCustomItemsList();
+
+        for(CustomItems c : customItems) {
+            if(c.getItemName().equalsIgnoreCase(name)) {
+                return customItems.indexOf(c);
+            }
+        }
+        return -1;
+    }
 
     public ItemStack GetCustomItem(int inputIndex) {
         String serializedItem;
@@ -128,18 +139,19 @@ public class ConfigManager {
         }
     }
 
-    public void AddCustomItem(Player p) {
+    public void AddCustomItem(Player p, String itemName) {
         UpdateCustomItemsList();
-        customItemsList.add(new CustomItems(SerializeItem(p.getInventory().getItemInMainHand())));
+        customItemsList.add(new CustomItems(SerializeItem(p.getInventory().getItemInMainHand()), itemName));
         UpdateItemFile();
     }
-    public void SetCustomItem(Player p, int index) {
+
+    public void SetCustomItem(Player p, int index, String name) {
         UpdateCustomItemsList();
         if(index > customItemsList.size() - 1) {
             Bukkit.broadcastMessage("Not in bounds of index");
         }
         else {
-            customItemsList.set(index, new CustomItems(SerializeItem(p.getInventory().getItemInMainHand())));
+            customItemsList.set(index, new CustomItems(SerializeItem(p.getInventory().getItemInMainHand()), name));
             UpdateItemFile();
         }
     }
@@ -170,6 +182,7 @@ public class ConfigManager {
                 arguments.add(String.valueOf(ch));
                 currentWord.clear();
             }
+
             i++;
         }
         return arguments;

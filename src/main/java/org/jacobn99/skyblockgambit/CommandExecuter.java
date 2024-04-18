@@ -83,21 +83,89 @@ public class CommandExecuter implements CommandExecutor {
             } else if (label.equalsIgnoreCase("set_spawn")) {
                 Set_Spawn_Command(p, args);
             } else if (label.equalsIgnoreCase("get_custom_item")) {
-                if (args.length == 1) {
-                    int arg = Integer.valueOf(args[0]);
-                    if (_configManager.GetCustomItem(arg) != null) {
-                        Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(arg));
+                if (args.length == 2) {
+                    if (args[0].equalsIgnoreCase("index")) {
+                        int index = Integer.valueOf(args[1]);
+                        if (_configManager.GetCustomItem(index) != null) {
+                            Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(index));
+                            return true;
+                        }
+                    } else if (args[0].equalsIgnoreCase("name")) {
+                        String arg = args[1];
+                        Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(_configManager.ItemNameToIndex(arg)));
+                        return true;
+                    }
+                    else {
+                        return false;
                     }
                 }
-            } else if (label.equalsIgnoreCase("add_custom_item")) {
-                if (args.length == 1) {
-                    int arg = Integer.valueOf(args[0]);
-                    _configManager.SetCustomItem(p, arg);
-                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg));
-                } else {
-                    _configManager.AddCustomItem(p);
-                    Bukkit.broadcastMessage("Added an item");
+                else {
+                    Bukkit.broadcastMessage("Format: get_custom_item index/name argument");
                 }
+                return false;
+            }
+            else if (label.equalsIgnoreCase("set_custom_item")) {
+                String name = null;
+                if (args.length == 2) { //fix this part by making it == 2 and also make a "set_custom_item" command
+                    int arg0 = Integer.valueOf(args[0]);
+                    name = args[1];
+
+                    _configManager.SetCustomItem(p, arg0, name);
+                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg0) + ", name = " + name);
+                    return true;
+                }
+                else {
+                    Bukkit.broadcastMessage("Usage: set_custom_item index name(optional)");
+                    return false;
+//                    _configManager.AddCustomItem(p, null);
+//                    Bukkit.broadcastMessage("Added an item");
+//                    return true;
+                }
+
+//                String name = null;
+//                if (args.length >= 1) { //fix this part by making it == 2 and also make a "set_custom_item" command
+//                    int arg0 = Integer.valueOf(args[0]);
+//                    if(args.length == 2){
+//                        name = args[1];
+//                    }
+//                    _configManager.SetCustomItem(p, arg0, name);
+//                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg0) + ", name = " + name);
+//                    return true;
+//                }
+//                else {
+//                    Bukkit.broadcastMessage("Usage: set_custom_item index name(optional)");
+//                    return false;
+////                    _configManager.AddCustomItem(p, null);
+////                    Bukkit.broadcastMessage("Added an item");
+////                    return true;
+//                }
+            }
+            else if (label.equalsIgnoreCase("add_custom_item")) {
+                //String name = null;
+                if (args.length == 1) { //fix this part by making it == 2 and also make a "set_custom_item" command
+                    String name = args[0];
+                    _configManager.AddCustomItem(p, name);
+                    int index = _configManager.GetCustomItemsList().size() - 1;
+                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(index) + ", name = " + name + ", index = " + (index));
+                    return true;
+                }
+                else {
+                    Bukkit.broadcastMessage("Usage: add_custom_item name(optional)");
+                    return false;
+                }
+
+//                String name = null;
+//                if (args.length == 1) { //fix this part by making it == 2 and also make a "set_custom_item" command
+//                    name = args[0];
+//                }
+//                else if(args.length > 1) {
+//                    Bukkit.broadcastMessage("Usage: add_custom_item name(optional)");
+//                    return false;
+//                }
+//                _configManager.AddCustomItem(p, name);
+//                int index = _configManager.GetCustomItemsList().size() - 1;
+//                Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(index) + ", name = " + name + ", index = " + (index));
+//                return true;
             }
         }
         return false;

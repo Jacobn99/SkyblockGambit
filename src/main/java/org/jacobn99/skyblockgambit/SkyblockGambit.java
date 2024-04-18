@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockGambit extends JavaPlugin {
-    private String[] commandNames = {"start", "debug", "t", "set_spawn", "spawn_villager", "add_custom_item", "get_custom_item"};
+    private String[] commandNames = {"start", "debug", "t", "set_spawn", "spawn_villager", "set_custom_item", "add_custom_item", "get_custom_item"};
     EventManager _eventManager = new EventManager(this);
     GameManager _gameManager = new GameManager(this);
 

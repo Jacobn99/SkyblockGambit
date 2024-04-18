@@ -4,17 +4,27 @@ import org.bukkit.inventory.ItemStack;
 
 
 public class CustomItems {
-    String _item;
+    String _serializeItem;
+    String _itemName;
 
-    public CustomItems(String item) {
-        _item = item;
+    public String getItemName() {
+        return _itemName;
+    }
+
+    public void setItemName(String _itemName) {
+        this._itemName = _itemName;
+    }
+
+    public CustomItems(String item, String itemName) {
+        _serializeItem = item;
+        _itemName = itemName;
     }
 
     public String getItem() {
-        return _item;
+        return _serializeItem;
     }
 
     public void setItem(String _item) {
-        this._item = _item;
+        this._serializeItem = _item;
     }
 }
