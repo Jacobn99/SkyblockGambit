@@ -17,7 +17,7 @@ public class CustomItems {
 
     public CustomItems(String item, String itemName) {
         _serializeItem = item;
-        _itemName = itemName;
+        _itemName = itemName.toUpperCase();
     }
 
     public String getItem() {

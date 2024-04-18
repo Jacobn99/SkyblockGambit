@@ -1,8 +1,6 @@
 package org.jacobn99.skyblockgambit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Cow;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Borderwall extends GameManager {

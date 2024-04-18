@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jacobn99.skyblockgambit.*;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
 
 import java.util.*;
@@ -12,11 +13,11 @@ public class GameManager {
     Location blueSpawn;
     Location redSpawn;
     long tickRate;
-    ArrayList<Generator> generatorList = new ArrayList();
-    List<Portal> portals = new ArrayList();
-    List<CustomVillager> customVillagers = new ArrayList();
-    Set<Player> blueTeam = new HashSet();
-    Set<Player> redTeam = new HashSet();
+    public ArrayList<Generator> generatorList = new ArrayList();
+    public List<Portal> portals = new ArrayList();
+    public List<CustomVillager> customVillagers = new ArrayList();
+    public Set<Player> blueTeam = new HashSet();
+    public Set<Player> redTeam = new HashSet();
     JavaPlugin _mainPlugin;
     ArmorStand blueArmorStand;
     ArmorStand redArmorStand;
@@ -118,21 +119,21 @@ public class GameManager {
         Location spawnLoc = GetBlueSpawn();
 
         for(int i = 0; i < 2; i++) {
-//            SpawnVillager(spawnLoc, Villager.Profession.CLERIC);
-//            SpawnVillager(spawnLoc, Villager.Profession.FARMER);
-//            SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
-//            SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
-//            SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
-//            SpawnVillager(spawnLoc, Villager.Profession.MASON);
-//            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
-//            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
-//            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
+            SpawnVillager(spawnLoc, Villager.Profession.CLERIC);
+            SpawnVillager(spawnLoc, Villager.Profession.FARMER);
+            SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
+            SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
+            SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
+            SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
+            SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
+            SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
+            SpawnVillager(spawnLoc, Villager.Profession.MASON);
+            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
+            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
+            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
 
-            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.CARTOGRAPHER);
-            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.FARMER);
+            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
+            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
 
             spawnLoc = GetRedSpawn();
         }
@@ -150,6 +151,7 @@ public class GameManager {
         CustomVillager custom = new CustomVillager(_mainPlugin,
                 SpawnVillager(loc, profession));
         custom.SetTrades(preset);
+        custom.getVillager().setVillagerLevel(5);
         customVillagers.add(custom);
         return custom;
     }

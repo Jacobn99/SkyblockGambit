@@ -3,31 +3,24 @@ package org.jacobn99.skyblockgambit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.IOException;
 
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
     private GameManager _gameManager;
-    private PortalManager _portalManager;
     private ConfigManager _configManager;
-    private CustomVillager _customVillager;
+    private PortalManager _portalManager;
     public CommandExecuter(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         _gameManager = new GameManager(_mainPlugin);
         _configManager = new ConfigManager(_mainPlugin);
+        _portalManager = new PortalManager();
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -38,43 +31,10 @@ public class CommandExecuter implements CommandExecutor {
                 _gameManager.Start();
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
+                for(Portal portal : _gameManager.portals) {
+                    portal.Activate();
+                }
                 sender.sendMessage(ChatColor.RED + "debug");
-
-                //Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(0));
-
-                //Bukkit.broadcastMessage(_configManager.serializeItem(p.getInventory().getItemInMainHand()));
-
-//                File file = new File(_mainPlugin.getDataFolder(), "Fortnite.yml");
-//                try {
-//                    file.createNewFile();
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-
-
-//                for(String s : _configManager.GetArguments("Villager1", "Trades", "Trade1")) {
-//                    Bukkit.broadcastMessage(s);
-//                }
-//                for(String s : _configManager.GetArguments("Villager1")) {
-//                    Bukkit.broadcastMessage(s);
-//                }
-
-//                for(String s : _mainPlugin.getConfig().getStringList("Villager1")) {
-//                    Bukkit.broadcastMessage(s);
-//                }
-
-//                for(Portal portal : _gameManager.portals) {
-//                    //Bukkit.broadcastMessage("portal loc: " + portal.GetPortalLocation());
-//                    portal.Activate();
-//                }
-//                Portal _portal = new Portal(new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
-//                _portal.ActivatePortal();
-                //_portal.TeleportIsland(p, _gameManager.GetRedSpawn());
-                //_portalManager.TeleportIsland(p, new Location(Bukkit.getWorld("void_world"), 112, -60, 4));
-//                Bukkit.getWorld("void_world").getBlockAt(113, -60, 160).setType(Material.CHEST);
-//                Location loc = new Location(Bukkit.getWorld("void_world"), 113, -60, 160);
-//                Chest crate = (Chest) Bukkit.getWorld("void_world").getBlockAt(loc).getState();
-//                _gameManager.CheckChest(crate);
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
                 T_Command(p, args);
@@ -111,61 +71,26 @@ public class CommandExecuter implements CommandExecutor {
                     name = args[1];
 
                     _configManager.SetCustomItem(p, arg0, name);
-                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg0) + ", name = " + name);
+                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg0) + ", name = " + name.toUpperCase());
                     return true;
                 }
                 else {
                     Bukkit.broadcastMessage("Usage: set_custom_item index name(optional)");
                     return false;
-//                    _configManager.AddCustomItem(p, null);
-//                    Bukkit.broadcastMessage("Added an item");
-//                    return true;
                 }
-
-//                String name = null;
-//                if (args.length >= 1) { //fix this part by making it == 2 and also make a "set_custom_item" command
-//                    int arg0 = Integer.valueOf(args[0]);
-//                    if(args.length == 2){
-//                        name = args[1];
-//                    }
-//                    _configManager.SetCustomItem(p, arg0, name);
-//                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg0) + ", name = " + name);
-//                    return true;
-//                }
-//                else {
-//                    Bukkit.broadcastMessage("Usage: set_custom_item index name(optional)");
-//                    return false;
-////                    _configManager.AddCustomItem(p, null);
-////                    Bukkit.broadcastMessage("Added an item");
-////                    return true;
-//                }
             }
             else if (label.equalsIgnoreCase("add_custom_item")) {
-                //String name = null;
-                if (args.length == 1) { //fix this part by making it == 2 and also make a "set_custom_item" command
+                if (args.length == 1) {
                     String name = args[0];
                     _configManager.AddCustomItem(p, name);
                     int index = _configManager.GetCustomItemsList().size() - 1;
-                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(index) + ", name = " + name + ", index = " + (index));
+                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(index) + ", name = " + name.toUpperCase() + ", index = " + (index));
                     return true;
                 }
                 else {
                     Bukkit.broadcastMessage("Usage: add_custom_item name(optional)");
                     return false;
                 }
-
-//                String name = null;
-//                if (args.length == 1) { //fix this part by making it == 2 and also make a "set_custom_item" command
-//                    name = args[0];
-//                }
-//                else if(args.length > 1) {
-//                    Bukkit.broadcastMessage("Usage: add_custom_item name(optional)");
-//                    return false;
-//                }
-//                _configManager.AddCustomItem(p, name);
-//                int index = _configManager.GetCustomItemsList().size() - 1;
-//                Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(index) + ", name = " + name + ", index = " + (index));
-//                return true;
             }
         }
         return false;
@@ -190,12 +115,10 @@ public class CommandExecuter implements CommandExecutor {
         if (args.length == 1) {
             String arg = args[0];
             if (arg.equalsIgnoreCase("blue")) {
-                //_gameManager.blueSpawn = p.getLocation();
                 p.sendMessage(ChatColor.GOLD + "Blue spawn set");
                 return true;
 
             } else if (arg.equalsIgnoreCase("red")) {
-                //_gameManager.redSpawn = p.getLocation();
                 p.sendMessage(ChatColor.GOLD + "Red spawn set");
                 return true;
             } else {
@@ -214,14 +137,12 @@ public class CommandExecuter implements CommandExecutor {
             String arg = args[0];
             if(arg.equalsIgnoreCase("blue"))  {
                 _gameManager.blueTeam.add(p);
-                //p.setRespawnLocation(_gameManager.blueSpawn, true);
                 p.sendMessage(ChatColor.RED + "blue");
                 return true;
 
             }
             else if(arg.equalsIgnoreCase("red"))  {
                 _gameManager.redTeam.add(p);
-                //p.setRespawnLocation(_gameManager.redSpawn, true);
                 p.sendMessage(ChatColor.RED + "red");
                 return true;
             }
