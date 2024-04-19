@@ -14,12 +14,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
     private GameManager _gameManager;
-    private ConfigManager _configManager;
+    private CustomItemManager _itemManager;
     private PortalManager _portalManager;
     public CommandExecuter(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         _gameManager = new GameManager(_mainPlugin);
-        _configManager = new ConfigManager(_mainPlugin);
+        _itemManager = new CustomItemManager(_mainPlugin);
         _portalManager = new PortalManager();
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -46,13 +46,13 @@ public class CommandExecuter implements CommandExecutor {
                 if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("index")) {
                         int index = Integer.valueOf(args[1]);
-                        if (_configManager.GetCustomItem(index) != null) {
-                            Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(index));
+                        if (_itemManager.GetCustomItem(index) != null) {
+                            Bukkit.getWorld("void_world").dropItem(p.getLocation(), _itemManager.GetCustomItem(index));
                             return true;
                         }
                     } else if (args[0].equalsIgnoreCase("name")) {
                         String arg = args[1];
-                        Bukkit.getWorld("void_world").dropItem(p.getLocation(), _configManager.GetCustomItem(_configManager.ItemNameToIndex(arg)));
+                        Bukkit.getWorld("void_world").dropItem(p.getLocation(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex(arg)));
                         return true;
                     }
                     else {
@@ -70,8 +70,8 @@ public class CommandExecuter implements CommandExecutor {
                     int arg0 = Integer.valueOf(args[0]);
                     name = args[1];
 
-                    _configManager.SetCustomItem(p, arg0, name);
-                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(arg0) + ", name = " + name.toUpperCase());
+                    _itemManager.SetCustomItem(p, arg0, name);
+                    Bukkit.broadcastMessage("Added: " + _itemManager.GetCustomItem(arg0) + ", name = " + name.toUpperCase());
                     return true;
                 }
                 else {
@@ -82,9 +82,9 @@ public class CommandExecuter implements CommandExecutor {
             else if (label.equalsIgnoreCase("add_custom_item")) {
                 if (args.length == 1) {
                     String name = args[0];
-                    _configManager.AddCustomItem(p, name);
-                    int index = _configManager.GetCustomItemsList().size() - 1;
-                    Bukkit.broadcastMessage("Added: " + _configManager.GetCustomItem(index) + ", name = " + name.toUpperCase() + ", index = " + (index));
+                    _itemManager.AddCustomItem(p, name);
+                    int index = _itemManager.GetCustomItemsList().size() - 1;
+                    Bukkit.broadcastMessage("Added: " + _itemManager.GetCustomItem(index) + ", name = " + name.toUpperCase() + ", index = " + (index));
                     return true;
                 }
                 else {

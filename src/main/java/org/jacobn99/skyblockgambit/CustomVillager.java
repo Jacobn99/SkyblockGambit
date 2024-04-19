@@ -14,11 +14,13 @@ public class CustomVillager {
     List<MerchantRecipe> recipes;
     ConfigManager _configManager;
     JavaPlugin _mainPlugin;
+    CustomItemManager _itemManager;
     Villager _villager;
     public CustomVillager(JavaPlugin mainPlugin, Villager villager) {
         recipes = new ArrayList<>();
         _mainPlugin = mainPlugin;
         _configManager = new ConfigManager(_mainPlugin);
+        _itemManager = new CustomItemManager(_mainPlugin);
         _villager = villager;
     }
     public void SetTrades(String villagerPath) {
@@ -31,7 +33,7 @@ public class CustomVillager {
         //Make a for loop to see if any of the arguments are part of the special item name list, if they are change their arg index to the material of the item they represent
         for(int i = 0; i < loopLimit; i++) {
             args = _configManager.GetArguments(villagerPath, "Trades", "Trade" + i);
-            for(CustomItems ci : _configManager.GetCustomItemsList()) {
+            for(CustomItems ci : _itemManager.GetCustomItemsList()) {
                 if(!customItemNames.contains(ci.getItemName())) {
                     customItemNames.add(ci.getItemName());
                 }
@@ -45,7 +47,7 @@ public class CustomVillager {
                 //Bukkit.broadcastMessage("list: " + customItemNames + ", arg: " + args.get(lastIndex - 1));
 
                 if(customItemNames.contains(args.get(lastIndex - 1))) {
-                    product = _configManager.GetCustomItem(_configManager.ItemNameToIndex(args.get(lastIndex - 1)));
+                    product = _itemManager.GetCustomItem(_itemManager.ItemNameToIndex(args.get(lastIndex - 1)));
                     product.setAmount(Integer.parseInt(args.get(lastIndex)));
                 }
                 else {
@@ -57,7 +59,7 @@ public class CustomVillager {
                 for(int ii = 0; ii < (args.size() - 3); ii += 2) {
                     ItemStack ingredient;
                     if(customItemNames.contains(args.get(ii))) {
-                        ingredient = _configManager.GetCustomItem(_configManager.ItemNameToIndex(args.get(ii)));
+                        ingredient = _itemManager.GetCustomItem(_itemManager.ItemNameToIndex(args.get(ii)));
                         ingredient.setAmount(Integer.parseInt(args.get(ii + 1)));
                     }
                     else {

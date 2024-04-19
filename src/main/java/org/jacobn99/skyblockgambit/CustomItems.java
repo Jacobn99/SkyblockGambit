@@ -7,17 +7,16 @@ public class CustomItems {
     String _serializeItem;
     String _itemName;
 
+    public CustomItems(String item, String itemName) {
+        _serializeItem = item;
+        _itemName = itemName.toUpperCase();
+    }
     public String getItemName() {
         return _itemName;
     }
 
     public void setItemName(String _itemName) {
         this._itemName = _itemName;
-    }
-
-    public CustomItems(String item, String itemName) {
-        _serializeItem = item;
-        _itemName = itemName.toUpperCase();
     }
 
     public String getItem() {
