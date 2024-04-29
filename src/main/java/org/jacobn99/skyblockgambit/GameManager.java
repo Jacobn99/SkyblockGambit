@@ -1,6 +1,7 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.*;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -90,7 +91,6 @@ public class GameManager {
         UpdateSpawns();
         return redSpawn.clone();
     }
-
 
     private void RenewGenerators(long tickRate) {
 //        ItemStack fuel = new ItemStack(Material.STONE, 1);

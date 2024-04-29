@@ -120,7 +120,7 @@ public class CustomItemManager {
             UpdateItemFile();
         }
     }
-    private String SerializeItem(ItemStack item) {
+    public String SerializeItem(ItemStack item) {
         String encodedItem;
         try {
             ByteArrayOutputStream io = new ByteArrayOutputStream();
@@ -140,7 +140,7 @@ public class CustomItemManager {
         }
     }
 
-    private ItemStack DeserializeItem(String encodedItem) {
+    public ItemStack DeserializeItem(String encodedItem) {
         byte[] decodedItem;
         try {
             decodedItem = Base64.getDecoder().decode(encodedItem);

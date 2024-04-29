@@ -3,6 +3,8 @@ package org.jacobn99.skyblockgambit;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,11 +18,13 @@ public class CommandExecuter implements CommandExecutor {
     private GameManager _gameManager;
     private CustomItemManager _itemManager;
     private PortalManager _portalManager;
+    private StarterChestManager _chestManager;
     public CommandExecuter(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         _gameManager = new GameManager(_mainPlugin);
         _itemManager = new CustomItemManager(_mainPlugin);
         _portalManager = new PortalManager();
+        _chestManager = new StarterChestManager(_mainPlugin);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -31,13 +35,29 @@ public class CommandExecuter implements CommandExecutor {
                 _gameManager.Start();
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
-                for(Portal portal : _gameManager.portals) {
-                    portal.Activate();
-                }
                 sender.sendMessage(ChatColor.RED + "debug");
+                _chestManager.UpdateStarterChest(p);
+                //_chestManager.CreateStarterChest(new Location(p.getWorld(), 116, -60, 162));
+
+//                Location loc = new Location(p.getWorld(), 116, -60, 163);
+//
+//                loc.getBlock().setType(Material.CHEST);
+//                Chest chest = (Chest)loc.getBlock().getState();
+//
+//                StarterChest starterChest = new StarterChest(_chestManager.SerializeInventory(chest.getInventory().getContents()),
+//                        _chestManager.LocationToString(chest.getLocation()));
+//                starterChest.setInventory(_chestManager.DeserializeInventory(_chestManager));
+                //chest.getBlockInventory();
+                //p.getLocation().getBlock().setType(Material.CHEST);
+
+//                for(Portal portal : _gameManager.portals) {
+//                    portal.Activate();
+//                }
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
-                T_Command(p, args);
+               // _chestManager.SetChestInventory(p);
+                Bukkit.broadcastMessage("changing chest inventory");
+                //T_Command(p, args);
             } else if (label.equalsIgnoreCase("spawn_villager")) {
                 Spawn_Villager_Command(p, args);
             } else if (label.equalsIgnoreCase("set_spawn")) {
