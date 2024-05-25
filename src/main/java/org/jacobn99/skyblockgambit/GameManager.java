@@ -5,7 +5,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jacobn99.skyblockgambit.*;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
 
 import java.util.*;
@@ -17,12 +16,12 @@ public class GameManager {
     public ArrayList<Generator> generatorList = new ArrayList();
     public List<Portal> portals = new ArrayList();
     public List<CustomVillager> customVillagers = new ArrayList();
+    public List<StarterChest> starterChestList = new ArrayList<>();
     public Set<Player> blueTeam = new HashSet();
     public Set<Player> redTeam = new HashSet();
     JavaPlugin _mainPlugin;
     ArmorStand blueArmorStand;
     ArmorStand redArmorStand;
-
     PortalManager _portalManager;
     public GameManager(JavaPlugin mainPlugin) {
         _portalManager = new PortalManager();
@@ -31,7 +30,10 @@ public class GameManager {
         tickRate = 3;
     }
     public void Start() {
+        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
+
         World world = Bukkit.getWorld("void_world");
+        //StarterChest chest1 = new StarterChest()
 
         Generator gen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
                 new Location(world,122, -61, 163));
@@ -42,6 +44,13 @@ public class GameManager {
                 new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
         Portal portal2 = new Portal(portals, GetBlueSpawn(),
                 new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
+
+        StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
+        blueChest.CreateChest();
+
+        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
+        redChest.CreateChest();
+
 
         UpdateSpawns();
         SpawnTeamVillagers();

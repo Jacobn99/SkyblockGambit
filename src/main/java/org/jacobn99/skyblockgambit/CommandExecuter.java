@@ -36,28 +36,14 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _chestManager.UpdateStarterChest(p);
-                //_chestManager.CreateStarterChest(new Location(p.getWorld(), 116, -60, 162));
-
-//                Location loc = new Location(p.getWorld(), 116, -60, 163);
-//
-//                loc.getBlock().setType(Material.CHEST);
-//                Chest chest = (Chest)loc.getBlock().getState();
-//
-//                StarterChest starterChest = new StarterChest(_chestManager.SerializeInventory(chest.getInventory().getContents()),
-//                        _chestManager.LocationToString(chest.getLocation()));
-//                starterChest.setInventory(_chestManager.DeserializeInventory(_chestManager));
-                //chest.getBlockInventory();
-                //p.getLocation().getBlock().setType(Material.CHEST);
-
-//                for(Portal portal : _gameManager.portals) {
-//                    portal.Activate();
-//                }
+                for (Portal portal : _gameManager.portals) {
+                    portal.Activate();
+                }
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
-               // _chestManager.SetChestInventory(p);
-                Bukkit.broadcastMessage("changing chest inventory");
-                //T_Command(p, args);
+                //_chestManager.SetChestInventory(p);
+                //Bukkit.broadcastMessage("changed chest inventory");
+                T_Command(p, args);
             } else if (label.equalsIgnoreCase("spawn_villager")) {
                 Spawn_Villager_Command(p, args);
             } else if (label.equalsIgnoreCase("set_spawn")) {
@@ -112,6 +98,11 @@ public class CommandExecuter implements CommandExecutor {
                     return false;
                 }
             }
+            else if (label.equalsIgnoreCase("set_starter_chest")) {
+                _chestManager.SetChestInventory(p);
+                return true;
+            }
+
         }
         return false;
     }
