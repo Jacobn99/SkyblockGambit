@@ -1,9 +1,6 @@
 package org.jacobn99.skyblockgambit;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +9,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
 
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
@@ -36,9 +35,29 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                for (Portal portal : _gameManager.portals) {
-                    portal.Activate();
-                }
+//                HashMap<Long, Queueable> processes = new HashMap<>();
+
+                World world = Bukkit.getWorld("void_world");
+
+                Queueable _queueable = () -> Bukkit.broadcastMessage("Bruh");
+                _gameManager.processes.put(world.getFullTime() + 10, _queueable);
+                _gameManager.processes.put(world.getFullTime() + 20, _queueable);
+
+
+                //Queueable currentProcess = process1.
+//                for(Long executionTime : processes.keySet()) {
+//                    Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
+//                    if(world.getFullTime() >= executionTime) {
+//                        processes.get(executionTime).Wait(1, 1);
+//                    }
+//                    //q.Wait(world.getFullTime(), );
+//                }
+
+                //_queueable.Wait(world.getFullTime(), world.getFullTime() + 10);
+
+//                for (Portal portal : _gameManager.portals) {
+//                    portal.Activate();
+//                }
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
                 //_chestManager.SetChestInventory(p);

@@ -19,11 +19,13 @@ public class GameManager {
     public List<StarterChest> starterChestList = new ArrayList<>();
     public Set<Player> blueTeam = new HashSet();
     public Set<Player> redTeam = new HashSet();
+    HashMap<Long, Queueable> processes;
     JavaPlugin _mainPlugin;
     ArmorStand blueArmorStand;
     ArmorStand redArmorStand;
     PortalManager _portalManager;
     public GameManager(JavaPlugin mainPlugin) {
+        processes = new HashMap<>();
         _portalManager = new PortalManager();
 
         _mainPlugin = mainPlugin;
@@ -58,16 +60,47 @@ public class GameManager {
         Borderwall _borderwall = new Borderwall(_mainPlugin);
         _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
 
+        //long currnetTime = world.getFullTime();
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 //UpdateSpawns();
+
+                HandleProcesses();
+//                for(Long executionTime : processes.keySet()) {
+//                    Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
+//                    if(world.getFullTime() >= executionTime) {
+//                        processes.get(executionTime).Execute();
+//                        processes.remove(executionTime);
+//                    }
+//                    //q.Wait(world.getFullTime(), );
+//                }
                 RenewGenerators(tickRate);
                 _portalManager.PortalUpdate(portals);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
 
+//    public void PrintMessage(long currentTime, long executionTime) {
+//        Bukkit.broadcastMessage("done!");
+//        //Bukkit.broadcastMessage(currentTime + ", " + executionTime);
+////        if(currentTime >= executionTime) {
+////            Bukkit.broadcastMessage("done");
+////        }
+//    }
+
+    private void HandleProcesses() {
+        World world = Bukkit.getWorld("void_world");
+        for(Long executionTime : processes.keySet()) {
+            Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
+            if(world.getFullTime() >= executionTime) {
+                processes.get(executionTime).Execute();
+                processes.remove(executionTime);
+            }
+            //q.Wait(world.getFullTime(), );
+        }
+    }
     public void UpdateSpawns() {
         if(blueArmorStand == null || redArmorStand == null) {
             for (Entity e : Bukkit.getWorld("void_world").getEntities()) {
