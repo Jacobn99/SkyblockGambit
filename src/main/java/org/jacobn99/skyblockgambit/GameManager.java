@@ -17,16 +17,23 @@ public class GameManager {
     public List<Portal> portals = new ArrayList();
     public List<CustomVillager> customVillagers = new ArrayList();
     public List<StarterChest> starterChestList = new ArrayList<>();
-    public Set<Player> blueTeam = new HashSet();
-    public Set<Player> redTeam = new HashSet();
+    public Set<Set<Player>> teams = new HashSet<>();
+    public Set<Player> blueTeam;
+    public Set<Player> redTeam;
+    Portal redPortal;
+    Portal bluePortal;
     HashMap<Long, Queueable> processes;
     JavaPlugin _mainPlugin;
     ArmorStand blueArmorStand;
     ArmorStand redArmorStand;
     PortalManager _portalManager;
     public GameManager(JavaPlugin mainPlugin) {
+        blueTeam = new HashSet();
+        redTeam = new HashSet();
         processes = new HashMap<>();
         _portalManager = new PortalManager();
+        teams.add(blueTeam);
+        teams.add(redTeam);
 
         _mainPlugin = mainPlugin;
         tickRate = 3;
@@ -42,9 +49,9 @@ public class GameManager {
         Generator gen2 = new DiamondGenerator(generatorList, new Location(world,102, -60, 163),
                 new Location(world,104, -61, 163));
 
-        Portal portal1 = new Portal(portals, GetRedSpawn(),
+        redPortal = new Portal(portals, GetRedSpawn(),
                 new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
-        Portal portal2 = new Portal(portals, GetBlueSpawn(),
+        bluePortal = new Portal(portals, GetBlueSpawn(),
                 new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
 
         StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
@@ -60,35 +67,16 @@ public class GameManager {
         Borderwall _borderwall = new Borderwall(_mainPlugin);
         _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
 
-        //long currnetTime = world.getFullTime();
-
         new BukkitRunnable() {
             @Override
             public void run() {
                 //UpdateSpawns();
-
                 HandleProcesses();
-//                for(Long executionTime : processes.keySet()) {
-//                    Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-//                    if(world.getFullTime() >= executionTime) {
-//                        processes.get(executionTime).Execute();
-//                        processes.remove(executionTime);
-//                    }
-//                    //q.Wait(world.getFullTime(), );
-//                }
                 RenewGenerators(tickRate);
                 _portalManager.PortalUpdate(portals);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
-
-//    public void PrintMessage(long currentTime, long executionTime) {
-//        Bukkit.broadcastMessage("done!");
-//        //Bukkit.broadcastMessage(currentTime + ", " + executionTime);
-////        if(currentTime >= executionTime) {
-////            Bukkit.broadcastMessage("done");
-////        }
-//    }
 
     private void HandleProcesses() {
         World world = Bukkit.getWorld("void_world");
@@ -98,7 +86,6 @@ public class GameManager {
                 processes.get(executionTime).Execute();
                 processes.remove(executionTime);
             }
-            //q.Wait(world.getFullTime(), );
         }
     }
     public void UpdateSpawns() {
@@ -125,6 +112,12 @@ public class GameManager {
         }
     }
 
+    public Set<Player> GetBlueTeamList() {
+        return blueTeam;
+    }
+    public Set<Player> GetRedTeamList() {
+        return redTeam;
+    }
     public Location GetBlueSpawn() {
         UpdateSpawns();
         return blueSpawn.clone();

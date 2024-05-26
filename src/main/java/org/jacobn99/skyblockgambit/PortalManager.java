@@ -21,6 +21,7 @@ public class PortalManager {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (IsInPortal(portal, p)) {
                         TeleportIsland(p, portal.GetOpposingIslandLocation());
+                        portal.Deactivate();
                         Bukkit.broadcastMessage("guy");
                     }
                 }

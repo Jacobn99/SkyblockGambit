@@ -18,9 +18,9 @@ public class CommandExecuter implements CommandExecutor {
     private CustomItemManager _itemManager;
     private PortalManager _portalManager;
     private StarterChestManager _chestManager;
-    public CommandExecuter(JavaPlugin mainPlugin) {
+    public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
-        _gameManager = new GameManager(_mainPlugin);
+        _gameManager = gameManager;
         _itemManager = new CustomItemManager(_mainPlugin);
         _portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
@@ -35,13 +35,17 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
+                for(Portal portal : _gameManager.portals) {
+                    portal.Activate();
+                }
+
+
 //                HashMap<Long, Queueable> processes = new HashMap<>();
-
-                World world = Bukkit.getWorld("void_world");
-
-                Queueable _queueable = () -> Bukkit.broadcastMessage("Bruh");
-                _gameManager.processes.put(world.getFullTime() + 10, _queueable);
-                _gameManager.processes.put(world.getFullTime() + 20, _queueable);
+//                World world = Bukkit.getWorld("void_world");
+//
+//                Queueable _queueable = () -> Bukkit.broadcastMessage("Bruh");
+//                _gameManager.processes.put(world.getFullTime() + 10, _queueable);
+//                _gameManager.processes.put(world.getFullTime() + 20, _queueable);
 
 
                 //Queueable currentProcess = process1.
@@ -140,7 +144,7 @@ public class CommandExecuter implements CommandExecutor {
     }
 
     private boolean Set_Spawn_Command(Player p, String[] args) {
-        p.sendMessage(ChatColor.RED + "Skibidi");
+        p.sendMessage(ChatColor.RED + "THIS COMMAND DOESN'T SET SPAWNS RIGHT NOW");
 
         if (args.length == 1) {
             String arg = args[0];
@@ -167,12 +171,14 @@ public class CommandExecuter implements CommandExecutor {
             String arg = args[0];
             if(arg.equalsIgnoreCase("blue"))  {
                 _gameManager.blueTeam.add(p);
+                Bukkit.broadcastMessage("Blue Team: " + _gameManager.blueTeam);
                 p.sendMessage(ChatColor.RED + "blue");
                 return true;
 
             }
             else if(arg.equalsIgnoreCase("red"))  {
                 _gameManager.redTeam.add(p);
+                Bukkit.broadcastMessage("Red Team: " + _gameManager.redTeam);
                 p.sendMessage(ChatColor.RED + "red");
                 return true;
             }
