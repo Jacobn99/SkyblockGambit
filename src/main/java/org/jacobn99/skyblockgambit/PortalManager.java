@@ -10,14 +10,20 @@ import java.util.Random;
 
 public class PortalManager {
     Random rand = new Random();
+
+    public PortalManager() {
+
+    }
     public void TeleportIsland(Player p, Location islandSpawn) {
         Location location;
         location = FindRandomSpawn(islandSpawn);
         p.teleport(location);
     }
     public void PortalUpdate(List<Portal> portals) {
+        //.broadcastMessage("portals: " + portals);
         for (Portal portal : portals) {
             if(portal.isActivated) {
+                //Bukkit.broadcastMessage("Got here");
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (IsInPortal(portal, p)) {
                         TeleportIsland(p, portal.GetOpposingIslandLocation());

@@ -17,20 +17,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;
     CustomItemManager _itemManager;
-    Borderwall _borderwall = new Borderwall(_mainPlugin);
+    Borderwall _borderwall;
     GameManager _gameManager;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
         _gameManager = gameManager;
+        _borderwall = new Borderwall(_mainPlugin, _gameManager);
     }
 
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         Player p = event.getPlayer();
         if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
-            Bukkit.broadcastMessage("Blue Team: " + _gameManager.blueTeam);
-            Bukkit.broadcastMessage("Red Team: " + _gameManager.redTeam);
+            Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
+            Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());
 
             if(_gameManager.GetBlueTeamList().contains(p)) {
                 _gameManager.bluePortal.Activate();

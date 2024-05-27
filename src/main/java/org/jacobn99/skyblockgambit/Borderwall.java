@@ -3,11 +3,17 @@ package org.jacobn99.skyblockgambit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Borderwall extends GameManager {
+//public class Borderwall extends GameManager {
+public class Borderwall {
     Location borderLocation;
     JavaPlugin _mainPlugin;
-    public Borderwall(JavaPlugin mainPlugin) {
-        super(mainPlugin);
+    GameManager _gameManager;
+//    public Borderwall(JavaPlugin mainPlugin) {
+//        super(mainPlugin);
+//        _mainPlugin = mainPlugin;
+//    }
+    public Borderwall(JavaPlugin mainPlugin, GameManager gameManager) {
+        _gameManager = gameManager;
         _mainPlugin = mainPlugin;
     }
 
@@ -17,7 +23,7 @@ public class Borderwall extends GameManager {
     }
     public Location GetBorderLocation() {
         if(borderLocation == null) {
-            createBorder(GetBlueSpawn(), GetRedSpawn());
+            createBorder(_gameManager.GetBlueSpawn(), _gameManager.GetRedSpawn());
         }
         return borderLocation;
     }

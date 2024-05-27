@@ -14,3 +14,5 @@ commands:
   set_custom_item:
   get_custom_item:
   set_starter_chest:
+  end:
+  list_custom_items:

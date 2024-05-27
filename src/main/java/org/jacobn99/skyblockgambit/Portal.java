@@ -13,8 +13,8 @@ public class Portal {
     Location _opposingIslandLocation;
     String _team;
     boolean isActivated;
-    public Portal(List portals, Location opposingIslandLocation, Location portalLoc) {
-        _manager = new PortalManager();
+    public Portal(List portals, PortalManager manager, Location opposingIslandLocation, Location portalLoc) {
+        _manager = manager;
         _portalLoc = portalLoc;
         _opposingIslandLocation = opposingIslandLocation;
         isActivated = false;

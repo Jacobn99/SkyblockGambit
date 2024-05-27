@@ -6,6 +6,7 @@ import org.bukkit.entity.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
+import org.jacobn99.skyblockgambit.GeneratorInfo.IronGenerator;
 
 import java.util.*;
 
@@ -13,11 +14,13 @@ public class GameManager {
     Location blueSpawn;
     Location redSpawn;
     long tickRate;
-    public ArrayList<Generator> generatorList = new ArrayList();
-    public List<Portal> portals = new ArrayList();
-    public List<CustomVillager> customVillagers = new ArrayList();
-    public List<StarterChest> starterChestList = new ArrayList<>();
-    public Set<Set<Player>> teams = new HashSet<>();
+    boolean isRunning;
+    public ArrayList<Generator> generatorList;
+    public ArrayList<Entity> disposableEntities;
+    public List<Portal> portals;
+    public List<CustomVillager> customVillagers;
+    public List<StarterChest> starterChestList;
+    public Set<Set<Player>> teams;
     public Set<Player> blueTeam;
     public Set<Player> redTeam;
     Portal redPortal;
@@ -27,31 +30,45 @@ public class GameManager {
     ArmorStand blueArmorStand;
     ArmorStand redArmorStand;
     PortalManager _portalManager;
+
     public GameManager(JavaPlugin mainPlugin) {
         blueTeam = new HashSet();
         redTeam = new HashSet();
+        teams = new HashSet<>();
+
+        disposableEntities = new ArrayList<>();
+        generatorList = new ArrayList();
+        portals = new ArrayList<>();
+        starterChestList = new ArrayList<>();
+        customVillagers = new ArrayList();
+
         processes = new HashMap<>();
         _portalManager = new PortalManager();
+
         teams.add(blueTeam);
         teams.add(redTeam);
-
         _mainPlugin = mainPlugin;
         tickRate = 3;
     }
     public void Start() {
-        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
+        isRunning = true;
 
+        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
         World world = Bukkit.getWorld("void_world");
         //StarterChest chest1 = new StarterChest()
 
-        Generator gen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
+        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
                 new Location(world,122, -61, 163));
-        Generator gen2 = new DiamondGenerator(generatorList, new Location(world,102, -60, 163),
+        Generator blueGen2 = new IronGenerator(generatorList, new Location(world,102, -60, 163),
                 new Location(world,104, -61, 163));
+        Generator redGen1 = new IronGenerator(generatorList, new Location(world,101, -60, 4),
+                new Location(world,103, -61, 4));
+        Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
+                new Location(world,121, -61, 4));
 
-        redPortal = new Portal(portals, GetRedSpawn(),
+        bluePortal = new Portal(portals, _portalManager, GetRedSpawn(),
                 new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
-        bluePortal = new Portal(portals, GetBlueSpawn(),
+        redPortal = new Portal(portals, _portalManager, GetBlueSpawn(),
                 new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
 
         StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
@@ -64,13 +81,16 @@ public class GameManager {
         UpdateSpawns();
         SpawnTeamVillagers();
 
-        Borderwall _borderwall = new Borderwall(_mainPlugin);
+        Borderwall _borderwall = new Borderwall(_mainPlugin, this);
         _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 //UpdateSpawns();
+                if(isRunning != true) {
+                    this.cancel();
+                }
                 HandleProcesses();
                 RenewGenerators(tickRate);
                 _portalManager.PortalUpdate(portals);
@@ -78,6 +98,13 @@ public class GameManager {
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
 
+    public void EndGame() {
+        isRunning = false;
+
+        for(Entity e : disposableEntities) {
+            e.remove();
+        }
+    }
     private void HandleProcesses() {
         World world = Bukkit.getWorld("void_world");
         for(Long executionTime : processes.keySet()) {
@@ -179,6 +206,7 @@ public class GameManager {
         Villager villager = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
+        disposableEntities.add(villager);
         return villager;
     }
 

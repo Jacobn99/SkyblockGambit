@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -16,13 +17,13 @@ public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
     private GameManager _gameManager;
     private CustomItemManager _itemManager;
-    private PortalManager _portalManager;
+    //private PortalManager _portalManager;
     private StarterChestManager _chestManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _gameManager = gameManager;
         _itemManager = new CustomItemManager(_mainPlugin);
-        _portalManager = new PortalManager();
+        //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -32,6 +33,12 @@ public class CommandExecuter implements CommandExecutor {
             if (label.equalsIgnoreCase("start")) {
                 sender.sendMessage(ChatColor.RED + "start");
                 _gameManager.Start();
+                return true;
+            } if (label.equalsIgnoreCase("end")) {
+                sender.sendMessage(ChatColor.RED + "end");
+                _gameManager.EndGame();
+                _gameManager = new GameManager(_mainPlugin);
+                Bukkit.broadcastMessage("red team: " + _gameManager.GetRedTeamList());
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
@@ -95,7 +102,7 @@ public class CommandExecuter implements CommandExecutor {
             }
             else if (label.equalsIgnoreCase("set_custom_item")) {
                 String name = null;
-                if (args.length == 2) { //fix this part by making it == 2 and also make a "set_custom_item" command
+                if (args.length == 2) {
                     int arg0 = Integer.valueOf(args[0]);
                     name = args[1];
 
@@ -106,6 +113,13 @@ public class CommandExecuter implements CommandExecutor {
                 else {
                     Bukkit.broadcastMessage("Usage: set_custom_item index name(optional)");
                     return false;
+                }
+            }
+            else if (label.equalsIgnoreCase("list_custom_items")) {
+                int i = 0;
+                for(CustomItems item : _itemManager.GetCustomItemsList()) {
+                    Bukkit.broadcastMessage("index " + i + ": " + item.getItemName());
+                    i++;
                 }
             }
             else if (label.equalsIgnoreCase("add_custom_item")) {
