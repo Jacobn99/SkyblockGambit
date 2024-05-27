@@ -29,9 +29,11 @@ public class EventManager implements Listener {
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         Player p = event.getPlayer();
+        Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
+        Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());
         if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
-            Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
-            Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());
+//            Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
+//            Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());
 
             if(_gameManager.GetBlueTeamList().contains(p)) {
                 _gameManager.bluePortal.Activate();

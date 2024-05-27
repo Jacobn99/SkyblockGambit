@@ -49,6 +49,8 @@ public class GameManager {
         teams.add(redTeam);
         _mainPlugin = mainPlugin;
         tickRate = 3;
+        Bukkit.getConsoleSender().sendMessage("new gamemanager");
+        //Bukkit.broadcastMessage("new gameManager");
     }
     public void Start() {
         isRunning = true;

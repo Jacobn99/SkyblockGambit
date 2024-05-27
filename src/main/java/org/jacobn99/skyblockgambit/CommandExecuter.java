@@ -38,13 +38,19 @@ public class CommandExecuter implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "end");
                 _gameManager.EndGame();
                 _gameManager = new GameManager(_mainPlugin);
+
+
+                _gameManager.blueTeam.add(p);
+                _gameManager.redTeam.clear();
                 Bukkit.broadcastMessage("red team: " + _gameManager.GetRedTeamList());
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                for(Portal portal : _gameManager.portals) {
-                    portal.Activate();
-                }
+                p.sendMessage("Blue Team List: " + _gameManager.GetBlueTeamList());
+                p.sendMessage("Red Team List: " + _gameManager.GetRedTeamList());
+//                for(Portal portal : _gameManager.portals) {
+//                    portal.Activate();
+//                }
 
 
 //                HashMap<Long, Queueable> processes = new HashMap<>();
