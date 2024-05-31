@@ -73,6 +73,7 @@ public class IronGenerator implements Generator {
         return _loc;
     }
     public void Generate() {
+        Bukkit.broadcastMessage("Generate!");
         Bukkit.getWorld("void_world").dropItemNaturally(_loc, _item);
     }
     public ItemStack GetFuel() {

@@ -20,6 +20,7 @@ public class GameManager {
     public List<Portal> portals;
     public List<CustomVillager> customVillagers;
     public List<StarterChest> starterChestList;
+    public List<Object> objects;
     public Set<Set<Player>> teams;
     public Set<Player> blueTeam;
     public Set<Player> redTeam;
@@ -41,6 +42,7 @@ public class GameManager {
         portals = new ArrayList<>();
         starterChestList = new ArrayList<>();
         customVillagers = new ArrayList();
+        objects = new ArrayList<>();
 
         processes = new HashMap<>();
         _portalManager = new PortalManager();
@@ -102,10 +104,12 @@ public class GameManager {
 
     public void EndGame() {
         isRunning = false;
+        Bukkit.broadcastMessage("size: " + disposableEntities.size());
 
         for(Entity e : disposableEntities) {
             e.remove();
         }
+        Reset();
     }
     private void HandleProcesses() {
         World world = Bukkit.getWorld("void_world");
@@ -219,5 +223,36 @@ public class GameManager {
         custom.getVillager().setVillagerLevel(5);
         customVillagers.add(custom);
         return custom;
+    }
+    public void Reset() {
+        objects.addAll(portals);
+        objects.addAll(generatorList);
+        objects.addAll(customVillagers);
+        objects.addAll(disposableEntities);
+        objects.addAll(starterChestList);
+        objects.addAll(teams);
+
+        portals.clear();
+        teams.clear();
+        disposableEntities.clear();
+        customVillagers.clear();
+        generatorList.clear();
+        starterChestList.clear();
+
+
+
+//        objects.add(this.portals);
+//        objects.add(this.generatorList);
+//        objects.add(this.customVillagers);
+//        objects.add(this.disposableEntities);
+//        objects.add(this.blueTeam);
+//        objects.add(this.redTeam);
+//        objects.add(this.redSpawn);
+//        objects.add(this.starterChestList);
+//
+        for(Object o : objects) {
+            o = null;
+        }
+        System.gc();
     }
 }

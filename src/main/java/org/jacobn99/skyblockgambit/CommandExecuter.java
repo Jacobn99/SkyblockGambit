@@ -37,7 +37,7 @@ public class CommandExecuter implements CommandExecutor {
             } if (label.equalsIgnoreCase("end")) {
                 sender.sendMessage(ChatColor.RED + "end");
                 _gameManager.EndGame();
-                _gameManager = new GameManager(_mainPlugin);
+                //_gameManager = new GameManager(_mainPlugin);
 
 
                 _gameManager.blueTeam.add(p);
