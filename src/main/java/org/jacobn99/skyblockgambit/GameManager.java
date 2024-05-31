@@ -238,18 +238,8 @@ public class GameManager {
         customVillagers.clear();
         generatorList.clear();
         starterChestList.clear();
+        processes = null;
 
-
-
-//        objects.add(this.portals);
-//        objects.add(this.generatorList);
-//        objects.add(this.customVillagers);
-//        objects.add(this.disposableEntities);
-//        objects.add(this.blueTeam);
-//        objects.add(this.redTeam);
-//        objects.add(this.redSpawn);
-//        objects.add(this.starterChestList);
-//
         for(Object o : objects) {
             o = null;
         }
