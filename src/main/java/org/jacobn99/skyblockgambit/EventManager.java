@@ -26,11 +26,11 @@ public class EventManager implements Listener {
         _borderwall = new Borderwall(_mainPlugin, _gameManager);
     }
 
+
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
-        Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());
+
         if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
 //            Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
 //            Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());

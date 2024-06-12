@@ -1,15 +1,14 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.*;
-import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 
 import java.util.HashMap;
 
@@ -19,12 +18,14 @@ public class CommandExecuter implements CommandExecutor {
     private CustomItemManager _itemManager;
     //private PortalManager _portalManager;
     private StarterChestManager _chestManager;
+    private AdvancementManager _advancementManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _gameManager = gameManager;
         _itemManager = new CustomItemManager(_mainPlugin);
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
+        _advancementManager = new AdvancementManager(_mainPlugin);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -46,35 +47,37 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                p.sendMessage("Blue Team List: " + _gameManager.GetBlueTeamList());
-                p.sendMessage("Red Team List: " + _gameManager.GetRedTeamList());
-//                for(Portal portal : _gameManager.portals) {
-//                    portal.Activate();
-//                }
+                _gameManager.InitializeTasks();
+                Bukkit.broadcastMessage(_advancementManager.GetEnabledTasks().toString());
 
-
-//                HashMap<Long, Queueable> processes = new HashMap<>();
-//                World world = Bukkit.getWorld("void_world");
+//                HashMap<Object, Object> parameterChanges = new HashMap<>();
 //
-//                Queueable _queueable = () -> Bukkit.broadcastMessage("Bruh");
-//                _gameManager.processes.put(world.getFullTime() + 10, _queueable);
-//                _gameManager.processes.put(world.getFullTime() + 20, _queueable);
+//                parameterChanges.put("parent", "task_advancements:tasks/root");
+//                parameterChanges.put("title", "Task 120");
+//                parameterChanges.put("show_toast", true);
+//                //parameterChanges.put("announce_to_chat", "true");
+
+                //_gameManager.InitializeTasks();
+                //_gameManager.LogEnabledTasks();
+                //_advancementManager.ModifyAdvancement("task1.json", "title", "task 69");
+                //JsonManager _jsonManager = new JsonManager();
+                //Map<Object,Object> outermostEntries = _jsonManager.JsonFileToMap(new File(_advancementManager.GetAdvancementPath() + "task1.json"));
+                //_jsonManager.ModifyJsonFile(new File(_advancementManager.GetAdvancementPath() + "task1.json"), "title", "69");
+
+//                String json = "{\"display\":{\"icon\":{\"id\":\"minecraft:map\"},\"title\":\"Task 120\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":true,\"hidden\":false},\"parent\":\"task_advancements:tasks/root\",\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
+//                Gson gson = new Gson();
+//                Map<Object,Object> map = gson.fromJson(json, Map.class);
 
 
-                //Queueable currentProcess = process1.
-//                for(Long executionTime : processes.keySet()) {
-//                    Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-//                    if(world.getFullTime() >= executionTime) {
-//                        processes.get(executionTime).Wait(1, 1);
-//                    }
-//                    //q.Wait(world.getFullTime(), );
-//                }
 
-                //_queueable.Wait(world.getFullTime(), world.getFullTime() + 10);
-
-//                for (Portal portal : _gameManager.portals) {
-//                    portal.Activate();
-//                }
+//                HashMap<String, Object> parameterChanges = new HashMap<>();
+//                parameterChanges.put("parent", "task_advancements:tasks/root");
+//                parameterChanges.put("title", "Task 120");
+//                parameterChanges.put("show_toast", true);
+//                //parameterChanges.put("announce_to_chat", "true");
+//
+//                AdvancementManager _advancementManager = new AdvancementManager();
+//                _advancementManager.ChangeAdvancementFile("task1.json", parameterChanges);
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
                 //_chestManager.SetChestInventory(p);

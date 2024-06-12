@@ -1,13 +1,13 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 
 public final class SkyblockGambit extends JavaPlugin {
     private String[] commandNames = {"start", "debug", "t", "set_spawn", "spawn_villager", "set_custom_item",
             "add_custom_item", "get_custom_item", "set_starter_chest", "end", "list_custom_items"};
     GameManager _gameManager;
     EventManager _eventManager;
-
     @Override
     public void onEnable() {
         _gameManager = new GameManager(this);
@@ -30,6 +30,8 @@ public final class SkyblockGambit extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        _gameManager.LogEnabledTasks();
+
     }
 
     private void setCommandExecuter(CommandExecuter commandExecuter) {

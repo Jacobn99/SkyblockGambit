@@ -1,36 +1,46 @@
 package org.jacobn99.skyblockgambit;
 
+import com.google.gson.Gson;
 import org.bukkit.*;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
+import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.IronGenerator;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class GameManager {
-    Location blueSpawn;
-    Location redSpawn;
+    private Location blueSpawn;
+    private Location redSpawn;
     long tickRate;
     boolean isRunning;
-    public ArrayList<Generator> generatorList;
-    public ArrayList<Entity> disposableEntities;
-    public List<Portal> portals;
-    public List<CustomVillager> customVillagers;
-    public List<StarterChest> starterChestList;
-    public List<Object> objects;
-    public Set<Set<Player>> teams;
+    private ArrayList<Generator> generatorList;
+    private ArrayList<Entity> disposableEntities;
+    private List<Portal> portals;
+    private List<CustomVillager> customVillagers;
+    private List<StarterChest> starterChestList;
+    private List<Object> objects;
+    //private List<CustomAdvancement> customAdvancements;
+    private Set<Set<Player>> teams;
     public Set<Player> blueTeam;
     public Set<Player> redTeam;
     Portal redPortal;
     Portal bluePortal;
     HashMap<Long, Queueable> processes;
     JavaPlugin _mainPlugin;
-    ArmorStand blueArmorStand;
-    ArmorStand redArmorStand;
-    PortalManager _portalManager;
+    private ArmorStand blueArmorStand;
+    private ArmorStand redArmorStand;
+    private PortalManager _portalManager;
+    private AdvancementManager _advancementManager;
 
     public GameManager(JavaPlugin mainPlugin) {
         blueTeam = new HashSet();
@@ -46,6 +56,7 @@ public class GameManager {
 
         processes = new HashMap<>();
         _portalManager = new PortalManager();
+        _advancementManager = new AdvancementManager(_mainPlugin);
 
         teams.add(blueTeam);
         teams.add(redTeam);
@@ -84,6 +95,7 @@ public class GameManager {
 
         UpdateSpawns();
         SpawnTeamVillagers();
+        //InitializeTaskObjects();
 
         Borderwall _borderwall = new Borderwall(_mainPlugin, this);
         _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
@@ -102,6 +114,22 @@ public class GameManager {
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
 
+    public void InitializeTasks() {
+        if(Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "defaultConfiguration.json")) && Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
+            CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+            CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  _advancementManager.customAdvancements);
+            CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+            CustomAdvancement task4 = new CustomAdvancement("task4", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+
+            for (CustomAdvancement a : _advancementManager.GetCustomAdvancementList()) {
+                a.LoadFile(_advancementManager.GetDefaultConfiguration());
+            }
+            _advancementManager.RandomizeTasks();}
+        else {
+            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or defaultConfiguration.json");
+        }
+
+    }
     public void EndGame() {
         isRunning = false;
         Bukkit.broadcastMessage("size: " + disposableEntities.size());
@@ -110,6 +138,20 @@ public class GameManager {
             e.remove();
         }
         Reset();
+    }
+    public void LogEnabledTasks() {
+        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
+
+        try {
+            Writer writer = Files.newBufferedWriter(file.toPath());
+            Gson gson = new Gson();
+            gson.toJson(_advancementManager.enabledAdvancementNames, writer);
+
+            //writer.write("fortnite");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     private void HandleProcesses() {
         World world = Bukkit.getWorld("void_world");
