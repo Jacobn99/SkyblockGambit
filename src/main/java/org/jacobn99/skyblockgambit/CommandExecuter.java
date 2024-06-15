@@ -18,14 +18,16 @@ public class CommandExecuter implements CommandExecutor {
     private CustomItemManager _itemManager;
     //private PortalManager _portalManager;
     private StarterChestManager _chestManager;
-    private AdvancementManager _advancementManager;
+    //private AdvancementManager _advancementManager;
+    WorldCopier _worldCopier;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _gameManager = gameManager;
         _itemManager = new CustomItemManager(_mainPlugin);
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
-        _advancementManager = new AdvancementManager(_mainPlugin);
+        //_advancementManager = new AdvancementManager(_mainPlugin);
+        _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -47,8 +49,10 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _gameManager.InitializeTasks();
-                Bukkit.broadcastMessage(_advancementManager.GetEnabledTasks().toString());
+                _worldCopier.DuplicateLand(20, 20, new Location(Bukkit.getWorld("void_world"),-13, 75, -53),
+                        new Location(Bukkit.getWorld("void_world"), 193, 75, 482));
+                //_gameManager.InitializeTasks();
+                //Bukkit.broadcastMessage(_advancementManager.GetEnabledTasks().toString());
 
 //                HashMap<Object, Object> parameterChanges = new HashMap<>();
 //

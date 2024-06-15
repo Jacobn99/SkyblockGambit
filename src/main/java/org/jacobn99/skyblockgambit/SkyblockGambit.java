@@ -8,6 +8,7 @@ public final class SkyblockGambit extends JavaPlugin {
             "add_custom_item", "get_custom_item", "set_starter_chest", "end", "list_custom_items"};
     GameManager _gameManager;
     EventManager _eventManager;
+    CommandExecuter _commandExecuter;
     @Override
     public void onEnable() {
         _gameManager = new GameManager(this);
@@ -16,9 +17,9 @@ public final class SkyblockGambit extends JavaPlugin {
         saveDefaultConfig();
         this.getServer().getPluginManager().registerEvents(_eventManager, this);
         // Plugin startup logic
-        CommandExecuter commandExecuter = new CommandExecuter(this, _gameManager);
+        _commandExecuter = new CommandExecuter(this, _gameManager);
 
-        setCommandExecuter(commandExecuter);
+        setCommandExecuter(_commandExecuter);
 
 
         //_gameManager.SetSpawns();

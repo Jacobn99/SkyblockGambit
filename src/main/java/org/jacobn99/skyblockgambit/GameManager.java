@@ -29,24 +29,27 @@ public class GameManager {
     private List<CustomVillager> customVillagers;
     private List<StarterChest> starterChestList;
     private List<Object> objects;
-    //private List<CustomAdvancement> customAdvancements;
     private Set<Set<Player>> teams;
     public Set<Player> blueTeam;
     public Set<Player> redTeam;
     Portal redPortal;
     Portal bluePortal;
-    HashMap<Long, Queueable> processes;
+    //HashMap<Long, Queueable> processes;
+    HashMap<Long, Process> processes;
+
     JavaPlugin _mainPlugin;
     private ArmorStand blueArmorStand;
     private ArmorStand redArmorStand;
     private PortalManager _portalManager;
     private AdvancementManager _advancementManager;
+    private ProcessManager _processManager;
+    //public List<ProcessGroup> processGroups;
+    public boolean canProceed;
 
     public GameManager(JavaPlugin mainPlugin) {
         blueTeam = new HashSet();
         redTeam = new HashSet();
         teams = new HashSet<>();
-
         disposableEntities = new ArrayList<>();
         generatorList = new ArrayList();
         portals = new ArrayList<>();
@@ -57,17 +60,84 @@ public class GameManager {
         processes = new HashMap<>();
         _portalManager = new PortalManager();
         _advancementManager = new AdvancementManager(_mainPlugin);
+        _processManager = new ProcessManager();
+        //processGroups = new ArrayList<>();
 
         teams.add(blueTeam);
         teams.add(redTeam);
         _mainPlugin = mainPlugin;
         tickRate = 3;
+        canProceed = true;
         Bukkit.getConsoleSender().sendMessage("new gamemanager");
         //Bukkit.broadcastMessage("new gameManager");
     }
     public void Start() {
         isRunning = true;
+        //InitializeObjects();
 
+//        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
+//        World world = Bukkit.getWorld("void_world");
+//        //StarterChest chest1 = new StarterChest()
+//
+//        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
+//                new Location(world,122, -61, 163));
+//        Generator blueGen2 = new IronGenerator(generatorList, new Location(world,102, -60, 163),
+//                new Location(world,104, -61, 163));
+//        Generator redGen1 = new IronGenerator(generatorList, new Location(world,101, -60, 4),
+//                new Location(world,103, -61, 4));
+//        Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
+//                new Location(world,121, -61, 4));
+//
+//        bluePortal = new Portal(portals, _portalManager, GetRedSpawn(),
+//                new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
+//        redPortal = new Portal(portals, _portalManager, GetBlueSpawn(),
+//                new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
+//
+//        StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
+//        blueChest.CreateChest();
+//
+//        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
+//        redChest.CreateChest();
+
+
+//        UpdateSpawns();
+//        SpawnTeamVillagers();
+//        InitializeTasks();
+//
+//        Borderwall _borderwall = new Borderwall(_mainPlugin, this);
+//        _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                //UpdateSpawns();
+                if(isRunning != true) {
+                    this.cancel();
+                }
+                _processManager.HandleProcesses(processes);
+                //RenewGenerators(tickRate);
+                //_portalManager.PortalUpdate(portals);
+            }
+        }.runTaskTimer(_mainPlugin, 0, tickRate);
+    }
+
+    public void InitializeTasks() {
+        if(Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "defaultConfiguration.json")) && Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
+            CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+            CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  _advancementManager.customAdvancements);
+            CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+            CustomAdvancement task4 = new CustomAdvancement("task4", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+
+            for (CustomAdvancement a : _advancementManager.GetCustomAdvancementList()) {
+                a.LoadFile(_advancementManager.GetDefaultConfiguration());
+            }
+            _advancementManager.RandomizeTasks();}
+        else {
+            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or defaultConfiguration.json");
+        }
+
+    }
+    private void InitializeObjects() {
         StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
         World world = Bukkit.getWorld("void_world");
         //StarterChest chest1 = new StarterChest()
@@ -91,44 +161,6 @@ public class GameManager {
 
         StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
         redChest.CreateChest();
-
-
-        UpdateSpawns();
-        SpawnTeamVillagers();
-        //InitializeTaskObjects();
-
-        Borderwall _borderwall = new Borderwall(_mainPlugin, this);
-        _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                //UpdateSpawns();
-                if(isRunning != true) {
-                    this.cancel();
-                }
-                HandleProcesses();
-                RenewGenerators(tickRate);
-                _portalManager.PortalUpdate(portals);
-            }
-        }.runTaskTimer(_mainPlugin, 0, tickRate);
-    }
-
-    public void InitializeTasks() {
-        if(Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "defaultConfiguration.json")) && Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
-            CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
-            CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  _advancementManager.customAdvancements);
-            CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
-            CustomAdvancement task4 = new CustomAdvancement("task4", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
-
-            for (CustomAdvancement a : _advancementManager.GetCustomAdvancementList()) {
-                a.LoadFile(_advancementManager.GetDefaultConfiguration());
-            }
-            _advancementManager.RandomizeTasks();}
-        else {
-            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or defaultConfiguration.json");
-        }
-
     }
     public void EndGame() {
         isRunning = false;
@@ -153,16 +185,24 @@ public class GameManager {
             e.printStackTrace();
         }
     }
-    private void HandleProcesses() {
-        World world = Bukkit.getWorld("void_world");
-        for(Long executionTime : processes.keySet()) {
-            Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-            if(world.getFullTime() >= executionTime) {
-                processes.get(executionTime).Execute();
-                processes.remove(executionTime);
-            }
-        }
-    }
+//    private void HandleProcesses() {
+//        World world = Bukkit.getWorld("void_world");
+//        Iterator it = processes.entrySet().iterator();
+//
+//        while(it.hasNext()) {
+//            Map.Entry item = (Map.Entry) it.next();
+//            long executionTime = (long) item.getKey();
+////            Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
+//            System.out.println("Processes size: " + processes.size());
+//            //Bukkit.broadcastMessage("Processes size: " + processes.size());
+//            if(world.getFullTime() >= executionTime) {
+//                //canProceed = false;
+//                //Bukkit.broadcastMessage("gone");
+//                processes.get(executionTime).Execute();
+//                it.remove();
+//            }
+//        }
+//    }
     public void UpdateSpawns() {
         if(blueArmorStand == null || redArmorStand == null) {
             for (Entity e : Bukkit.getWorld("void_world").getEntities()) {
