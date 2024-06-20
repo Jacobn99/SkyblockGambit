@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.ItemStack;
-import org.jacobn99.skyblockgambit.Generator;
 
 import java.util.List;
 

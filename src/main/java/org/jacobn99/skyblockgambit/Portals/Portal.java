@@ -1,9 +1,8 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.Portals;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class Portal {
     Location _opposingIslandLocation;
     String _team;
     boolean isActivated;
-    public Portal(List portals, PortalManager manager, Location opposingIslandLocation, Location portalLoc) {
+    public Portal(List<Portal> portals, PortalManager manager, Location opposingIslandLocation, Location portalLoc) {
         _manager = manager;
         _portalLoc = portalLoc;
         _opposingIslandLocation = opposingIslandLocation;

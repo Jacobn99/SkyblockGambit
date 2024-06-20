@@ -1,4 +1,4 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.StarterChest;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -6,6 +6,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 
 import java.io.*;
 import java.util.ArrayList;

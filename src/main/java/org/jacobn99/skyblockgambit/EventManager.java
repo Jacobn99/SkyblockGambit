@@ -13,6 +13,7 @@ import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;

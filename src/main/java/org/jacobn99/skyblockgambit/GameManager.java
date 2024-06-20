@@ -9,7 +9,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
+import org.jacobn99.skyblockgambit.GeneratorInfo.Generator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.IronGenerator;
+import org.jacobn99.skyblockgambit.Portals.Portal;
+import org.jacobn99.skyblockgambit.Portals.PortalManager;
+import org.jacobn99.skyblockgambit.Processes.Process;
+import org.jacobn99.skyblockgambit.Processes.ProcessManager;
+import org.jacobn99.skyblockgambit.Processes.Queueable;
+import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
+import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +33,8 @@ public class GameManager {
     boolean isRunning;
     private ArrayList<Generator> generatorList;
     private ArrayList<Entity> disposableEntities;
-    private List<Portal> portals;
+    public List<Portal> portals;
+    public List<CustomWorld> customWorlds;
     private List<CustomVillager> customVillagers;
     private List<StarterChest> starterChestList;
     private List<Object> objects;
@@ -43,10 +52,16 @@ public class GameManager {
     private PortalManager _portalManager;
     private AdvancementManager _advancementManager;
     private ProcessManager _processManager;
+    private WorldManager _worldManager;
+    CustomWorld blueWorld;
+    CustomWorld redWorld;
     //public List<ProcessGroup> processGroups;
     public boolean canProceed;
+    public int minWorldHeight;
 
     public GameManager(JavaPlugin mainPlugin) {
+        _mainPlugin = mainPlugin;
+
         blueTeam = new HashSet();
         redTeam = new HashSet();
         teams = new HashSet<>();
@@ -55,28 +70,46 @@ public class GameManager {
         portals = new ArrayList<>();
         starterChestList = new ArrayList<>();
         customVillagers = new ArrayList();
+        customWorlds = new ArrayList<>();
         objects = new ArrayList<>();
 
         processes = new HashMap<>();
-        _portalManager = new PortalManager();
+        _portalManager = new PortalManager(this);
         _advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
+        _worldManager = new WorldManager(_mainPlugin, this, _portalManager, customWorlds);
         //processGroups = new ArrayList<>();
 
         teams.add(blueTeam);
         teams.add(redTeam);
-        _mainPlugin = mainPlugin;
         tickRate = 3;
+        minWorldHeight = 94;
         canProceed = true;
-        Bukkit.getConsoleSender().sendMessage("new gamemanager");
+        //Bukkit.getConsoleSender().sendMessage("new gamemanager");
         //Bukkit.broadcastMessage("new gameManager");
     }
     public void Start() {
         isRunning = true;
+        World world = Bukkit.getWorld("void_world");
+        File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+        long exececutionTime = _processManager.GetLatestExecutionTime(this.processes) + 5;
+
+        Queueable queueable = _worldManager::SpawnPortals;
+        Process process = new Process(exececutionTime, queueable);
+
+        blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
+        redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
+//
+        _worldManager.BuildWorld(redWorld, file);
+        _worldManager.BuildWorld(blueWorld, file);
+
+        this.processes.put(exececutionTime, process);
+//
+//        _worldManager.SpawnPortals();
+
         //InitializeObjects();
 
 //        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
-//        World world = Bukkit.getWorld("void_world");
 //        //StarterChest chest1 = new StarterChest()
 //
 //        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
@@ -100,7 +133,7 @@ public class GameManager {
 //        redChest.CreateChest();
 
 
-//        UpdateSpawns();
+        UpdateSpawns();
 //        SpawnTeamVillagers();
 //        InitializeTasks();
 //
@@ -116,7 +149,7 @@ public class GameManager {
                 }
                 _processManager.HandleProcesses(processes);
                 //RenewGenerators(tickRate);
-                //_portalManager.PortalUpdate(portals);
+                _portalManager.PortalUpdate(portals);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
@@ -162,12 +195,36 @@ public class GameManager {
         StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
         redChest.CreateChest();
     }
+    public Location FindSurface(Location loc, double maxY, double minY) {
+        Location scan = loc;
+        //loc.setY(startY);
+        for(double i = maxY; i > minY; i--) {
+            scan.setY(i);
+            //Bukkit.broadcastMessage("scan.getY(): " + scan.getY());
+
+            if(scan.getBlock().getType() != Material.AIR) {
+                if(Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 1, (int)scan.getZ()).getType() == Material.AIR &&
+                        Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 2, (int)scan.getZ()).getType() == Material.AIR) {
+//                if(Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 1, (int)scan.getZ()).getType() == Material.AIR &&
+//                        Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 2, (int)scan.getZ()).getType() == Material.AIR) {
+                    //Bukkit.broadcastMessage("scan.getY(): " + scan.getY());
+                    scan.setY(scan.getY() + 1);
+                    //Bukkit.broadcastMessage("scan: " + scan);
+                    return scan;
+                }
+            }
+        }
+        return null;
+    }
     public void EndGame() {
         isRunning = false;
         Bukkit.broadcastMessage("size: " + disposableEntities.size());
 
         for(Entity e : disposableEntities) {
             e.remove();
+        }
+        for(Portal p : portals) {
+            p.Deactivate();
         }
         Reset();
     }
@@ -185,40 +242,29 @@ public class GameManager {
             e.printStackTrace();
         }
     }
-//    private void HandleProcesses() {
-//        World world = Bukkit.getWorld("void_world");
-//        Iterator it = processes.entrySet().iterator();
-//
-//        while(it.hasNext()) {
-//            Map.Entry item = (Map.Entry) it.next();
-//            long executionTime = (long) item.getKey();
-////            Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-//            System.out.println("Processes size: " + processes.size());
-//            //Bukkit.broadcastMessage("Processes size: " + processes.size());
-//            if(world.getFullTime() >= executionTime) {
-//                //canProceed = false;
-//                //Bukkit.broadcastMessage("gone");
-//                processes.get(executionTime).Execute();
-//                it.remove();
+    public void UpdateSpawns() {
+        blueSpawn = _worldManager.FindRandomWorldSpawn(blueWorld);
+        redSpawn = _worldManager.FindRandomWorldSpawn(redWorld);
+
+//        blueSpawn = blueWorld.GetReferenceCorner();
+//        redSpawn = redWorld.GetReferenceCorner();
+
+
+//        if(blueArmorStand == null || redArmorStand == null) {
+//            for (Entity e : Bukkit.getWorld("void_world").getEntities()) {
+//                //Bukkit.broadcastMessage("scoreboard: " + e.getScoreboardTags() + ", loc: " + e.getLocation());
+//                if (e.getScoreboardTags().contains("BlueSpawn")) {
+//                    //Bukkit.broadcastMessage("gamer blue alert");
+//                    blueSpawn = e.getLocation();
+//                    blueArmorStand = (ArmorStand) e;
+//                }
+//                else if (e.getScoreboardTags().contains("RedSpawn")) {
+//                    //Bukkit.broadcastMessage("gamer red alert");
+//                    redSpawn = e.getLocation();
+//                    redArmorStand = (ArmorStand) e;
+//                }
 //            }
 //        }
-//    }
-    public void UpdateSpawns() {
-        if(blueArmorStand == null || redArmorStand == null) {
-            for (Entity e : Bukkit.getWorld("void_world").getEntities()) {
-                //Bukkit.broadcastMessage("scoreboard: " + e.getScoreboardTags() + ", loc: " + e.getLocation());
-                if (e.getScoreboardTags().contains("BlueSpawn")) {
-                    //Bukkit.broadcastMessage("gamer blue alert");
-                    blueSpawn = e.getLocation();
-                    blueArmorStand = (ArmorStand) e;
-                }
-                else if (e.getScoreboardTags().contains("RedSpawn")) {
-                    //Bukkit.broadcastMessage("gamer red alert");
-                    redSpawn = e.getLocation();
-                    redArmorStand = (ArmorStand) e;
-                }
-            }
-        }
         for (Player p : redTeam) {
             p.setRespawnLocation(redSpawn, true);
         }
@@ -313,14 +359,16 @@ public class GameManager {
         objects.addAll(disposableEntities);
         objects.addAll(starterChestList);
         objects.addAll(teams);
+        objects.addAll(customWorlds);
 
+        customWorlds.clear();
         portals.clear();
         teams.clear();
         disposableEntities.clear();
         customVillagers.clear();
         generatorList.clear();
         starterChestList.clear();
-        processes = null;
+        processes.clear();
 
         for(Object o : objects) {
             o = null;

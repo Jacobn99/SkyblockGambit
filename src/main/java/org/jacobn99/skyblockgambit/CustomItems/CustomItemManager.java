@@ -1,4 +1,4 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.CustomItems;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;

@@ -1,11 +1,10 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.Processes;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Process {
     boolean _isDone;
-    Process _previousProcess;
+//    Process _previousProcess;
     private HashMap<Long, Process> _processGroup;
     //private HashMap<Long, Process>
     private Queueable _queueable;
@@ -16,13 +15,13 @@ public class Process {
         //_processGroup = processGroup;
     }
 
-    public Process(Long executionTime, Queueable queueable, final Process previousProcess) {
+    public Process(Long executionTime, Queueable queueable) {
         //_processGroup = processGroup;
         _isDone = false;
         //_isPreviousDone = isPreviousDone;
         _queueable = queueable;
         _executionTime = executionTime;
-        _previousProcess = previousProcess;
+//        _previousProcess = previousProcess;
         //processGroup.put(_executionTime, this);
     }
     public void ExecuteFunction()
@@ -36,18 +35,6 @@ public class Process {
     public void set_isDone(boolean isDone) {
         this._isDone = isDone;
     }
-
-    public Process get_previousProcess() {
-        return _previousProcess;
-    }
-    //    public boolean get_isPreviousDone() {
-//        return _isPreviousDone;
-//    }
-//
-//    public void set_isPreviousDone(boolean _isPreviousDone) {
-//        this._isPreviousDone = _isPreviousDone;
-//    }
-
     public Queueable get_queueable() {
         return _queueable;
     }

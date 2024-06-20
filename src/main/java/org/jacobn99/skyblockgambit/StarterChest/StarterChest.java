@@ -1,9 +1,8 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.StarterChest;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;

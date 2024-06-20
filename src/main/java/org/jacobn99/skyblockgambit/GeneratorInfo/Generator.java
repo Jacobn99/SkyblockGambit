@@ -1,4 +1,4 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.GeneratorInfo;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -1,4 +1,4 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.CustomItems;
 
 import org.bukkit.inventory.ItemStack;
 

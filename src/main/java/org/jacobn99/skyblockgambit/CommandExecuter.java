@@ -8,9 +8,14 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
+import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
+import org.jacobn99.skyblockgambit.Portals.Portal;
+import org.jacobn99.skyblockgambit.Portals.PortalManager;
+import org.jacobn99.skyblockgambit.Processes.ProcessManager;
+import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
-import java.util.HashMap;
+import java.io.File;
 
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
@@ -20,6 +25,9 @@ public class CommandExecuter implements CommandExecutor {
     private StarterChestManager _chestManager;
     //private AdvancementManager _advancementManager;
     WorldCopier _worldCopier;
+    WorldManager _worldManager;
+    PortalManager _portalManager;
+    ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _gameManager = gameManager;
@@ -27,7 +35,10 @@ public class CommandExecuter implements CommandExecutor {
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
         //_advancementManager = new AdvancementManager(_mainPlugin);
+        _portalManager = new PortalManager(_gameManager);
         _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes);
+        _processManager = new ProcessManager();
+        _worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _gameManager.customWorlds);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -49,8 +60,19 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _worldCopier.DuplicateLand(20, 20, new Location(Bukkit.getWorld("void_world"),-13, 75, -53),
-                        new Location(Bukkit.getWorld("void_world"), 193, 75, 482));
+//                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+//
+//                _worldCopier.DuplicateLand(new Location(Bukkit.getWorld("void_world"), -550,98,-9), file);
+                //Bukkit.broadcast  Message("latest execution time: " + _processManager.GetLatestExecutionTime(_gameManager.processes));
+
+                for(Portal portal : _gameManager.portals) {
+                    Bukkit.broadcastMessage("Portal Loc: " + portal.GetPortalLocation());
+                }
+                for(CustomWorld customWorld : _gameManager.customWorlds) {
+                    Bukkit.broadcastMessage("Reference Corner: " + customWorld.GetReferenceCorner());
+                }
+//                _worldCopier.DuplicateLand(20, 20, new Location(Bukkit.getWorld("void_world"),-13, 75, -53),
+//                        new Location(Bukkit.getWorld("void_world"), 193, 75, 482));
                 //_gameManager.InitializeTasks();
                 //Bukkit.broadcastMessage(_advancementManager.GetEnabledTasks().toString());
 
