@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
+import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
+import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.Generator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.IronGenerator;
@@ -44,7 +46,7 @@ public class GameManager {
     Portal redPortal;
     Portal bluePortal;
     //HashMap<Long, Queueable> processes;
-    HashMap<Long, Process> processes;
+    public HashMap<Long, Process> processes;
 
     JavaPlugin _mainPlugin;
     private ArmorStand blueArmorStand;
@@ -77,7 +79,7 @@ public class GameManager {
         _portalManager = new PortalManager(this);
         _advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
-        _worldManager = new WorldManager(_mainPlugin, this, _portalManager, customWorlds);
+        _worldManager = new WorldManager(_mainPlugin, this, _portalManager);
         //processGroups = new ArrayList<>();
 
         teams.add(blueTeam);
@@ -92,18 +94,25 @@ public class GameManager {
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
         File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+
+
+        blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
+        redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
+
+        _worldManager.BuildWorld(redWorld, file);
+//        _worldManager.BuildWorld(blueWorld, file);
+
         long exececutionTime = _processManager.GetLatestExecutionTime(this.processes) + 5;
 
         Queueable queueable = _worldManager::SpawnPortals;
         Process process = new Process(exececutionTime, queueable);
-
-        blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
-        redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
 //
-        _worldManager.BuildWorld(redWorld, file);
-        _worldManager.BuildWorld(blueWorld, file);
-
         this.processes.put(exececutionTime, process);
+        UpdateSpawns();
+
+
+
+
 //
 //        _worldManager.SpawnPortals();
 
@@ -132,8 +141,6 @@ public class GameManager {
 //        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
 //        redChest.CreateChest();
 
-
-        UpdateSpawns();
 //        SpawnTeamVillagers();
 //        InitializeTasks();
 //
@@ -218,14 +225,14 @@ public class GameManager {
     }
     public void EndGame() {
         isRunning = false;
-        Bukkit.broadcastMessage("size: " + disposableEntities.size());
+        //Bukkit.broadcastMessage("size: " + disposableEntities.size());
 
         for(Entity e : disposableEntities) {
             e.remove();
         }
-        for(Portal p : portals) {
-            p.Deactivate();
-        }
+//        for(Portal p : portals) {
+//            p.Deactivate();
+//        }
         Reset();
     }
     public void LogEnabledTasks() {
@@ -243,28 +250,9 @@ public class GameManager {
         }
     }
     public void UpdateSpawns() {
-        blueSpawn = _worldManager.FindRandomWorldSpawn(blueWorld);
-        redSpawn = _worldManager.FindRandomWorldSpawn(redWorld);
+        blueSpawn = blueWorld.GetWorldSpawn();
+        redSpawn =  redWorld.GetWorldSpawn();
 
-//        blueSpawn = blueWorld.GetReferenceCorner();
-//        redSpawn = redWorld.GetReferenceCorner();
-
-
-//        if(blueArmorStand == null || redArmorStand == null) {
-//            for (Entity e : Bukkit.getWorld("void_world").getEntities()) {
-//                //Bukkit.broadcastMessage("scoreboard: " + e.getScoreboardTags() + ", loc: " + e.getLocation());
-//                if (e.getScoreboardTags().contains("BlueSpawn")) {
-//                    //Bukkit.broadcastMessage("gamer blue alert");
-//                    blueSpawn = e.getLocation();
-//                    blueArmorStand = (ArmorStand) e;
-//                }
-//                else if (e.getScoreboardTags().contains("RedSpawn")) {
-//                    //Bukkit.broadcastMessage("gamer red alert");
-//                    redSpawn = e.getLocation();
-//                    redArmorStand = (ArmorStand) e;
-//                }
-//            }
-//        }
         for (Player p : redTeam) {
             p.setRespawnLocation(redSpawn, true);
         }
@@ -311,29 +299,29 @@ public class GameManager {
         }
     }
 
-    public void SpawnTeamVillagers() {
-        Location spawnLoc = GetBlueSpawn();
-
-        for(int i = 0; i < 2; i++) {
-            SpawnVillager(spawnLoc, Villager.Profession.CLERIC);
-            SpawnVillager(spawnLoc, Villager.Profession.FARMER);
-            SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
-            SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
-            SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
-            SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
-            SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
-            SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
-            SpawnVillager(spawnLoc, Villager.Profession.MASON);
-            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
-            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
-            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
-
-            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
-            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
-
-            spawnLoc = GetRedSpawn();
-        }
-    }
+//    public void SpawnTeamVillagers() {
+//        Location spawnLoc = GetBlueSpawn();
+//
+//        for(int i = 0; i < 2; i++) {
+//            SpawnVillager(spawnLoc, Villager.Profession.CLERIC);
+//            SpawnVillager(spawnLoc, Villager.Profession.FARMER);
+//            SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
+//            SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
+//            SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
+//            SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
+//            SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
+//            SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
+//            SpawnVillager(spawnLoc, Villager.Profession.MASON);
+//            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
+//            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
+//            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
+//
+//            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
+//            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
+//
+//            spawnLoc = GetRedSpawn();
+//        }
+//    }
 
     private Villager SpawnVillager(Location loc, Villager.Profession profession) {
         // Spawn a villager with all trades unlocked
@@ -353,6 +341,10 @@ public class GameManager {
         return custom;
     }
     public void Reset() {
+        for(Portal p : portals) {
+            p.Deactivate();
+        }
+
         objects.addAll(portals);
         objects.addAll(generatorList);
         objects.addAll(customVillagers);

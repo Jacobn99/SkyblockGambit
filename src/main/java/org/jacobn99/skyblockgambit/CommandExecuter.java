@@ -10,6 +10,9 @@ import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
+import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
+import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
+import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Portals.Portal;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
@@ -38,7 +41,7 @@ public class CommandExecuter implements CommandExecutor {
         _portalManager = new PortalManager(_gameManager);
         _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes);
         _processManager = new ProcessManager();
-        _worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _gameManager.customWorlds);
+        _worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -60,7 +63,11 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-//                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+                _worldManager.BuildWorld(_gameManager.redWorld, file);
+                //_worldCopier.DuplicateLand(p.getLocation(), file);
+
+                //_worldCopier.PasteChunkPiece(_worldCopier.GetChunkPieceData(file.getAbsolutePath()), 0, p.getLocation());
 //
 //                _worldCopier.DuplicateLand(new Location(Bukkit.getWorld("void_world"), -550,98,-9), file);
                 //Bukkit.broadcast  Message("latest execution time: " + _processManager.GetLatestExecutionTime(_gameManager.processes));

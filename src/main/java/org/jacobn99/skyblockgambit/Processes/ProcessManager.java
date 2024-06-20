@@ -42,7 +42,7 @@ public class ProcessManager {
             if(executionTime > latestExecutionTime) {
                 latestExecutionTime = executionTime;
             }
-            Bukkit.broadcastMessage("ex time: " + executionTime);
+            //Bukkit.broadcastMessage("ex time: " + executionTime);
         }
         return latestExecutionTime;
     }

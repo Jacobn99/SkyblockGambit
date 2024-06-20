@@ -1,6 +1,5 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.CustomWorlds;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -13,7 +12,7 @@ public class CustomWorld {
     Location _worldSpawn;
 
 
-    CustomWorld(WorldManager manager, Location referenceCorner, List<CustomWorld> customWorlds) {
+    public CustomWorld(WorldManager manager, Location referenceCorner, List<CustomWorld> customWorlds) {
         _referenceCorner = referenceCorner;
         _manager = manager;
         _customWorlds = customWorlds;
@@ -25,7 +24,7 @@ public class CustomWorld {
     }
     public Location GetWorldSpawn() {
         if(_worldSpawn == null) {
-            _worldSpawn = _manager.FindRandomWorldSpawn(this);
+            _worldSpawn = _manager.GenerateSpawnLocation(this._referenceCorner, _manager.get_worldLength());
             //Bukkit.broadcastMessage("ERROR: _worldSpawn == null");
         }
         return _worldSpawn;

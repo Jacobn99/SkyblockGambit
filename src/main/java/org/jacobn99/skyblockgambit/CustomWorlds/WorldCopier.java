@@ -1,4 +1,4 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.CustomWorlds;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -8,6 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.Processes.Process;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
+import org.jacobn99.skyblockgambit.SerializedBlock;
+
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -24,8 +26,6 @@ public class WorldCopier {
     int blocksGeneratedPerExecution;
     int maxYLevel;
     int minYLevel;
-    //private boolean _canProceed;
-//    boolean isCopying;
     int pieceHeight;
 
     public WorldCopier(JavaPlugin mainPlugin, HashMap<Long, Process> processes) {
@@ -43,7 +43,7 @@ public class WorldCopier {
         minYLevel = 0;
     }
 
-    public void DuplicateLand(/*int XChunks, int ZChunks, Location generalStartLoc,*/ Location newLoc, File file) {
+    public void DuplicateLand(Location newLoc, File file) {
         long executionTime;
         int loopIterations;
         List<SerializedBlock> list;
@@ -54,11 +54,10 @@ public class WorldCopier {
         Queueable _queueable;
         loopIterations = 0;
 
-        //while(!list.isEmpty()) {
         Bukkit.broadcastMessage("list size: " + list.size());
         for(int i = 0; i < list.size(); i += 25000) {
             final int finalI = i;
-            _queueable = () -> PasteChunkPiece(list, finalI, newLoc, pieceHeight);
+            _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
             executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
             Process process = new Process(executionTime, _queueable);
             _storedProcesses.put(executionTime, process);
@@ -69,98 +68,43 @@ public class WorldCopier {
         _storedProcesses.clear();
     }
 
-    public void PasteChunkPiece(List<SerializedBlock> list, int startIteration, Location newLoc, int pieceHeight) {
+    public void PasteChunkPiece(List<SerializedBlock> list, int startIteration, Location newLoc) {
         try {
             World world = Bukkit.getWorld("void_world");
             double xDistance = newLoc.getX() - list.get(0).get_x();
             double yDistance = newLoc.getY() - list.get(0).get_y();
             double zDistance = newLoc.getZ() - list.get(0).get_z();
 
-
-            Bukkit.broadcastMessage("startIteration: " + startIteration);
+//            Bukkit.broadcastMessage("newLoc: " + newLoc);
+//            newLoc.getBlock().setType(Material.DIAMOND_BLOCK);
+            //Bukkit.broadcastMessage("startIteration: " + startIteration);
             for (int i = startIteration; i < blocksGeneratedPerExecution + startIteration; i++) {
-            //for (int i = startIteration; i < 200 + startIteration; i++) {
                 if (i < list.size() - 1) {
                     SerializedBlock b = list.get(i);
                     Location blockLoc = new Location(world, b.get_x() + xDistance,
                             b.get_y() + yDistance, b.get_z() + zDistance);
 
                     BlockData newData = Bukkit.createBlockData(b.get_data());
-                    //Bukkit.broadcastMessage("data: " + newData + "Location: " + newLoc);
                     blockLoc.getBlock().setBlockData(newData);
 
-//                    if(blockLoc.getBlock().getType() != Material.NETHER_PORTAL) {
-//                        blockLoc.getBlock().setBlockData(newData);
+
+//                    if(i % 1000 == 1) {
+//                        blockLoc.getBlock().setType(Material.DIAMOND_BLOCK);
+//                        Bukkit.broadcastMessage("data: " + newData + "Location: " + blockLoc);
 //                    }
-                    //list.remove(b);
 
                     blockLoc = null;
                     newData = null;
                 } else {
-                    //Bukkit.broadcastMessage("too big");
                     return;
                 }
             }
-//            for (int i = 0; i < pieceHeight * 16 * 16; i++) {
-//                if (!list.isEmpty()) {
-//                    SerializedBlock b = list.get(0);
-//                    Location blockLoc = new Location(world, b.get_x() + xDistance,
-//                            b.get_y() + yDistance, b.get_z() + zDistance);
-//
-//                    BlockData newData = Bukkit.createBlockData(b.get_data());
-//                    blockLoc.getBlock().setBlockData(newData);
-//
-////                    if(blockLoc.getBlock().getType() != Material.NETHER_PORTAL) {
-////                        blockLoc.getBlock().setBlockData(newData);
-////                    }
-//                    list.remove(b);
-//
-//                    blockLoc = null;
-//                    newData = null;
-//                } else {
-//                    //Bukkit.broadcastMessage("too big");
-//                    return;
-//                }
-//            }
         } catch (Exception e) {
             Bukkit.broadcastMessage("ERROR");
             e.printStackTrace();
             return;
         }
     }
-
-    private void CopyChunkPieceData(String filePath, Location cornerLoc) {
-        World world = Bukkit.getWorld("void_world");
-        double cornerX = cornerLoc.getX() - 1;
-        double cornerY = cornerLoc.getY();
-        double cornerZ = cornerLoc.getZ();
-
-        Gson gson = new Gson();
-
-        try {
-            Writer writer = Files.newBufferedWriter(Paths.get(filePath));
-            List<SerializedBlock> serializedBlocks = new ArrayList<>();
-            for (int y = minYLevel; y < maxYLevel; y++) {
-                for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        Location currentLoc = new Location(world, cornerX - x, cornerY + y, cornerZ - z);
-                        SerializedBlock serializedBlock = new SerializedBlock(currentLoc.getBlock().getBlockData().getAsString(), currentLoc.getX(), currentLoc.getY(), currentLoc.getZ());
-                        serializedBlocks.add(serializedBlock);
-                        currentLoc = null;
-                    }
-                }
-            }
-            gson.toJson(serializedBlocks, writer);
-            writer.flush();
-            writer.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        gson = null;
-    }
-
     public List<SerializedBlock> GetChunkPieceData(String filePath) {
         Gson gson = new Gson();
         try {

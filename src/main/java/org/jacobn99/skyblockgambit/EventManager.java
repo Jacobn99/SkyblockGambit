@@ -28,26 +28,23 @@ public class EventManager implements Listener {
     }
 
 
-    @EventHandler
-    public void onClick(PlayerInteractEvent event) {
-        Player p = event.getPlayer();
-
-        if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
-//            Bukkit.broadcastMessage("Blue Team: " + _gameManager.GetBlueTeamList());
-//            Bukkit.broadcastMessage("Red Team: " + _gameManager.GetRedTeamList());
-
-            if(_gameManager.GetBlueTeamList().contains(p)) {
-                _gameManager.bluePortal.Activate();
-            }
-            else if (_gameManager.GetRedTeamList().contains(p)) {
-                _gameManager.redPortal.Activate();
-            }
-            else {
-                Bukkit.broadcastMessage("Join a team!");
-            }
-        }
-        //Bukkit.broadcastMessage("Item: " + event.getItem());
-    }
+//    @EventHandler
+//    public void onClick(PlayerInteractEvent event) {
+//        Player p = event.getPlayer();
+//
+//        if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
+//            if(_gameManager.GetBlueTeamList().contains(p)) {
+//                _gameManager.bluePortal.Activate();
+//            }
+//            else if (_gameManager.GetRedTeamList().contains(p)) {
+//                _gameManager.redPortal.Activate();
+//            }
+//            else {
+//                Bukkit.broadcastMessage("Join a team!");
+//            }
+//        }
+//        //Bukkit.broadcastMessage("Item: " + event.getItem());
+//    }
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
@@ -78,15 +75,15 @@ public class EventManager implements Listener {
         }
     }
 
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        Block block = event.getBlock();
-
-        Location borderLocation = _borderwall.GetBorderLocation();
-        double blockZ = block.getLocation().getZ();
-
-        if (blockZ >= borderLocation.getZ() - 0.5 && blockZ <= borderLocation.getZ() + 0.5) {
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onBlockBreak(BlockBreakEvent event) {
+//        Block block = event.getBlock();
+//
+//        Location borderLocation = _borderwall.GetBorderLocation();
+//        double blockZ = block.getLocation().getZ();
+//
+//        if (blockZ >= borderLocation.getZ() - 0.5 && blockZ <= borderLocation.getZ() + 0.5) {
+//            event.setCancelled(true);
+//        }
+//    }
 }

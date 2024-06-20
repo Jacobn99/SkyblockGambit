@@ -32,7 +32,7 @@ public final class SkyblockGambit extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         _gameManager.LogEnabledTasks();
-        _gameManager.EndGame();
+        _gameManager.Reset();
 
     }
 
