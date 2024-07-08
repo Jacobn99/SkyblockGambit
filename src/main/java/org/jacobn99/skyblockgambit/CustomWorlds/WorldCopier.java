@@ -11,6 +11,7 @@ import org.jacobn99.skyblockgambit.Processes.Queueable;
 import org.jacobn99.skyblockgambit.SerializedBlock;
 
 import java.io.*;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,13 +29,13 @@ public class WorldCopier {
     int minYLevel;
     int pieceHeight;
 
-    public WorldCopier(JavaPlugin mainPlugin, HashMap<Long, Process> processes) {
+    public WorldCopier(JavaPlugin mainPlugin, HashMap<Long, Process> processes, ProcessManager processManager) {
         _mainPlugin = mainPlugin;
         _outputFile = new File(_mainPlugin.getDataFolder() + "/output.json");
         _mainPlugin = mainPlugin;
         _processes = processes;
         _storedProcesses = new HashMap<>();
-        _processManager = new ProcessManager();
+        _processManager = processManager;
 
         timeBetweenExecution = 1; //in ticks
         pieceHeight = 100;
@@ -54,8 +55,8 @@ public class WorldCopier {
         Queueable _queueable;
         loopIterations = 0;
 
-        Bukkit.broadcastMessage("list size: " + list.size());
-        for(int i = 0; i < list.size(); i += 25000) {
+        //Bukkit.broadcastMessage("list size: " + list.size());
+        for (int i = 0; i < list.size(); i += blocksGeneratedPerExecution) {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
             executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
@@ -75,9 +76,6 @@ public class WorldCopier {
             double yDistance = newLoc.getY() - list.get(0).get_y();
             double zDistance = newLoc.getZ() - list.get(0).get_z();
 
-//            Bukkit.broadcastMessage("newLoc: " + newLoc);
-//            newLoc.getBlock().setType(Material.DIAMOND_BLOCK);
-            //Bukkit.broadcastMessage("startIteration: " + startIteration);
             for (int i = startIteration; i < blocksGeneratedPerExecution + startIteration; i++) {
                 if (i < list.size() - 1) {
                     SerializedBlock b = list.get(i);
@@ -87,10 +85,8 @@ public class WorldCopier {
                     BlockData newData = Bukkit.createBlockData(b.get_data());
                     blockLoc.getBlock().setBlockData(newData);
 
-
 //                    if(i % 1000 == 1) {
-//                        blockLoc.getBlock().setType(Material.DIAMOND_BLOCK);
-//                        Bukkit.broadcastMessage("data: " + newData + "Location: " + blockLoc);
+//                        Bukkit.broadcastMessage("data: " + newData + ", Location: " + blockLoc);
 //                    }
 
                     blockLoc = null;

@@ -10,6 +10,7 @@ import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class CustomVillager {
     List<MerchantRecipe> recipes;
@@ -31,21 +32,19 @@ public class CustomVillager {
         List<String> args;
 
 
-        //Make a for loop to see if any of the arguments are part of the special item name list, if they are change their arg index to the material of the item they represent
+        //Make a for loop to see if any of the arguments are part of the special item name list,
+        // if they are change their arg index to the material of the item they represent
         for(int i = 0; i < loopLimit; i++) {
             args = _configManager.GetArguments(villagerPath, "Trades", "Trade" + i);
             for(CustomItems ci : _itemManager.GetCustomItemsList()) {
                 if(!customItemNames.contains(ci.getItemName())) {
                     customItemNames.add(ci.getItemName());
                 }
-                //Bukkit.broadcastMessage("customItemNames: " + customItemNames);
             }
 
             if(args != null) {
                 int lastIndex = args.size() - 1;
                 ItemStack product;
-
-                //Bukkit.broadcastMessage("list: " + customItemNames + ", arg: " + args.get(lastIndex - 1));
 
                 if(customItemNames.contains(args.get(lastIndex - 1))) {
                     product = _itemManager.GetCustomItem(_itemManager.ItemNameToIndex(args.get(lastIndex - 1)));

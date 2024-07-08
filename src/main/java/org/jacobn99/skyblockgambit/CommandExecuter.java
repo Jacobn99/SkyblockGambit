@@ -39,9 +39,9 @@ public class CommandExecuter implements CommandExecutor {
         _chestManager = new StarterChestManager(_mainPlugin);
         //_advancementManager = new AdvancementManager(_mainPlugin);
         _portalManager = new PortalManager(_gameManager);
-        _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes);
-        _processManager = new ProcessManager();
-        _worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager);
+        _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
+        //_processManager = new ProcessManager();
+        _worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -64,12 +64,12 @@ public class CommandExecuter implements CommandExecutor {
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
                 File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
-                _worldManager.BuildWorld(_gameManager.redWorld, file);
+                _worldManager.BuildWorld(_gameManager.redWorld, file, _processManager);
                 //_worldCopier.DuplicateLand(p.getLocation(), file);
 
                 //_worldCopier.PasteChunkPiece(_worldCopier.GetChunkPieceData(file.getAbsolutePath()), 0, p.getLocation());
 //
-//                _worldCopier.DuplicateLand(new Location(Bukkit.getWorld("void_world"), -550,98,-9), file);
+                //_worldCopier.DuplicateLand(p.getLocation(), file);
                 //Bukkit.broadcast  Message("latest execution time: " + _processManager.GetLatestExecutionTime(_gameManager.processes));
 
                 for(Portal portal : _gameManager.portals) {

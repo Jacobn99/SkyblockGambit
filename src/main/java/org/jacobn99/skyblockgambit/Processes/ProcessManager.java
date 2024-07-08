@@ -4,13 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.jacobn99.skyblockgambit.GameManager;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class ProcessManager {
-    //HashMap<Long, Process> _processes;
-//    public ProcessManager() {}
+    List<HashMap<Long, Process>> processGroups;
+
+    public ProcessManager() {
+        processGroups = new ArrayList<>();
+    }
+
     public void HandleProcesses(HashMap<Long, Process> processes) {
         World world = Bukkit.getWorld("void_world");
         Iterator it = processes.entrySet().iterator();
@@ -37,7 +39,7 @@ public class ProcessManager {
         }
     }
     public long GetLatestExecutionTime(HashMap<Long, Process> processes) {
-        long latestExecutionTime = 0;
+        long latestExecutionTime = Bukkit.getWorld("void_world").getFullTime();
         for(long executionTime : processes.keySet()) {
             if(executionTime > latestExecutionTime) {
                 latestExecutionTime = executionTime;

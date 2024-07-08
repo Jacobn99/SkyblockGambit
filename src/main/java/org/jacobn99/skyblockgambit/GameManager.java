@@ -60,6 +60,7 @@ public class GameManager {
     //public List<ProcessGroup> processGroups;
     public boolean canProceed;
     public int minWorldHeight;
+    public int normalVillagerAmount;
 
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
@@ -79,13 +80,14 @@ public class GameManager {
         _portalManager = new PortalManager(this);
         _advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
-        _worldManager = new WorldManager(_mainPlugin, this, _portalManager);
+        _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager);
         //processGroups = new ArrayList<>();
 
         teams.add(blueTeam);
         teams.add(redTeam);
         tickRate = 3;
         minWorldHeight = 94;
+        normalVillagerAmount = 1;
         canProceed = true;
         //Bukkit.getConsoleSender().sendMessage("new gamemanager");
         //Bukkit.broadcastMessage("new gameManager");
@@ -99,16 +101,15 @@ public class GameManager {
         blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
         redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
 
-        _worldManager.BuildWorld(redWorld, file);
-//        _worldManager.BuildWorld(blueWorld, file);
+        _worldManager.BuildWorld(redWorld, file, _processManager);
+        _worldManager.BuildWorld(blueWorld, file, _processManager);
 
-        long exececutionTime = _processManager.GetLatestExecutionTime(this.processes) + 5;
-
-        Queueable queueable = _worldManager::SpawnPortals;
-        Process process = new Process(exececutionTime, queueable);
+//        long exececutionTime = _processManager.GetLatestExecutionTime(this.processes) + 5;
 //
-        this.processes.put(exececutionTime, process);
-        UpdateSpawns();
+//        Queueable queueable = () -> _worldManager.AddPostGenerationObjects(customVillagers);
+//        Process process = new Process(exececutionTime, queueable);
+//        this.processes.put(exececutionTime, process);
+//        UpdateSpawns();
 
 
 
@@ -323,7 +324,7 @@ public class GameManager {
 //        }
 //    }
 
-    private Villager SpawnVillager(Location loc, Villager.Profession profession) {
+    public Villager SpawnVillager(Location loc, Villager.Profession profession) {
         // Spawn a villager with all trades unlocked
         Villager villager = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
         villager.setProfession(profession); // Set the villager's profession (optional)
@@ -332,14 +333,38 @@ public class GameManager {
         return villager;
     }
 
-    private CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
+    public Villager.Profession SetRandomProfession() {
+        Random rand = new Random();
+        int professionID;
+        professionID = rand.nextInt(15);
+
+        Villager.Profession profession;
+
+        profession = Villager.Profession.values()[professionID];
+        return profession;
+        //_villager.setProfession(profession);
+    }
+
+    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
+
         CustomVillager custom = new CustomVillager(_mainPlugin,
                 SpawnVillager(loc, profession));
-        custom.SetTrades(preset);
+
+        if(preset != null) {
+            custom.SetTrades(preset);
+        }
         custom.getVillager().setVillagerLevel(5);
         customVillagers.add(custom);
         return custom;
     }
+//    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
+//        CustomVillager custom = new CustomVillager(_mainPlugin,
+//                SpawnVillager(loc, profession));
+//        custom.SetTrades(preset);
+//        custom.getVillager().setVillagerLevel(5);
+//        customVillagers.add(custom);
+//        return custom;
+//    }
     public void Reset() {
         for(Portal p : portals) {
             p.Deactivate();
