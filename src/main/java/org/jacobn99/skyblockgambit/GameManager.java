@@ -103,14 +103,16 @@ public class GameManager {
 
         _worldManager.BuildWorld(redWorld, file, _processManager);
         _worldManager.BuildWorld(blueWorld, file, _processManager);
+        _worldManager.SpawnPortals();
+
+        UpdateSpawns();
+
 
 //        long exececutionTime = _processManager.GetLatestExecutionTime(this.processes) + 5;
 //
 //        Queueable queueable = () -> _worldManager.AddPostGenerationObjects(customVillagers);
 //        Process process = new Process(exececutionTime, queueable);
 //        this.processes.put(exececutionTime, process);
-//        UpdateSpawns();
-
 
 
 
@@ -151,7 +153,7 @@ public class GameManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                //UpdateSpawns();
+                UpdateSpawns();
                 if(isRunning != true) {
                     this.cancel();
                 }

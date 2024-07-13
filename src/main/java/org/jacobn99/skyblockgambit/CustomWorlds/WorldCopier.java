@@ -65,7 +65,7 @@ public class WorldCopier {
             loopIterations++;
         }
         _processes.putAll(_storedProcesses);
-        Bukkit.broadcastMessage("Process: " + _processes.size());
+        //Bukkit.broadcastMessage("Process: " + _processes.size());
         _storedProcesses.clear();
     }
 

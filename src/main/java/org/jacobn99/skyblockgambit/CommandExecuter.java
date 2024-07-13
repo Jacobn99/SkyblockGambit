@@ -30,7 +30,7 @@ public class CommandExecuter implements CommandExecutor {
     WorldCopier _worldCopier;
     WorldManager _worldManager;
     PortalManager _portalManager;
-    ProcessManager _processManager;
+    //ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _gameManager = gameManager;
@@ -39,9 +39,9 @@ public class CommandExecuter implements CommandExecutor {
         _chestManager = new StarterChestManager(_mainPlugin);
         //_advancementManager = new AdvancementManager(_mainPlugin);
         _portalManager = new PortalManager(_gameManager);
-        _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
+        //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
-        _worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
+        //_worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -63,8 +63,8 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
-                _worldManager.BuildWorld(_gameManager.redWorld, file, _processManager);
+//                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+//                _worldManager.BuildWorld(_gameManager.redWorld, file, _processManager);
                 //_worldCopier.DuplicateLand(p.getLocation(), file);
 
                 //_worldCopier.PasteChunkPiece(_worldCopier.GetChunkPieceData(file.getAbsolutePath()), 0, p.getLocation());

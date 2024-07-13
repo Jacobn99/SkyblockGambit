@@ -1,5 +1,6 @@
 package org.jacobn99.skyblockgambit.Processes;
 
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.jacobn99.skyblockgambit.GameManager;
@@ -23,7 +24,9 @@ public class ProcessManager {
             Process process = processes.get(executionTime);
 
             System.out.println("Processes size: " + processes.size());
-            //Bukkit.broadcastMessage("isPreviousProcessDone: " + isPreviousProcessDone);
+            String command = "title @a actionbar {\"text\":\"Processes size: " + processes.size() + "\"}";
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+            //Bukkit.broadcastMessage("isPreviousProcessDone: " + isPreviousProcessDone);36
 
             //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
             //if(world.getFullTime() >= executionTime && isPreviousProcessDone) {
@@ -32,9 +35,14 @@ public class ProcessManager {
                 //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
 
                 //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-
-                process.ExecuteFunction();
-                it.remove();
+                if(process._isDone) {
+                    it.remove();
+                }
+                else {
+                    process.set_isDone(true);
+                    process.ExecuteFunction();
+                }
+                //processes.remove(process);
             }
         }
     }

@@ -112,8 +112,18 @@ public class WorldManager {
 
         int i = 0;
         for(CustomWorld customWorld : _customWorlds) {
-            portalLoc = _gameManager.FindSurface(customWorld.GetWorldSpawn(), 300, _gameManager.minWorldHeight);
+            portalLoc = new Location(Bukkit.getWorld("void_world"), customWorld.GetWorldSpawn().getX() + 5, customWorld.GetWorldSpawn().getY(), customWorld.GetWorldSpawn().getZ() + 5);
+            //portalLoc.setX(portalLoc.getX() + 5);
+            Bukkit.broadcastMessage("portal loc1: " + portalLoc);
 
+            portalLoc = _gameManager.FindSurface(portalLoc, 300, _gameManager.minWorldHeight);
+            if (portalLoc == null) {
+                portalLoc.setX(customWorld.GetWorldSpawn().getX() + 5);
+                portalLoc.setY(customWorld.GetWorldSpawn().getY());
+                portalLoc.setY(customWorld.GetWorldSpawn().getZ() + 5);
+            }
+
+            Bukkit.broadcastMessage("portal loc2: " + portalLoc);
             if(i < _customWorlds.size() - 1) {
                 currentOpposingWorld = _customWorlds.get(i + 1);
             }
