@@ -1,5 +1,6 @@
 package org.jacobn99.skyblockgambit.Portals;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ public class Portal {
         _opposingIslandLocation = opposingIslandLocation;
         isActivated = false;
         portals.add(this);
+        Bukkit.broadcastMessage("Portal Created");
     }
     public Location GetOpposingIslandLocation() {
         return _opposingIslandLocation;
@@ -27,6 +29,8 @@ public class Portal {
         return _portalLoc;
     }
     public void Activate() {
+        Bukkit.broadcastMessage("Activated");
+
         Location loc = new Location(_portalLoc.getWorld(), _portalLoc.getX() - 1, _portalLoc.getY(), _portalLoc.getZ());
         isActivated = true;
 
@@ -41,6 +45,7 @@ public class Portal {
     }
 
     public void Deactivate() {
+        Bukkit.broadcastMessage("Deactivated");
         Location loc = new Location(_portalLoc.getWorld(), _portalLoc.getX() - 1, _portalLoc.getY(), _portalLoc.getZ());
         isActivated = false;
 

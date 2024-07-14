@@ -20,6 +20,9 @@ public class StarterChest {
         starterChestList.add(this);
     }
 
+    public void DestroyChest() {
+        _chestLoc.getBlock().setType(Material.AIR);
+    }
     public void CreateChest() {
         _chestLoc.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) _chestLoc.getBlock().getState();

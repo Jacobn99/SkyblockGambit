@@ -38,13 +38,14 @@ public class GameManager {
     public List<Portal> portals;
     public List<CustomWorld> customWorlds;
     private List<CustomVillager> customVillagers;
+
     private List<StarterChest> starterChestList;
     private List<Object> objects;
     private Set<Set<Player>> teams;
     public Set<Player> blueTeam;
     public Set<Player> redTeam;
-    Portal redPortal;
-    Portal bluePortal;
+//    Portal redPortal;
+//    Portal bluePortal;
     //HashMap<Long, Queueable> processes;
     public HashMap<Long, Process> processes;
 
@@ -55,6 +56,8 @@ public class GameManager {
     private AdvancementManager _advancementManager;
     private ProcessManager _processManager;
     private WorldManager _worldManager;
+    private StarterChestManager _chestManager;
+
     CustomWorld blueWorld;
     CustomWorld redWorld;
     //public List<ProcessGroup> processGroups;
@@ -81,6 +84,7 @@ public class GameManager {
         _advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager);
+        _chestManager = new StarterChestManager(_mainPlugin);
         //processGroups = new ArrayList<>();
 
         teams.add(blueTeam);
@@ -103,7 +107,16 @@ public class GameManager {
 
         _worldManager.BuildWorld(redWorld, file, _processManager);
         _worldManager.BuildWorld(blueWorld, file, _processManager);
-        _worldManager.SpawnPortals();
+
+//        Queueable queueable = () -> _worldManager.AddPostGenerationObjects(_chestManager);
+//        long executionTime = _processManager.GetLatestExecutionTime(processes) + 50;
+//        Process process = new Process(executionTime, queueable);
+//        processes.put(executionTime, process);
+        _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
+                () -> _worldManager.AddPostGenerationObjects(_chestManager));
+
+//        _worldManager.SpawnPortals();
+//        _worldManager.SpawnStarterChests(_chestManager);
 
         UpdateSpawns();
 
@@ -194,16 +207,16 @@ public class GameManager {
         Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
                 new Location(world,121, -61, 4));
 
-        bluePortal = new Portal(portals, _portalManager, GetRedSpawn(),
-                new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
-        redPortal = new Portal(portals, _portalManager, GetBlueSpawn(),
-                new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
-
-        StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
-        blueChest.CreateChest();
-
-        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
-        redChest.CreateChest();
+//        bluePortal = new Portal(portals, _portalManager, GetRedSpawn(),
+//                new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
+//        redPortal = new Portal(portals, _portalManager, GetBlueSpawn(),
+//                new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
+//
+//        StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
+//        blueChest.CreateChest();
+//
+//        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
+//        redChest.CreateChest();
     }
     public Location FindSurface(Location loc, double maxY, double minY) {
         Location scan = loc;
@@ -262,6 +275,9 @@ public class GameManager {
         for (Player p : blueTeam) {
             p.setRespawnLocation(blueSpawn, true);
         }
+    }
+    public List<StarterChest> GetStarterChestList() {
+        return starterChestList;
     }
 
     public Set<Player> GetBlueTeamList() {
@@ -370,6 +386,9 @@ public class GameManager {
     public void Reset() {
         for(Portal p : portals) {
             p.Deactivate();
+        }
+        for(StarterChest chest : starterChestList) {
+            chest.DestroyChest();
         }
 
         objects.addAll(portals);

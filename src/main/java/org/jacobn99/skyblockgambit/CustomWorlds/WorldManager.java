@@ -2,6 +2,8 @@ package org.jacobn99.skyblockgambit.CustomWorlds;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomVillager;
@@ -11,6 +13,8 @@ import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.Process;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
+import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
+import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +33,7 @@ public class WorldManager {
     public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager) {
         rand = new Random();
         _mainPlugin = mainPlugin;
-        _worldLength = 300;
+        _worldLength = 150;
 
         _gameManager = gameManager;
         _portalManager = portalManager;
@@ -46,6 +50,7 @@ public class WorldManager {
         referenceCorner = referenceLocation;
         //sideLength = _worldLength;
 
+        Bukkit.broadcastMessage("reference corner: " + referenceCorner);
         for(int i = 0; i < 20; i++) {
             x = rand.nextInt(spawnRadius);
             z = rand.nextInt(spawnRadius);
@@ -59,14 +64,13 @@ public class WorldManager {
         }
         return referenceCorner;
     }
-    public void AddPostGenerationObjects(List<CustomVillager> customs) {
+    //public void AddPostGenerationObjects(List<CustomVillager> customs) {
+    public void AddPostGenerationObjects(StarterChestManager _chestManager) {
+        SpawnStarterChests(_chestManager);
         SpawnPortals();
         //SpawnTeamVillagers(customs);
     }
     public void SpawnTeamVillagers(List<CustomVillager> customs) {
-//        for(int i = 0; i < _gameManager.normalVillagerAmount; i++) {
-//            professions.add(_gameManager.SetRandomProfession());
-//        }
         List<CustomVillager> templateVillagers = new ArrayList<>();
         Villager currentVillager = null;
 
@@ -105,25 +109,32 @@ public class WorldManager {
             //spawnLoc = GetRedSpawn();
     }
 
+    public void SpawnStarterChests(StarterChestManager chestManager) {
+        for(CustomWorld customWorld : _customWorlds) {
+            Location worldSpawn = customWorld.GetWorldSpawn();
+            Location startChestLoc = new Location(Bukkit.getWorld("void_world"), worldSpawn.getX() + 1, worldSpawn.getY(), worldSpawn.getZ() + 1);
+            StarterChest starterChest = new StarterChest(startChestLoc, chestManager.GetInventory(), _gameManager.GetStarterChestList());
+            starterChest.CreateChest();
+            startChestLoc = null;
+            worldSpawn = null;
+        }
+    }
     public void SpawnPortals() {
         Location portalLoc;
-        //CustomWorld currentWorld;
         CustomWorld currentOpposingWorld;
 
         int i = 0;
         for(CustomWorld customWorld : _customWorlds) {
-            portalLoc = new Location(Bukkit.getWorld("void_world"), customWorld.GetWorldSpawn().getX() + 5, customWorld.GetWorldSpawn().getY(), customWorld.GetWorldSpawn().getZ() + 5);
-            //portalLoc.setX(portalLoc.getX() + 5);
-            Bukkit.broadcastMessage("portal loc1: " + portalLoc);
-
+            Location worldSpawn = customWorld.GetWorldSpawn();
+            portalLoc = new Location(worldSpawn.getWorld(), worldSpawn.getX() + 5, 0, worldSpawn.getZ() + 5);
             portalLoc = _gameManager.FindSurface(portalLoc, 300, _gameManager.minWorldHeight);
-            if (portalLoc == null) {
-                portalLoc.setX(customWorld.GetWorldSpawn().getX() + 5);
-                portalLoc.setY(customWorld.GetWorldSpawn().getY());
-                portalLoc.setY(customWorld.GetWorldSpawn().getZ() + 5);
-            }
 
-            Bukkit.broadcastMessage("portal loc2: " + portalLoc);
+            if (portalLoc == null) {
+                portalLoc = customWorld.GetWorldSpawn().clone().add(0, 5, 0);
+            }
+            //portalLoc = new Location(worldSpawn.getWorld(), worldSpawn.getX(), worldSpawn.getY() + 2, worldSpawn.getZ());
+
+            Bukkit.broadcastMessage("portal loc: " + portalLoc);
             if(i < _customWorlds.size() - 1) {
                 currentOpposingWorld = _customWorlds.get(i + 1);
             }
@@ -137,9 +148,48 @@ public class WorldManager {
             //Bukkit.broadcastMessage("got here");
 
             Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(), portalLoc);
+            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc, EntityType.ARMOR_STAND);
+            armorStand.setGlowing(true);
+            armorStand.setGravity(false);
             p.Activate();
+            portalLoc = null;
+            worldSpawn = null;
             i++;
         }
+//        Location portalLoc;
+//        CustomWorld currentOpposingWorld;
+//
+//        int i = 0;
+//        for(CustomWorld customWorld : _customWorlds) {
+//            portalLoc = new Location(Bukkit.getWorld("void_world"), customWorld.GetWorldSpawn().getX() + 5, customWorld.GetWorldSpawn().getY(), customWorld.GetWorldSpawn().getZ() + 5);
+//            portalLoc = _gameManager.FindSurface(portalLoc, 300, _gameManager.minWorldHeight);
+//
+//            if (portalLoc == null) {
+//                portalLoc = customWorld.GetWorldSpawn().add(0, 5, 0);
+//            }
+//
+//            Bukkit.broadcastMessage("portal loc: " + portalLoc);
+//            if(i < _customWorlds.size() - 1) {
+//                currentOpposingWorld = _customWorlds.get(i + 1);
+//            }
+//            else if (_customWorlds.size() > 1) {
+//                currentOpposingWorld = _customWorlds.get(i - 1);
+//            }
+//            else {
+//                Bukkit.broadcastMessage("ERROR: NO CUSTOM WORLD");
+//                return;
+//            }
+//            //Bukkit.broadcastMessage("got here");
+//
+//            Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(), portalLoc);
+//            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc.add(0, 10, 0), EntityType.ARMOR_STAND);
+//            armorStand.setGlowing(true);
+//            armorStand.setGravity(false);
+//            p.Activate();
+//            portalLoc = null;
+//            i++;
+//        }
+//        Bukkit.broadcastMessage("Portal list: " + _gameManager.portals.size());
     }
     public void BuildWorld(CustomWorld newWorld, File worldFile, ProcessManager processManager) {
         long executionTime = processManager.GetLatestExecutionTime(_gameManager.processes) + 10;

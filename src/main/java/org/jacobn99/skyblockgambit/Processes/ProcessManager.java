@@ -46,6 +46,10 @@ public class ProcessManager {
             }
         }
     }
+    public void CreateProcess(HashMap<Long, Process> processes, long executionTime, Queueable queueable) {
+        Process process = new Process(executionTime, queueable);
+        processes.put(executionTime, process);
+    }
     public long GetLatestExecutionTime(HashMap<Long, Process> processes) {
         long latestExecutionTime = Bukkit.getWorld("void_world").getFullTime();
         for(long executionTime : processes.keySet()) {
