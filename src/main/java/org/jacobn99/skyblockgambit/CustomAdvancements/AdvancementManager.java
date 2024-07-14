@@ -30,7 +30,7 @@ public class AdvancementManager {
         gson = new Gson();
         maxTasks = 4;
         advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
-                + "/Spigot/void_world/datapacks/task_advancements/data/task_advancements/advancements/tasks/";
+                + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
         //defaultConfiguration = "{\"display\":{\"icon\":{\"id\":\"minecraft:spyglass\"},\"title\":\"Tasks\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":false,\"hidden\":false},\"parent\":null,\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
 
     }
@@ -70,12 +70,12 @@ public class AdvancementManager {
 
                 if (i == 0) {
                     parameterChanges.put("title", "Task " + (i + 1));
-                    parameterChanges.put("parent", "task_advancements:tasks/root");
+                    parameterChanges.put("parent", "minecraft:root");
 
                     ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
                 } else {
                     parameterChanges.put("title", "Task " + (i + 1));
-                    parameterChanges.put("parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
+                    parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
                     ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
                 }
                 enabledAdvancementNames.add(currentAdvancement.GetFile().getName());
@@ -88,7 +88,9 @@ public class AdvancementManager {
             }
         }
         CustomAdvancement enderdragon = new CustomAdvancement("enderdragon", new ItemStack(Material.DIAMOND, 10), customAdvancements);
-        ModifyAdvancement(enderdragon.GetFile(), "parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
+        ModifyAdvancement(enderdragon.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
+
+        //ModifyAdvancement(enderdragon.GetFile(), "parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
 
     }
     public void ModifyAdvancement(File file, HashMap<Object, Object> parameterChanges) {

@@ -132,9 +132,8 @@ public class WorldManager {
             if (portalLoc == null) {
                 portalLoc = customWorld.GetWorldSpawn().clone().add(0, 5, 0);
             }
-            //portalLoc = new Location(worldSpawn.getWorld(), worldSpawn.getX(), worldSpawn.getY() + 2, worldSpawn.getZ());
 
-            Bukkit.broadcastMessage("portal loc: " + portalLoc);
+            //Bukkit.broadcastMessage("portal loc: " + portalLoc);
             if(i < _customWorlds.size() - 1) {
                 currentOpposingWorld = _customWorlds.get(i + 1);
             }
@@ -156,44 +155,10 @@ public class WorldManager {
             worldSpawn = null;
             i++;
         }
-//        Location portalLoc;
-//        CustomWorld currentOpposingWorld;
-//
-//        int i = 0;
-//        for(CustomWorld customWorld : _customWorlds) {
-//            portalLoc = new Location(Bukkit.getWorld("void_world"), customWorld.GetWorldSpawn().getX() + 5, customWorld.GetWorldSpawn().getY(), customWorld.GetWorldSpawn().getZ() + 5);
-//            portalLoc = _gameManager.FindSurface(portalLoc, 300, _gameManager.minWorldHeight);
-//
-//            if (portalLoc == null) {
-//                portalLoc = customWorld.GetWorldSpawn().add(0, 5, 0);
-//            }
-//
-//            Bukkit.broadcastMessage("portal loc: " + portalLoc);
-//            if(i < _customWorlds.size() - 1) {
-//                currentOpposingWorld = _customWorlds.get(i + 1);
-//            }
-//            else if (_customWorlds.size() > 1) {
-//                currentOpposingWorld = _customWorlds.get(i - 1);
-//            }
-//            else {
-//                Bukkit.broadcastMessage("ERROR: NO CUSTOM WORLD");
-//                return;
-//            }
-//            //Bukkit.broadcastMessage("got here");
-//
-//            Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(), portalLoc);
-//            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc.add(0, 10, 0), EntityType.ARMOR_STAND);
-//            armorStand.setGlowing(true);
-//            armorStand.setGravity(false);
-//            p.Activate();
-//            portalLoc = null;
-//            i++;
-//        }
-//        Bukkit.broadcastMessage("Portal list: " + _gameManager.portals.size());
     }
     public void BuildWorld(CustomWorld newWorld, File worldFile, ProcessManager processManager) {
         long executionTime = processManager.GetLatestExecutionTime(_gameManager.processes) + 10;
-        Bukkit.broadcastMessage("latestExecutionTime: " + executionTime);
+        //Bukkit.broadcastMessage("latestExecutionTime: " + executionTime);
 
         Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetReferenceCorner(), worldFile);
 

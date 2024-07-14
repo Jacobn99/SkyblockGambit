@@ -31,7 +31,7 @@ public class CustomAdvancement {
     private void InitializeVariables(String advancementName, List<CustomAdvancement> customAdvancementList) {
         _customAdvancementList = customAdvancementList;
         _advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
-                + "/Spigot/void_world/datapacks/task_advancements/data/task_advancements/advancements/tasks/";
+                + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
         _file = new File( _advancementsPath + advancementName + ".json");
         _customAdvancementList.add(this);
         _playerList = new HashSet<>();
@@ -58,7 +58,7 @@ public class CustomAdvancement {
     public void SetReward(ItemStack _reward[]) {this._reward = _reward;}
     public void GrantAdvancement(Player p) {
         if(!_playerList.contains(p)) {
-            String command = "advancement grant " + p.getName() + " only task_advancements:tasks/" + this.GetFileName();
+            String command = "advancement grant " + p.getName() + " only minecraft:" + this.GetFileName();
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             for (ItemStack item : _reward) {
                 p.getWorld().dropItem(p.getLocation(), item);

@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
@@ -26,7 +27,7 @@ public class CommandExecuter implements CommandExecutor {
     private CustomItemManager _itemManager;
     //private PortalManager _portalManager;
     private StarterChestManager _chestManager;
-    //private AdvancementManager _advancementManager;
+    private AdvancementManager _advancementManager;
     WorldCopier _worldCopier;
     WorldManager _worldManager;
     PortalManager _portalManager;
@@ -37,7 +38,7 @@ public class CommandExecuter implements CommandExecutor {
         _itemManager = new CustomItemManager(_mainPlugin);
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
-        //_advancementManager = new AdvancementManager(_mainPlugin);
+        _advancementManager = new AdvancementManager(_mainPlugin);
         _portalManager = new PortalManager(_gameManager);
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
@@ -63,6 +64,7 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
+                _gameManager.InitializeTasks();
 //                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
 //                _worldManager.BuildWorld(_gameManager.redWorld, file, _processManager);
                 //_worldCopier.DuplicateLand(p.getLocation(), file);
