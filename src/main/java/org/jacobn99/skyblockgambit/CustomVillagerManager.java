@@ -6,17 +6,20 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class CustomVillagerManager {
     List<CustomVillager> _customs;
-    List<Entity> _disposableEntities;
+    //List<Entity> _disposableEntities;
     JavaPlugin _mainPlugin;
-    CustomVillagerManager(JavaPlugin mainplugin, List<CustomVillager> customs, List<Entity> disposableEntities) {
+    GameManager _gameManager;
+    CustomVillagerManager(JavaPlugin mainplugin, List<CustomVillager> customs, GameManager gameManger) {
         _mainPlugin = mainplugin;
         _customs = customs;
-        _disposableEntities = disposableEntities;
+        _gameManager = gameManger;
+        //_disposableEntities = disposableEntities;
     }
     //    public void SpawnTeamVillagers() {
 //        Location spawnLoc = GetBlueSpawn();
@@ -47,14 +50,15 @@ public class CustomVillagerManager {
         Villager villager = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
-        _disposableEntities.add(villager);
+        _gameManager.disposableEntities.add(villager);
         return villager;
     }
 
     public Villager.Profession SetRandomProfession() {
         Random rand = new Random();
+        int[] allowedProfessions = {0,1,2,3,4,5,6,7,8,9,12,13,14};
         int professionID;
-        professionID = rand.nextInt(15);
+        professionID = allowedProfessions[rand.nextInt(13)];
 
         Villager.Profession profession;
 
@@ -64,7 +68,6 @@ public class CustomVillagerManager {
     }
 
     public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
-
         CustomVillager custom = new CustomVillager(_mainPlugin,
                 SpawnVillager(loc, profession), _customs, -1);
 
@@ -72,7 +75,9 @@ public class CustomVillagerManager {
             custom.SetTrades(preset);
         }
         custom.GetVillager().setVillagerLevel(5);
+        custom.GetVillager().addScoreboardTag("Customized");
         _customs.add(custom);
+        _gameManager.disposableEntities.add(custom.GetVillager());
         return custom;
     }
 //    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {

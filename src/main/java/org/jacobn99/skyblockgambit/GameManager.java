@@ -6,8 +6,10 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.checkerframework.checker.units.qual.C;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
+import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
@@ -34,7 +36,7 @@ public class GameManager {
     long tickRate;
     boolean isRunning;
     private ArrayList<Generator> generatorList;
-    private ArrayList<Entity> disposableEntities;
+    public ArrayList<Entity> disposableEntities;
     public List<Portal> portals;
     public List<CustomWorld> customWorlds;
     private List<CustomVillager> customVillagers;
@@ -53,6 +55,7 @@ public class GameManager {
     private WorldManager _worldManager;
     private StarterChestManager _chestManager;
     private CustomVillagerManager _customVillagerManager;
+    private CustomItemManager _customItemManager;
     private Team blueTeam;
     private Team redTeam;
     CustomWorld blueWorld;
@@ -60,7 +63,6 @@ public class GameManager {
     //public List<ProcessGroup> processGroups;
     public boolean canProceed;
     public boolean isWorldGenerated;
-
     public int minWorldHeight;
     public int normalVillagerAmount;
 
@@ -81,9 +83,10 @@ public class GameManager {
         _portalManager = new PortalManager(this);
         _advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
-        _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager);
+        _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, this);
+        _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
         _chestManager = new StarterChestManager(_mainPlugin);
-        _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, disposableEntities);
+        _customItemManager = new CustomItemManager(_mainPlugin);
         blueTeam = new Team(null, "blue", teams);
         redTeam = new Team(null, "red", teams);
         tickRate = 3;
@@ -96,6 +99,8 @@ public class GameManager {
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
         File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+
+        _customItemManager.LoadRequiredItems();
         InitializeTasks();
 
         blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
@@ -113,7 +118,7 @@ public class GameManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if(isRunning != true) {
+                if(!isRunning) {
                     this.cancel();
                 }
                 _processManager.HandleProcesses(processes);

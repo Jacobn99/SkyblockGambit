@@ -35,11 +35,12 @@ public class EventManager implements Listener {
         _gameManager.UpdateSpawns();
     }
 
-//    @EventHandler
-//    public void onClick(PlayerInteractEvent event) {
-//        Player p = event.getPlayer();
-//        if(_gameManager.isRunning) {
-//            if (event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
+    @EventHandler
+    public void onClick(PlayerInteractEvent event) {
+        Player p = event.getPlayer();
+        if(_gameManager.isRunning) {
+            if (event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
+                Bukkit.broadcastMessage("What the sigma?");
 //                if (_gameManager.GetBlueTeamList().contains(p)) {
 //                    _gameManager.bluePortal.Activate();
 //                } else if (_gameManager.GetRedTeamList().contains(p)) {
@@ -47,28 +48,34 @@ public class EventManager implements Listener {
 //                } else {
 //                    Bukkit.broadcastMessage("Join a team!");
 //                }
-//            }
-//        }
-//        //Bukkit.broadcastMessaege("Item: " + event.getItem());
-//    }
+            }
+        }
+        //Bukkit.broadcastMessaege("Item: " + event.getItem());
+    }
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
+//        Villager villagerReference;
+//        Villager trader;
         if(event.getInventory() instanceof MerchantInventory) {
             MerchantInventory inventory = (MerchantInventory) event.getInventory();
             Merchant merchant = inventory.getMerchant();
-
-            for(CustomVillager villager : _gameManager.getCustomVillagers()) {
-                if(villager.GetVillager().getScoreboardTags().containsAll(merchant.getTrader().getScoreboardTags()) && !villager.IsInitialized()) {
-                    for(CustomVillager v : _gameManager.getCustomVillagers()) {
-                        if(villager.GetVillager().getScoreboardTags().containsAll(v.GetVillager().getScoreboardTags()) && !villager.IsInitialized()) {
-                            v.GetVillager().setRecipes(villager.GetVillager().getRecipes());
-                            v.SetInitialized(true);
-                        }
-                    }
-                    villager.SetInitialized(true);
-                }
-            }
+//
+//            //Checks if villager is in customVillagers list and isn't a villager designed in config
+//            for(CustomVillager customVillager : _gameManager.getCustomVillagers()) {
+//                villagerReference = customVillager.GetVillager();
+//                trader = (Villager) merchant.getTrader();
+//                if(villagerReference.getScoreboardTags().containsAll(trader.getScoreboardTags()) && !customVillager.IsInitialized() && !villagerReference.getScoreboardTags().contains("Customized")) {
+//                    //Changes trades of other villagers with same scoreboard tag
+//                    for(CustomVillager v : _gameManager.getCustomVillagers()) {
+//                        if(trader.getScoreboardTags().containsAll(v.GetVillager().getScoreboardTags()) && !customVillager.IsInitialized()) {
+//                            v.GetVillager().setRecipes(villagerReference.getRecipes());
+//                            v.SetInitialized(true);
+//                        }
+//                    }
+//                    customVillager.SetInitialized(true);
+//                }
+//            }
 
             if(event.getInventory().getHolder() != null)  {
                 for(MerchantRecipe recipe : merchant.getRecipes()) {

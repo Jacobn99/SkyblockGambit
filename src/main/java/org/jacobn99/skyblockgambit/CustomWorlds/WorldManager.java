@@ -31,7 +31,8 @@ public class WorldManager {
     private GameManager _gameManager;
     private PortalManager _portalManager;
     private ProcessManager _processManager;
-    public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager) {
+    private CustomVillagerManager _villagerManager;
+    public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager, CustomVillagerManager customVillagerManager) {
         rand = new Random();
         _mainPlugin = mainPlugin;
         _worldLength = 150;
@@ -41,6 +42,7 @@ public class WorldManager {
         _processManager = processManager;
         _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         _customWorlds = _gameManager.customWorlds;
+        _villagerManager = customVillagerManager;
     }
     public Location GenerateSpawnLocation(Location referenceLocation, int spawnRadius) {
         int x;
@@ -51,7 +53,7 @@ public class WorldManager {
         referenceCorner = referenceLocation;
         //sideLength = _worldLength;
 
-        Bukkit.broadcastMessage("reference corner: " + referenceCorner);
+        //Bukkit.broadcastMessage("reference corner: " + referenceCorner);
         for(int i = 0; i < 20; i++) {
             x = rand.nextInt(spawnRadius);
             z = rand.nextInt(spawnRadius);
@@ -79,20 +81,23 @@ public class WorldManager {
 
         for(CustomWorld customWorld : _customWorlds) {
             if(customs.isEmpty()) {
+                Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
                 for (int i = 0; i < _gameManager.normalVillagerAmount; i++) {
-                    Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
                     Villager vil = villagerManager.SpawnVillager(spawnLoc, villagerManager.SetRandomProfession());
                     CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), i);
-                    vil.addScoreboardTag("villager" + i);
+                    //vil.addScoreboardTag("villager" + i);
 
                 }
+                _villagerManager.CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
                 templateVillagers.addAll(customs);
             }
             else {
                 int iterations = 0;
                 for(CustomVillager customVillager : templateVillagers) {
-                    //Bukkit.broadcastMessage("got here");
                     Villager villager = (Villager) customVillager.GetVillager().copy(customWorld.GetWorldSpawn(_gameManager));
+                    villager.setRecipes(customs.get(iterations).GetVillager().getRecipes());
+
                     CustomVillager customVill = new CustomVillager(_mainPlugin, villager, _gameManager.getCustomVillagers(), customVillager.GetID());
                     villager.addScoreboardTag("villager" + iterations);
                     iterations++;

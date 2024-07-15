@@ -3,8 +3,11 @@ package org.jacobn99.skyblockgambit.CustomItems;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -19,13 +22,52 @@ public class CustomItemManager {
     JavaPlugin _mainPlugin;
     File _itemFile;
     List<CustomItems> customItemsList;
+    List<String> requiredItemsList;
 
     public CustomItemManager(JavaPlugin mainPlugin) {
         customItemsList = new ArrayList();
         _mainPlugin = mainPlugin;
         _itemFile = new File(_mainPlugin.getDataFolder(), "custom_items.json");
+        requiredItemsList = new ArrayList<>();
+        requiredItemsList.add("PORTAL_OPENER");
+        requiredItemsList.add("REDSTONE_KIT");
+
     }
 
+    public void LoadRequiredItems() {
+        List<CustomItems> itemsList = GetCustomItemsList();
+        if(!itemsList.isEmpty()) {
+            for (String itemName : requiredItemsList) {
+                int i = 0;
+                for (CustomItems item : itemsList) {
+                    if (item.getItemName().equalsIgnoreCase(itemName)) {
+                        break;
+                    }
+                    else if (i == itemsList.size() - 1) {
+                        ItemStack placeholder = new ItemStack(Material.DEAD_BUSH);
+                        ItemMeta meta = placeholder.getItemMeta();
+                        meta.setDisplayName(itemName + "(placeholder)");
+                        placeholder.setItemMeta(meta);
+
+                        AddCustomItem(placeholder, itemName);
+                        Bukkit.broadcastMessage("Adding placeholder " + itemName);
+                    }
+                    i++;
+                }
+            }
+        }
+        else {
+            ItemStack placeholder = new ItemStack(Material.DEAD_BUSH);
+            ItemMeta meta = placeholder.getItemMeta();
+            for (String itemName : requiredItemsList) {
+                meta.setDisplayName(itemName + " (placeholder)");
+                placeholder.setItemMeta(meta);
+
+                AddCustomItem(placeholder, itemName);
+                Bukkit.broadcastMessage("Adding placeholder " + itemName);
+            }
+        }
+    }
     public ItemStack GetCustomItem(int inputIndex) {
         String serializedItem;
         ItemStack item;
@@ -35,6 +77,10 @@ public class CustomItemManager {
         UpdateCustomItemsList();
         if(inputIndex > customItemsList.size() - 1 || customItemsList.isEmpty()) {
             Bukkit.broadcastMessage("Outside of bounds of index");
+            return null;
+        }
+        else if(inputIndex == -1) {
+            Bukkit.broadcastMessage("Item doesn't exist");
             return null;
         }
         else {
@@ -49,6 +95,9 @@ public class CustomItemManager {
     public List<CustomItems> GetCustomItemsList() {
         UpdateCustomItemsList();
         return customItemsList;
+    }
+    public void ClearFile() {
+        _itemFile.delete();
     }
 
     public int ItemNameToIndex(String name) {
@@ -107,6 +156,11 @@ public class CustomItemManager {
     public void AddCustomItem(Player p, String itemName) {
         UpdateCustomItemsList();
         customItemsList.add(new CustomItems(SerializeItem(p.getInventory().getItemInMainHand()), itemName));
+        UpdateItemFile();
+    }
+    public void AddCustomItem(ItemStack item, String itemName) {
+        UpdateCustomItemsList();
+        customItemsList.add(new CustomItems(SerializeItem(item), itemName));
         UpdateItemFile();
     }
 

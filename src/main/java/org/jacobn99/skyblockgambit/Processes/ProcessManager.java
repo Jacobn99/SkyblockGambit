@@ -24,8 +24,8 @@ public class ProcessManager {
             Process process = processes.get(executionTime);
 
             System.out.println("Processes size: " + processes.size());
-            String command = "title @a actionbar {\"text\":\"Processes size: " + processes.size() + "\"}";
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+//            String command = "title @a actionbar {\"text\":\"Processes size: " + processes.size() + "\"}";
+//            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             //Bukkit.broadcastMessage("isPreviousProcessDone: " + isPreviousProcessDone);36
 
             //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);

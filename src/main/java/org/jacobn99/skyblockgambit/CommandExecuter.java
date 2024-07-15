@@ -180,6 +180,10 @@ public class CommandExecuter implements CommandExecutor {
                     return false;
                 }
             }
+            else if(label.equalsIgnoreCase("clear_custom_items")) {
+                _itemManager.ClearFile();
+                Bukkit.broadcastMessage("Items cleared");
+            }
             else if (label.equalsIgnoreCase("set_starter_chest")) {
                 _chestManager.SetChestInventory(p);
                 return true;

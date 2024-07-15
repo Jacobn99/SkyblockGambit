@@ -114,7 +114,7 @@ public class AdvancementManager {
                 for (Map.Entry<Object, Object> entry : map.entrySet()) {
                     if (parameterChanges.containsKey(entry.getKey())) {
                         entry.setValue(parameterChanges.get(entry.getKey()));
-                        Bukkit.broadcastMessage(file.getName() + ": " + entry.getKey() + " has been changed to " + parameterChanges.get(entry.getKey()));
+                        //Bukkit.broadcastMessage(file.getName() + ": " + entry.getKey() + " has been changed to " + parameterChanges.get(entry.getKey()));
                     }
                     else if (ContainsChar(String.valueOf(entry.getValue()), '{')) {
                         Map<Object, Object> innerMap = new Gson().fromJson(new Gson().toJson(entry.getValue()), Map.class);
@@ -123,7 +123,7 @@ public class AdvancementManager {
                             if (parameterChanges.containsKey(innerEntry.getKey())) {
                                 innerEntry.setValue(parameterChanges.get(innerEntry.getKey()));
                                 map.replace(entry.getKey(), innerMap);
-                                Bukkit.broadcastMessage(file.getName() + ": " + innerEntry.getKey() + " has been changed to " + parameterChanges.get(innerEntry.getKey()));
+                                //Bukkit.broadcastMessage(file.getName() + ": " + innerEntry.getKey() + " has been changed to " + parameterChanges.get(innerEntry.getKey()));
                             }
                         }
                     }
