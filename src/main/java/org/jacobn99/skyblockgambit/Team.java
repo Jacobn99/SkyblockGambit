@@ -2,6 +2,7 @@ package org.jacobn99.skyblockgambit;
 
 import org.bukkit.entity.Player;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
+import org.jacobn99.skyblockgambit.Portals.Portal;
 
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +12,7 @@ public class Team {
     Set<Player> _members;
     CustomWorld _teamWorld;
     String _teamColor;
+    Portal _teamPortal;
 
     public Team(CustomWorld teamWorld, String teamColor, List<Team> teams) {
         _members = new HashSet<>();
@@ -41,4 +43,5 @@ public class Team {
     public void SetTeamColor(String _teamColor) {
         this._teamColor = _teamColor;
     }
+
 }

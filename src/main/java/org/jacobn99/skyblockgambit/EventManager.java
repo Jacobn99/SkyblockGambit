@@ -16,17 +16,26 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
+import org.jacobn99.skyblockgambit.CustomItems.RageSpell;
+import org.jacobn99.skyblockgambit.CustomItems.VillagerTradeBoost;
 
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;
     CustomItemManager _itemManager;
     Borderwall _borderwall;
     GameManager _gameManager;
+    PortalOpener _portalOpener;
+    RageSpell _rageSpell;
+    VillagerTradeBoost _villagerTradeBoost;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
         _gameManager = gameManager;
         _borderwall = new Borderwall(_mainPlugin, _gameManager);
+        _portalOpener = new PortalOpener(_gameManager);
+        _villagerTradeBoost = new VillagerTradeBoost(_gameManager);
+        _rageSpell = new RageSpell(_gameManager);
     }
 
     @EventHandler
@@ -37,20 +46,11 @@ public class EventManager implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
-        Player p = event.getPlayer();
-        if(_gameManager.isRunning) {
-            if (event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
-                Bukkit.broadcastMessage("What the sigma?");
-//                if (_gameManager.GetBlueTeamList().contains(p)) {
-//                    _gameManager.bluePortal.Activate();
-//                } else if (_gameManager.GetRedTeamList().contains(p)) {
-//                    _gameManager.redPortal.Activate();
-//                } else {
-//                    Bukkit.broadcastMessage("Join a team!");
-//                }
-            }
+        if (_gameManager.isRunning && event.getPlayer().getItemInUse() != null) {
+            _portalOpener.PortalOpenerCheck(event, _itemManager);
+            _villagerTradeBoost.TradeBoostCheck(event, _itemManager);
+            _rageSpell.RageSpellCheck(event, _itemManager);
         }
-        //Bukkit.broadcastMessaege("Item: " + event.getItem());
     }
 
     @EventHandler
@@ -60,23 +60,6 @@ public class EventManager implements Listener {
         if(event.getInventory() instanceof MerchantInventory) {
             MerchantInventory inventory = (MerchantInventory) event.getInventory();
             Merchant merchant = inventory.getMerchant();
-//
-//            //Checks if villager is in customVillagers list and isn't a villager designed in config
-//            for(CustomVillager customVillager : _gameManager.getCustomVillagers()) {
-//                villagerReference = customVillager.GetVillager();
-//                trader = (Villager) merchant.getTrader();
-//                if(villagerReference.getScoreboardTags().containsAll(trader.getScoreboardTags()) && !customVillager.IsInitialized() && !villagerReference.getScoreboardTags().contains("Customized")) {
-//                    //Changes trades of other villagers with same scoreboard tag
-//                    for(CustomVillager v : _gameManager.getCustomVillagers()) {
-//                        if(trader.getScoreboardTags().containsAll(v.GetVillager().getScoreboardTags()) && !customVillager.IsInitialized()) {
-//                            v.GetVillager().setRecipes(villagerReference.getRecipes());
-//                            v.SetInitialized(true);
-//                        }
-//                    }
-//                    customVillager.SetInitialized(true);
-//                }
-//            }
-
             if(event.getInventory().getHolder() != null)  {
                 for(MerchantRecipe recipe : merchant.getRecipes()) {
                     //Bukkit.broadcastMessage("Recipe: " + recipe.getIngredients() + "-> " + recipe.getResult());

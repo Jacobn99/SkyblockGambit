@@ -16,3 +16,4 @@ commands:
   set_starter_chest:
   end:
   list_custom_items:
+  clear_custom_items:

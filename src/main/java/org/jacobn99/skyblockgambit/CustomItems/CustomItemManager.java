@@ -31,6 +31,10 @@ public class CustomItemManager {
         requiredItemsList = new ArrayList<>();
         requiredItemsList.add("PORTAL_OPENER");
         requiredItemsList.add("REDSTONE_KIT");
+        requiredItemsList.add("TRADE_BOOST");
+        requiredItemsList.add("RAGE_SPELL");
+
+
 
     }
 

@@ -34,7 +34,7 @@ public class GameManager {
 //    private Location blueSpawn;
 //    private Location redSpawn;
     long tickRate;
-    boolean isRunning;
+    public boolean isRunning;
     private ArrayList<Generator> generatorList;
     public ArrayList<Entity> disposableEntities;
     public List<Portal> portals;
@@ -149,8 +149,10 @@ public class GameManager {
     }
     public void AssignTeamWorlds() {
         int i = 0;
+        Team team;
         for(CustomWorld customWorld : customWorlds) {
-            teams.get(i).SetTeamWorld(customWorld);
+            team = teams.get(i);
+            team.SetTeamWorld(customWorld);
             i++;
         }
     }
@@ -280,5 +282,13 @@ public void UpdateSpawns() {
     }
     public List<CustomVillager> getCustomVillagers() {
         return customVillagers;
+    }
+    public Team FindPlayerTeam(Player p) {
+        for (Team t : teams) {
+            if (t.GetMembers().contains(p)) {
+                return t;
+            }
+        }
+        return null;
     }
 }

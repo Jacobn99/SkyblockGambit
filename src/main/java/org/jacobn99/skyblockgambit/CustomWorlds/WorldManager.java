@@ -160,10 +160,13 @@ public class WorldManager {
             //Bukkit.broadcastMessage("got here");
 
             Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(_gameManager), portalLoc);
+            customWorld.SetWorldPortal(p);
+            p.Activate();
+
             ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc, EntityType.ARMOR_STAND);
             armorStand.setGlowing(true);
             armorStand.setGravity(false);
-            p.Activate();
+
             portalLoc = null;
             worldSpawn = null;
             i++;
