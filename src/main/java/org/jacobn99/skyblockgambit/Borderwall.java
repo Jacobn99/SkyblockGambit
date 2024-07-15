@@ -23,7 +23,8 @@ public class Borderwall {
     }
     public Location GetBorderLocation() {
         if(borderLocation == null) {
-            createBorder(_gameManager.GetBlueSpawn(), _gameManager.GetRedSpawn());
+            createBorder(_gameManager.teams.get(0).GetTeamWorld().GetWorldSpawn(_gameManager),
+                    _gameManager.teams.get(1).GetTeamWorld().GetWorldSpawn(_gameManager));
         }
         return borderLocation;
     }

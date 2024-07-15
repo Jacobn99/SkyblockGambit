@@ -29,8 +29,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class GameManager {
-    private Location blueSpawn;
-    private Location redSpawn;
+//    private Location blueSpawn;
+//    private Location redSpawn;
     long tickRate;
     boolean isRunning;
     private ArrayList<Generator> generatorList;
@@ -41,12 +41,7 @@ public class GameManager {
 
     private List<StarterChest> starterChestList;
     private List<Object> objects;
-    private Set<Set<Player>> teams;
-    public Set<Player> blueTeam;
-    public Set<Player> redTeam;
-//    Portal redPortal;
-//    Portal bluePortal;
-    //HashMap<Long, Queueable> processes;
+    public List<Team> teams;
     public HashMap<Long, Process> processes;
 
     JavaPlugin _mainPlugin;
@@ -57,20 +52,22 @@ public class GameManager {
     private ProcessManager _processManager;
     private WorldManager _worldManager;
     private StarterChestManager _chestManager;
-
+    private CustomVillagerManager _customVillagerManager;
+    private Team blueTeam;
+    private Team redTeam;
     CustomWorld blueWorld;
     CustomWorld redWorld;
     //public List<ProcessGroup> processGroups;
     public boolean canProceed;
+    public boolean isWorldGenerated;
+
     public int minWorldHeight;
     public int normalVillagerAmount;
+
 
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
 
-        blueTeam = new HashSet();
-        redTeam = new HashSet();
-        teams = new HashSet<>();
         disposableEntities = new ArrayList<>();
         generatorList = new ArrayList();
         portals = new ArrayList<>();
@@ -78,6 +75,7 @@ public class GameManager {
         customVillagers = new ArrayList();
         customWorlds = new ArrayList<>();
         objects = new ArrayList<>();
+        teams = new ArrayList<>();
 
         processes = new HashMap<>();
         _portalManager = new PortalManager(this);
@@ -85,22 +83,20 @@ public class GameManager {
         _processManager = new ProcessManager();
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager);
         _chestManager = new StarterChestManager(_mainPlugin);
-        //processGroups = new ArrayList<>();
-
-        teams.add(blueTeam);
-        teams.add(redTeam);
+        _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, disposableEntities);
+        blueTeam = new Team(null, "blue", teams);
+        redTeam = new Team(null, "red", teams);
         tickRate = 3;
         minWorldHeight = 94;
-        normalVillagerAmount = 1;
+        normalVillagerAmount = 2;
         canProceed = true;
-        //Bukkit.getConsoleSender().sendMessage("new gamemanager");
-        //Bukkit.broadcastMessage("new gameManager");
+        isWorldGenerated = false;
     }
     public void Start() {
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
         File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
-
+        InitializeTasks();
 
         blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
         redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
@@ -108,65 +104,15 @@ public class GameManager {
         _worldManager.BuildWorld(redWorld, file, _processManager);
         _worldManager.BuildWorld(blueWorld, file, _processManager);
 
-//        Queueable queueable = () -> _worldManager.AddPostGenerationObjects(_chestManager);
-//        long executionTime = _processManager.GetLatestExecutionTime(processes) + 50;
-//        Process process = new Process(executionTime, queueable);
-//        processes.put(executionTime, process);
         _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
-                () -> _worldManager.AddPostGenerationObjects(_chestManager));
+                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 
-//        _worldManager.SpawnPortals();
-//        _worldManager.SpawnStarterChests(_chestManager);
-
+        InitializeTeams();
         UpdateSpawns();
-
-
-//        long exececutionTime = _processManager.GetLatestExecutionTime(this.processes) + 5;
-//
-//        Queueable queueable = () -> _worldManager.AddPostGenerationObjects(customVillagers);
-//        Process process = new Process(exececutionTime, queueable);
-//        this.processes.put(exececutionTime, process);
-
-
-
-//
-//        _worldManager.SpawnPortals();
-
-        //InitializeObjects();
-
-//        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
-//        //StarterChest chest1 = new StarterChest()
-//
-//        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
-//                new Location(world,122, -61, 163));
-//        Generator blueGen2 = new IronGenerator(generatorList, new Location(world,102, -60, 163),
-//                new Location(world,104, -61, 163));
-//        Generator redGen1 = new IronGenerator(generatorList, new Location(world,101, -60, 4),
-//                new Location(world,103, -61, 4));
-//        Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
-//                new Location(world,121, -61, 4));
-//
-//        bluePortal = new Portal(portals, _portalManager, GetRedSpawn(),
-//                new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
-//        redPortal = new Portal(portals, _portalManager, GetBlueSpawn(),
-//                new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
-//
-//        StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
-//        blueChest.CreateChest();
-//
-//        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
-//        redChest.CreateChest();
-
-//        SpawnTeamVillagers();
-//        InitializeTasks();
-//
-//        Borderwall _borderwall = new Borderwall(_mainPlugin, this);
-//        _borderwall.createBorder(GetBlueSpawn(), GetRedSpawn());
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                UpdateSpawns();
                 if(isRunning != true) {
                     this.cancel();
                 }
@@ -193,46 +139,39 @@ public class GameManager {
         }
 
     }
-    private void InitializeObjects() {
-        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
-        World world = Bukkit.getWorld("void_world");
-        //StarterChest chest1 = new StarterChest()
-
-        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
-                new Location(world,122, -61, 163));
-        Generator blueGen2 = new IronGenerator(generatorList, new Location(world,102, -60, 163),
-                new Location(world,104, -61, 163));
-        Generator redGen1 = new IronGenerator(generatorList, new Location(world,101, -60, 4),
-                new Location(world,103, -61, 4));
-        Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
-                new Location(world,121, -61, 4));
-
-//        bluePortal = new Portal(portals, _portalManager, GetRedSpawn(),
-//                new Location(Bukkit.getWorld("void_world"), 113, -60, 168));
-//        redPortal = new Portal(portals, _portalManager, GetBlueSpawn(),
-//                new Location(Bukkit.getWorld("void_world"), 112, -60, 0));
-//
-//        StarterChest blueChest = new StarterChest(new Location(world, 113, -60, 160), _chestManager.GetInventory(), starterChestList);
-//        blueChest.CreateChest();
-//
-//        StarterChest redChest = new StarterChest(new Location(world, 112, -60, 7), _chestManager.GetInventory(), starterChestList);
-//        redChest.CreateChest();
+    public void InitializeTeams() {
+        AssignTeamWorlds();
     }
+    public void AssignTeamWorlds() {
+        int i = 0;
+        for(CustomWorld customWorld : customWorlds) {
+            teams.get(i).SetTeamWorld(customWorld);
+            i++;
+        }
+    }
+//    private void InitializeObjects() {
+//        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
+//        World world = Bukkit.getWorld("void_world");
+//        //StarterChest chest1 = new StarterChest()
+//
+//        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
+//                new Location(world,122, -61, 163));
+//        Generator blueGen2 = new IronGenerator(generatorList, new Location(world,102, -60, 163),
+//                new Location(world,104, -61, 163));
+//        Generator redGen1 = new IronGenerator(generatorList, new Location(world,101, -60, 4),
+//                new Location(world,103, -61, 4));
+//        Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
+//                new Location(world,121, -61, 4));
+//    }
     public Location FindSurface(Location loc, double maxY, double minY) {
         Location scan = loc;
-        //loc.setY(startY);
         for(double i = maxY; i > minY; i--) {
             scan.setY(i);
-            //Bukkit.broadcastMessage("scan.getY(): " + scan.getY());
 
             if(scan.getBlock().getType() != Material.AIR) {
                 if(Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 1, (int)scan.getZ()).getType() == Material.AIR &&
                         Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 2, (int)scan.getZ()).getType() == Material.AIR) {
-//                if(Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 1, (int)scan.getZ()).getType() == Material.AIR &&
-//                        Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 2, (int)scan.getZ()).getType() == Material.AIR) {
-                    //Bukkit.broadcastMessage("scan.getY(): " + scan.getY());
                     scan.setY(scan.getY() + 1);
-                    //Bukkit.broadcastMessage("scan: " + scan);
                     return scan;
                 }
             }
@@ -241,14 +180,10 @@ public class GameManager {
     }
     public void EndGame() {
         isRunning = false;
-        //Bukkit.broadcastMessage("size: " + disposableEntities.size());
-
         for(Entity e : disposableEntities) {
             e.remove();
         }
-//        for(Portal p : portals) {
-//            p.Deactivate();
-//        }
+
         Reset();
     }
     public void LogEnabledTasks() {
@@ -265,34 +200,23 @@ public class GameManager {
             e.printStackTrace();
         }
     }
-    public void UpdateSpawns() {
-        blueSpawn = blueWorld.GetWorldSpawn();
-        redSpawn =  redWorld.GetWorldSpawn();
 
-        for (Player p : redTeam) {
-            p.setRespawnLocation(redSpawn, true);
-        }
-        for (Player p : blueTeam) {
-            p.setRespawnLocation(blueSpawn, true);
+public void UpdateSpawns() {
+        //if()
+//    blueSpawn = blueWorld.GetWorldSpawn();
+//    redSpawn =  redWorld.GetWorldSpawn();
+
+    if(isWorldGenerated) {
+        Bukkit.broadcastMessage("worlds have generated");
+        for (Team t : teams) {
+            for (Player p : t.GetMembers()) {
+                p.setRespawnLocation(t.GetTeamWorld().GetWorldSpawn(this), true);
+            }
         }
     }
+}
     public List<StarterChest> GetStarterChestList() {
         return starterChestList;
-    }
-
-    public Set<Player> GetBlueTeamList() {
-        return blueTeam;
-    }
-    public Set<Player> GetRedTeamList() {
-        return redTeam;
-    }
-    public Location GetBlueSpawn() {
-        UpdateSpawns();
-        return blueSpawn.clone();
-    }
-    public Location GetRedSpawn() {
-        UpdateSpawns();
-        return redSpawn.clone();
     }
 
     private void RenewGenerators(long tickRate) {
@@ -318,71 +242,7 @@ public class GameManager {
         }
     }
 
-//    public void SpawnTeamVillagers() {
-//        Location spawnLoc = GetBlueSpawn();
-//
-//        for(int i = 0; i < 2; i++) {
-//            SpawnVillager(spawnLoc, Villager.Profession.CLERIC);
-//            SpawnVillager(spawnLoc, Villager.Profession.FARMER);
-//            SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
-//            SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
-//            SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
-//            SpawnVillager(spawnLoc, Villager.Profession.MASON);
-//            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
-//            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
-//            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
-//
-//            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
-//            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
-//
-//            spawnLoc = GetRedSpawn();
-//        }
-//    }
 
-    public Villager SpawnVillager(Location loc, Villager.Profession profession) {
-        // Spawn a villager with all trades unlocked
-        Villager villager = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
-        villager.setProfession(profession); // Set the villager's profession (optional)
-        villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
-        disposableEntities.add(villager);
-        return villager;
-    }
-
-    public Villager.Profession SetRandomProfession() {
-        Random rand = new Random();
-        int professionID;
-        professionID = rand.nextInt(15);
-
-        Villager.Profession profession;
-
-        profession = Villager.Profession.values()[professionID];
-        return profession;
-        //_villager.setProfession(profession);
-    }
-
-    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
-
-        CustomVillager custom = new CustomVillager(_mainPlugin,
-                SpawnVillager(loc, profession));
-
-        if(preset != null) {
-            custom.SetTrades(preset);
-        }
-        custom.getVillager().setVillagerLevel(5);
-        customVillagers.add(custom);
-        return custom;
-    }
-//    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
-//        CustomVillager custom = new CustomVillager(_mainPlugin,
-//                SpawnVillager(loc, profession));
-//        custom.SetTrades(preset);
-//        custom.getVillager().setVillagerLevel(5);
-//        customVillagers.add(custom);
-//        return custom;
-//    }
     public void Reset() {
         for(Portal p : portals) {
             p.Deactivate();
@@ -396,12 +256,12 @@ public class GameManager {
         objects.addAll(customVillagers);
         objects.addAll(disposableEntities);
         objects.addAll(starterChestList);
-        objects.addAll(teams);
+        //objects.addAll(teams);
         objects.addAll(customWorlds);
 
         customWorlds.clear();
         portals.clear();
-        teams.clear();
+        //teams.clear();
         disposableEntities.clear();
         customVillagers.clear();
         generatorList.clear();
@@ -412,5 +272,8 @@ public class GameManager {
             o = null;
         }
         System.gc();
+    }
+    public List<CustomVillager> getCustomVillagers() {
+        return customVillagers;
     }
 }

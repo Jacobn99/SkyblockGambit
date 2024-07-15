@@ -4,9 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Merchant;
@@ -27,23 +29,27 @@ public class EventManager implements Listener {
         _borderwall = new Borderwall(_mainPlugin, _gameManager);
     }
 
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        Player p = (Player) event.getEntity();
+        _gameManager.UpdateSpawns();
+    }
 
 //    @EventHandler
 //    public void onClick(PlayerInteractEvent event) {
 //        Player p = event.getPlayer();
-//
-//        if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
-//            if(_gameManager.GetBlueTeamList().contains(p)) {
-//                _gameManager.bluePortal.Activate();
-//            }
-//            else if (_gameManager.GetRedTeamList().contains(p)) {
-//                _gameManager.redPortal.Activate();
-//            }
-//            else {
-//                Bukkit.broadcastMessage("Join a team!");
+//        if(_gameManager.isRunning) {
+//            if (event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
+//                if (_gameManager.GetBlueTeamList().contains(p)) {
+//                    _gameManager.bluePortal.Activate();
+//                } else if (_gameManager.GetRedTeamList().contains(p)) {
+//                    _gameManager.redPortal.Activate();
+//                } else {
+//                    Bukkit.broadcastMessage("Join a team!");
+//                }
 //            }
 //        }
-//        //Bukkit.broadcastMessage("Item: " + event.getItem());
+//        //Bukkit.broadcastMessaege("Item: " + event.getItem());
 //    }
 
     @EventHandler
@@ -51,6 +57,18 @@ public class EventManager implements Listener {
         if(event.getInventory() instanceof MerchantInventory) {
             MerchantInventory inventory = (MerchantInventory) event.getInventory();
             Merchant merchant = inventory.getMerchant();
+
+            for(CustomVillager villager : _gameManager.getCustomVillagers()) {
+                if(villager.GetVillager().getScoreboardTags().containsAll(merchant.getTrader().getScoreboardTags()) && !villager.IsInitialized()) {
+                    for(CustomVillager v : _gameManager.getCustomVillagers()) {
+                        if(villager.GetVillager().getScoreboardTags().containsAll(v.GetVillager().getScoreboardTags()) && !villager.IsInitialized()) {
+                            v.GetVillager().setRecipes(villager.GetVillager().getRecipes());
+                            v.SetInitialized(true);
+                        }
+                    }
+                    villager.SetInitialized(true);
+                }
+            }
 
             if(event.getInventory().getHolder() != null)  {
                 for(MerchantRecipe recipe : merchant.getRecipes()) {

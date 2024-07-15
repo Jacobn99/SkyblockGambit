@@ -20,6 +20,7 @@ import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
 import java.io.File;
+import java.util.List;
 
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
@@ -58,9 +59,9 @@ public class CommandExecuter implements CommandExecutor {
                 //_gameManager = new GameManager(_mainPlugin);
 
 
-                _gameManager.blueTeam.add(p);
-                _gameManager.redTeam.clear();
-                Bukkit.broadcastMessage("red team: " + _gameManager.GetRedTeamList());
+                //_gameManager.blueTeam.add(p);
+//                _gameManager.redTeam.clear();
+                //Bukkit.broadcastMessage("red team: " + _gameManager.GetRedTeamList());
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
@@ -227,23 +228,17 @@ public class CommandExecuter implements CommandExecutor {
 
         if (args.length == 1) {
             String arg = args[0];
-            if(arg.equalsIgnoreCase("blue"))  {
-                _gameManager.blueTeam.add(p);
-                Bukkit.broadcastMessage("Blue Team: " + _gameManager.blueTeam);
-                p.sendMessage(ChatColor.RED + "blue");
-                return true;
+            List<Team> _teams = _gameManager.teams;
 
+            for(Team team : _teams) {
+                if(team.GetTeamColor().equalsIgnoreCase(arg)) {
+                    team.AddMember(p);
+                    Bukkit.broadcastMessage(team.GetTeamColor() + " Team: " + team.GetMembers());
+                    return true;
+                }
             }
-            else if(arg.equalsIgnoreCase("red"))  {
-                _gameManager.redTeam.add(p);
-                Bukkit.broadcastMessage("Red Team: " + _gameManager.redTeam);
-                p.sendMessage(ChatColor.RED + "red");
-                return true;
-            }
-            else {
-                p.sendMessage(ChatColor.RED + "Usage: /t Blue/Red");
-                return false;
-            }
+            p.sendMessage(ChatColor.RED + "Usage: /t Blue/Red");
+            return false;
         }
         p.sendMessage(ChatColor.RED + "Usage: /t Blue/Red");
         return true;

@@ -18,12 +18,17 @@ public class CustomVillager {
     JavaPlugin _mainPlugin;
     CustomItemManager _itemManager;
     Villager _villager;
-    public CustomVillager(JavaPlugin mainPlugin, Villager villager) {
+    int _ID;
+    boolean isInitialized;
+
+    public CustomVillager(JavaPlugin mainPlugin, Villager villager, List<CustomVillager> customs, int ID) {
         recipes = new ArrayList<>();
         _mainPlugin = mainPlugin;
         _configManager = new ConfigManager(_mainPlugin);
         _itemManager = new CustomItemManager(_mainPlugin);
         _villager = villager;
+        isInitialized = false;
+        customs.add(this);
     }
     public void SetTrades(String villagerPath) {
         int loopLimit = 20;
@@ -79,12 +84,22 @@ public class CustomVillager {
             _villager.setRecipes(newRecipes);
         }
     }
+    public boolean IsInitialized() {
+        return isInitialized;
+    }
+
+    public void SetInitialized(boolean initialized) {
+        isInitialized = initialized;
+    }
 
     public void SetVillager(Villager v) {
         _villager = v;
     }
+    public int GetID() {
+        return _ID;
+    }
 
-    public Villager getVillager() {
+    public Villager GetVillager() {
         return _villager;
     }
 }
