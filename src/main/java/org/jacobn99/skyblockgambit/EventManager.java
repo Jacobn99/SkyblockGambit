@@ -15,6 +15,7 @@ import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomAdvancements.TwoKillsTask;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
 import org.jacobn99.skyblockgambit.CustomItems.RageSpell;
@@ -28,6 +29,7 @@ public class EventManager implements Listener {
     PortalOpener _portalOpener;
     RageSpell _rageSpell;
     VillagerTradeBoost _villagerTradeBoost;
+    TwoKillsTask _twoKillsTask;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
@@ -36,12 +38,20 @@ public class EventManager implements Listener {
         _portalOpener = new PortalOpener(_gameManager);
         _villagerTradeBoost = new VillagerTradeBoost(_gameManager);
         _rageSpell = new RageSpell(_gameManager);
+        _twoKillsTask = new TwoKillsTask(_gameManager);
     }
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player p = (Player) event.getEntity();
+        Player killer = p.getKiller();
+
+        if(_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
+            _twoKillsTask.KillCounter(killer);
+            _twoKillsTask.TwoKillsCheck(killer);
+        }
         _gameManager.UpdateSpawns();
+
     }
 
     @EventHandler

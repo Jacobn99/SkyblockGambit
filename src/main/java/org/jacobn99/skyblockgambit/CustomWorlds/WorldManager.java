@@ -73,6 +73,7 @@ public class WorldManager {
         SpawnPortals();
         SpawnTeamVillagers(customs, villagerManager);
         _gameManager.isWorldGenerated = true;
+        Bukkit.broadcastMessage("World has been generated");
     }
     public void SpawnTeamVillagers(List<CustomVillager> customs, CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
@@ -178,8 +179,9 @@ public class WorldManager {
 
         Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetReferenceCorner(), worldFile);
 
+        Bukkit.broadcastMessage("This was called");
         Process process = new Process(executionTime, queueable);
-        processManager.GetLatestExecutionTime(_gameManager.processes);
+        //processManager.GetLatestExecutionTime(_gameManager.processes);
 
         _gameManager.processes.put(executionTime, process);
 

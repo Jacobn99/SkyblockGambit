@@ -44,8 +44,9 @@ public class GameManager {
     private List<StarterChest> starterChestList;
     private List<Object> objects;
     public List<Team> teams;
+    public Set<Player> participatingPlayers;
     public HashMap<Long, Process> processes;
-
+    public Map<Player, Integer> killCounts;
     JavaPlugin _mainPlugin;
     private ArmorStand blueArmorStand;
     private ArmorStand redArmorStand;
@@ -78,8 +79,10 @@ public class GameManager {
         customWorlds = new ArrayList<>();
         objects = new ArrayList<>();
         teams = new ArrayList<>();
+        participatingPlayers = new HashSet<>();
 
         processes = new HashMap<>();
+        killCounts = new HashMap<>();
         _portalManager = new PortalManager(this);
         _advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
@@ -87,8 +90,8 @@ public class GameManager {
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
         _chestManager = new StarterChestManager(_mainPlugin);
         _customItemManager = new CustomItemManager(_mainPlugin);
-        blueTeam = new Team(null, "blue", teams);
-        redTeam = new Team(null, "red", teams);
+        blueTeam = new Team("blue", this);
+        redTeam = new Team("red", this);
         tickRate = 3;
         minWorldHeight = 94;
         normalVillagerAmount = 2;
@@ -96,6 +99,9 @@ public class GameManager {
         isWorldGenerated = false;
     }
     public void Start() {
+
+        Bukkit.broadcastMessage("Starting...");
+
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
         File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
@@ -129,7 +135,10 @@ public class GameManager {
     }
 
     public void InitializeTasks() {
+        //If statement checks if defaultConfiguration.json (which is used load advancement files that don't exit yet)
+        //and if the enderdragon.json file exists (which has to exist because it is always the last advancement
         if(Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "defaultConfiguration.json")) && Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
+            CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
             CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
             CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  _advancementManager.customAdvancements);
             CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
@@ -214,7 +223,6 @@ public void UpdateSpawns() {
 //    redSpawn =  redWorld.GetWorldSpawn();
 
     if(isWorldGenerated) {
-        Bukkit.broadcastMessage("worlds have generated");
         for (Team t : teams) {
             for (Player p : t.GetMembers()) {
                 p.setRespawnLocation(t.GetTeamWorld().GetWorldSpawn(this), true);
@@ -291,4 +299,9 @@ public void UpdateSpawns() {
         }
         return null;
     }
+//    private void InitializeKillCounts() {
+//        for(Player p : participatingPlayers) {
+//            killCounts.put(p, 0);
+//        }
+//    }
 }

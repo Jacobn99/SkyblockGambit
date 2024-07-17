@@ -17,36 +17,32 @@ public class ProcessManager {
     public void HandleProcesses(HashMap<Long, Process> processes) {
         World world = Bukkit.getWorld("void_world");
         Iterator it = processes.entrySet().iterator();
+        List<Process> markedProcesses = new ArrayList<>();
 
         while(it.hasNext()) {
+            //try {
             Map.Entry item = (Map.Entry) it.next();
             long executionTime = (long) item.getKey();
             Process process = processes.get(executionTime);
 
             System.out.println("Processes size: " + processes.size());
-//            String command = "title @a actionbar {\"text\":\"Processes size: " + processes.size() + "\"}";
-//            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-            //Bukkit.broadcastMessage("isPreviousProcessDone: " + isPreviousProcessDone);36
-
-            //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-            //if(world.getFullTime() >= executionTime && isPreviousProcessDone) {
-            if(world.getFullTime() >= executionTime) {
-
-                //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-
-                //Bukkit.broadcastMessage(world.getFullTime() + ", " + executionTime);
-                if(process._isDone) {
-                    it.remove();
-                }
-                else {
+            if (world.getFullTime() >= executionTime) {
+                if(!process._isDone) {
+                    markedProcesses.add(process);
                     process.set_isDone(true);
                     process.ExecuteFunction();
                 }
-                //processes.remove(process);
             }
         }
+
+        for(Process process : markedProcesses) {
+            processes.remove(process.get_executionTime());
+        }
+        markedProcesses.clear();
     }
     public void CreateProcess(HashMap<Long, Process> processes, long executionTime, Queueable queueable) {
+        Bukkit.broadcastMessage("IT WAS called");
+
         Process process = new Process(executionTime, queueable);
         processes.put(executionTime, process);
     }

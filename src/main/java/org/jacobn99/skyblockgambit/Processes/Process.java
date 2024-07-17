@@ -9,15 +9,15 @@ public class Process {
     //private HashMap<Long, Process>
     private Queueable _queueable;
     private long _executionTime;
-    public Process(HashMap<Long, Queueable> processGroup) {
-        _isDone = true;
+    public Process(HashMap<Long, Process> processGroup) {
+        _isDone = false;
         //isPreviousDone = true;
-        //_processGroup = processGroup;
+        _processGroup = processGroup;
     }
 
     public Process(Long executionTime, Queueable queueable) {
         //_processGroup = processGroup;
-        _isDone = false;
+        //_isDone = false;
         //_isPreviousDone = isPreviousDone;
         _queueable = queueable;
         _executionTime = executionTime;
