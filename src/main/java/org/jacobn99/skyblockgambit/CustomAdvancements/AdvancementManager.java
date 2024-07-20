@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,6 +21,7 @@ public class AdvancementManager {
     private String defaultConfiguration;
     private JavaPlugin _mainPlugin;
     public  List<CustomAdvancement> customAdvancements;
+    //public Map<Player, Integer> playerTasksMap;
     public List<String> enabledAdvancementNames;
     int maxTasks;
 
@@ -29,6 +31,8 @@ public class AdvancementManager {
         _mainPlugin = mainPlugin;
         gson = new Gson();
         maxTasks = 4;
+        //playerTasksMap = new HashMap<>();
+
         advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
                 + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
         //defaultConfiguration = "{\"display\":{\"icon\":{\"id\":\"minecraft:spyglass\"},\"title\":\"Tasks\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":false,\"hidden\":false},\"parent\":null,\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
@@ -62,7 +66,7 @@ public class AdvancementManager {
         availableAdvancements.addAll(customAdvancements);
         CustomAdvancement parentAdvancement = null;
 
-        for(int i = 0; i < maxTasks; i++) {
+        for(int i = 0; i < maxTasks - 1; i++) {
             Random rand = new Random();
             if(!(availableAdvancements.isEmpty())) {
                 randomNumber = rand.nextInt(availableAdvancements.size());
@@ -76,6 +80,7 @@ public class AdvancementManager {
                 } else {
                     parameterChanges.put("title", "Task " + (i + 1));
                     parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
+                    currentAdvancement.SetParentAdvancement(parentAdvancement);
                     ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
                 }
                 enabledAdvancementNames.add(currentAdvancement.GetFile().getName());
@@ -141,7 +146,7 @@ public class AdvancementManager {
     public String GetDefaultConfiguration() {
         if(defaultConfiguration == null) {
             try {
-                defaultConfiguration = Files.lines(Paths.get(advancementsPath + "defaultConfiguration.json")).collect(Collectors.joining("\n"));
+                defaultConfiguration = Files.lines(Paths.get(advancementsPath + "default_configuration.json")).collect(Collectors.joining("\n"));
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -157,6 +162,17 @@ public class AdvancementManager {
             }
         }
         return false;
+    }
+    public CustomAdvancement GetAdvancement(String fileName) {
+        List<CustomAdvancement> advancementsList = GetCustomAdvancementList();
+        for(CustomAdvancement a : advancementsList) {
+            Bukkit.broadcastMessage(fileName + ", " + a.GetFileName());
+            if(a.GetFileName().equalsIgnoreCase(fileName)) {
+                //Bukkit.broadcastMessage("worked");
+                return a;
+            }
+        }
+        return null;
     }
     public String GetAdvancementPath() {
         return advancementsPath;

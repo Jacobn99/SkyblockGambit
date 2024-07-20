@@ -51,7 +51,7 @@ public class GameManager {
     private ArmorStand blueArmorStand;
     private ArmorStand redArmorStand;
     private PortalManager _portalManager;
-    private AdvancementManager _advancementManager;
+    public AdvancementManager advancementManager;
     private ProcessManager _processManager;
     private WorldManager _worldManager;
     private StarterChestManager _chestManager;
@@ -84,7 +84,7 @@ public class GameManager {
         processes = new HashMap<>();
         killCounts = new HashMap<>();
         _portalManager = new PortalManager(this);
-        _advancementManager = new AdvancementManager(_mainPlugin);
+        advancementManager = new AdvancementManager(_mainPlugin);
         _processManager = new ProcessManager();
         _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, this);
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
@@ -137,19 +137,19 @@ public class GameManager {
     public void InitializeTasks() {
         //If statement checks if defaultConfiguration.json (which is used load advancement files that don't exit yet)
         //and if the enderdragon.json file exists (which has to exist because it is always the last advancement
-        if(Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "defaultConfiguration.json")) && Files.exists(Paths.get(_advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
-            CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
-            CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
-            CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  _advancementManager.customAdvancements);
-            CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
-            CustomAdvancement task4 = new CustomAdvancement("task4", new ItemStack(Material.DIAMOND), _advancementManager.customAdvancements);
+        if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json")) && Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
+            //CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  advancementManager.customAdvancements);
+            CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            CustomAdvancement task4 = new CustomAdvancement("task4", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
 
-            for (CustomAdvancement a : _advancementManager.GetCustomAdvancementList()) {
-                a.LoadFile(_advancementManager.GetDefaultConfiguration());
+            for (CustomAdvancement a : advancementManager.GetCustomAdvancementList()) {
+                a.LoadFile(advancementManager.GetDefaultConfiguration());
             }
-            _advancementManager.RandomizeTasks();}
+            advancementManager.RandomizeTasks();}
         else {
-            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or defaultConfiguration.json");
+            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or default_configuration.json");
         }
 
     }
@@ -208,7 +208,7 @@ public class GameManager {
         try {
             Writer writer = Files.newBufferedWriter(file.toPath());
             Gson gson = new Gson();
-            gson.toJson(_advancementManager.enabledAdvancementNames, writer);
+            gson.toJson(advancementManager.enabledAdvancementNames, writer);
 
             //writer.write("fortnite");
             writer.close();

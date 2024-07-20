@@ -60,7 +60,6 @@ public class WorldCopier {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
             executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
-            Bukkit.broadcastMessage("Called it");
             Process process = new Process(executionTime, _queueable);
             _storedProcesses.put(executionTime, process);
             loopIterations++;

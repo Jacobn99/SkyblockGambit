@@ -19,14 +19,18 @@ public class ProcessManager {
         Iterator it = processes.entrySet().iterator();
         List<Process> markedProcesses = new ArrayList<>();
 
-        while(it.hasNext()) {
-            //try {
-            Map.Entry item = (Map.Entry) it.next();
-            long executionTime = (long) item.getKey();
-            Process process = processes.get(executionTime);
-
+        if(processes.size() > 0) {
             System.out.println("Processes size: " + processes.size());
-            if (world.getFullTime() >= executionTime) {
+        }
+
+        List<Long> executionTimes = new ArrayList<>();
+        executionTimes.addAll(processes.keySet());
+
+        for(int i = 0; i < executionTimes.size(); i++) {
+            long currentKey = executionTimes.get(i);
+            Process process = processes.get(currentKey);
+
+            if (world.getFullTime() >= currentKey) {
                 if(!process._isDone) {
                     markedProcesses.add(process);
                     process.set_isDone(true);
@@ -34,15 +38,28 @@ public class ProcessManager {
                 }
             }
         }
+//        while(it.hasNext()) {
+//            //try {
+//            Map.Entry item = (Map.Entry) it.next();
+//            long executionTime = (long) item.getKey();
+//            Process process = processes.get(executionTime);
+//
+//            if (world.getFullTime() >= executionTime) {
+//                if(!process._isDone) {
+//                    markedProcesses.add(process);
+//                    process.set_isDone(true);
+//                    process.ExecuteFunction();
+//                }
+//            }
+//        }
 
         for(Process process : markedProcesses) {
             processes.remove(process.get_executionTime());
+            process = null;
         }
         markedProcesses.clear();
     }
     public void CreateProcess(HashMap<Long, Process> processes, long executionTime, Queueable queueable) {
-        Bukkit.broadcastMessage("IT WAS called");
-
         Process process = new Process(executionTime, queueable);
         processes.put(executionTime, process);
     }

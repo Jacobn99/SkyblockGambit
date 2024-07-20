@@ -15,6 +15,7 @@ import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.TwoKillsTask;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
@@ -30,15 +31,17 @@ public class EventManager implements Listener {
     RageSpell _rageSpell;
     VillagerTradeBoost _villagerTradeBoost;
     TwoKillsTask _twoKillsTask;
+    AdvancementManager _advancementManager;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
         _gameManager = gameManager;
+        _advancementManager = _gameManager.advancementManager;
         _borderwall = new Borderwall(_mainPlugin, _gameManager);
         _portalOpener = new PortalOpener(_gameManager);
         _villagerTradeBoost = new VillagerTradeBoost(_gameManager);
         _rageSpell = new RageSpell(_gameManager);
-        _twoKillsTask = new TwoKillsTask(_gameManager);
+        _twoKillsTask = new TwoKillsTask(_gameManager, _advancementManager);
     }
 
     @EventHandler

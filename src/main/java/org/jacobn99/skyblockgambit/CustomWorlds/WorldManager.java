@@ -179,7 +179,6 @@ public class WorldManager {
 
         Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetReferenceCorner(), worldFile);
 
-        Bukkit.broadcastMessage("This was called");
         Process process = new Process(executionTime, queueable);
         //processManager.GetLatestExecutionTime(_gameManager.processes);
 

@@ -1,33 +1,37 @@
 package org.jacobn99.skyblockgambit.CustomAdvancements;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jacobn99.skyblockgambit.GameManager;
-import org.jacobn99.skyblockgambit.Team;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TwoKillsTask {
 GameManager _gameManager;
 Map<Player, Integer> _killCounts;
-    public TwoKillsTask(GameManager gameManager) {
+CustomAdvancement _advancement;
+private AdvancementManager _advancementManager;
+    public TwoKillsTask(GameManager gameManager, AdvancementManager advancementManager) {
         _gameManager = gameManager;
         _killCounts = _gameManager.killCounts;
+        _advancementManager = advancementManager;
+        //_advancement = _advancementManager.GetAdvancement("twoKills");
     }
 
     public void TwoKillsCheck(Player killer) {
 //        Player p = (Player) e.getEntity();
 //        Player killer = p.getKiller();
-//        if(_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
-        if (_killCounts.get(killer) == 2) {
-            Bukkit.broadcastMessage("Brootiotitjyj");
+        if(_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
+            //Bukkit.broadcastMessage("kills % 2: " + (_killCounts.get(killer) % 2));
+            if (_killCounts.get(killer) % 2 == 0) {
+                _advancement = _advancementManager.GetAdvancement("kill_two_players");
+                if(_advancement != null) {
+                    Bukkit.broadcastMessage("granting advancement");
+                    _advancement.GrantAdvancement(killer, false);
+                }
+            }
         }
-        //}
-
     }
     public void KillCounter(Player killer) {
 //        Player p = (Player) e.getEntity();

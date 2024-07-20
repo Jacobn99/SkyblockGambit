@@ -18,11 +18,13 @@ public class CustomAdvancement {
     File _file;
     List<CustomAdvancement> _customAdvancementList;
     Set<Player> _playerList;
+    CustomAdvancement _parentAdvancement;
 
     public CustomAdvancement(String advancementName, ItemStack reward, List<CustomAdvancement> customAdvancementList) {
         InitializeVariables(advancementName, customAdvancementList);
         _reward = new ItemStack[1];
         _reward[0] = reward;
+        _parentAdvancement = null;
     }
     public CustomAdvancement(String advancementName, ItemStack[] reward, List<CustomAdvancement> customAdvancementList) {
         InitializeVariables(advancementName, customAdvancementList);
@@ -56,8 +58,40 @@ public class CustomAdvancement {
     public ItemStack[] GetReward() {return _reward;}
 
     public void SetReward(ItemStack _reward[]) {this._reward = _reward;}
-    public void GrantAdvancement(Player p) {
-        if(!_playerList.contains(p)) {
+
+    public CustomAdvancement GetParentAdvancement() {
+        return _parentAdvancement;
+    }
+
+    public void SetParentAdvancement(CustomAdvancement _parentAdvancement) {
+        this._parentAdvancement = _parentAdvancement;
+    }
+
+    public Set<Player> GetPlayerList() {
+        return _playerList;
+    }
+
+    public void SetPlayerList(Set<Player> _playerList) {
+        this._playerList = _playerList;
+    }
+    public boolean CheckPrequisiteAdvancement(Player p) {
+        if(_parentAdvancement != null) {
+            if(_parentAdvancement.GetPlayerList().contains(p)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+    }
+
+    public void GrantAdvancement(Player p, boolean isConditional) {
+        Bukkit.broadcastMessage("Player list: " + _playerList + " isConditional: " + isConditional);
+        if(!_playerList.contains(p) && CheckPrequisiteAdvancement(p) || !_playerList.contains(p) && !isConditional) {
+            Bukkit.broadcastMessage("Got here");
             String command = "advancement grant " + p.getName() + " only minecraft:" + this.GetFileName();
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             for (ItemStack item : _reward) {
