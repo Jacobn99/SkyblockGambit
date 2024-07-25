@@ -5,7 +5,7 @@ import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 
 public final class SkyblockGambit extends JavaPlugin {
     private String[] commandNames = {"start", "debug", "t", "set_spawn", "spawn_villager", "set_custom_item",
-            "add_custom_item", "get_custom_item", "set_starter_chest", "end", "list_custom_items",
+            "add_custom_item", "get_custom_item", "set_starter_chest", "end", "list_custom_items", "grant_advancement",
             "clear_custom_items"};
     GameManager _gameManager;
     EventManager _eventManager;
@@ -32,7 +32,7 @@ public final class SkyblockGambit extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        _gameManager.LogEnabledTasks();
+        //_gameManager.LogEnabledTasks();
         _gameManager.EndGame();
 
     }

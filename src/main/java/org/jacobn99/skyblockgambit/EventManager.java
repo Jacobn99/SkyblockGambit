@@ -8,15 +8,17 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
-import org.jacobn99.skyblockgambit.CustomAdvancements.TwoKillsTask;
+import org.jacobn99.skyblockgambit.CustomAdvancements.*;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
 import org.jacobn99.skyblockgambit.CustomItems.RageSpell;
@@ -31,7 +33,9 @@ public class EventManager implements Listener {
     RageSpell _rageSpell;
     VillagerTradeBoost _villagerTradeBoost;
     TwoKillsTask _twoKillsTask;
+    ReachLevelX _reachLevelX;
     AdvancementManager _advancementManager;
+    KillEnderdragon _killEnderdragon;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
@@ -42,6 +46,30 @@ public class EventManager implements Listener {
         _villagerTradeBoost = new VillagerTradeBoost(_gameManager);
         _rageSpell = new RageSpell(_gameManager);
         _twoKillsTask = new TwoKillsTask(_gameManager, _advancementManager);
+        _reachLevelX = new ReachLevelX(_gameManager, _advancementManager);
+        _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
+        //_craftX = new CraftX(_gameManager, _advancementManager);
+    }
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        if(_gameManager.isRunning) {
+            _killEnderdragon.KillEnderdragonCheck(event);
+        }
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        if(_gameManager.isRunning) {
+            _gameManager.craftX.CraftXCheck(event);
+        }
+    }
+    @EventHandler
+    public void onLevelUp(PlayerExpChangeEvent event) {
+        //Bukkit.broadcastMessage("level increase");
+        Player p = event.getPlayer();
+        if(_gameManager.isRunning) {
+            _reachLevelX.ReachLevelXCheck(p);
+        }
     }
 
     @EventHandler

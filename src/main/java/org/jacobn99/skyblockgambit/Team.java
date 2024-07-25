@@ -1,13 +1,13 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.Portals.Portal;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Team {
     Set<Player> _members;
@@ -17,8 +17,12 @@ public class Team {
     Set<Player> _participatingPlayers;
     List<Team> _teams;
     GameManager _gameManager;
+    List<CustomAdvancement> _finishedTasks;
+
+
     public Team(String teamColor, GameManager gameManager) {
         _gameManager = gameManager;
+        _finishedTasks = new ArrayList<>();
         _members = new HashSet<>();
         _teamWorld = null;
 //        _teamWorld = teamWorld;
@@ -26,6 +30,29 @@ public class Team {
         _teams = _gameManager.teams;
         _participatingPlayers = _gameManager.participatingPlayers;
         _teams.add(this);
+    }
+    public boolean AreTasksDone() {
+        if(_finishedTasks.size() == _gameManager.advancementManager.GetMaxTasks() - 1) {
+            return true;
+        }
+        return false;
+    }
+    public List<CustomAdvancement> GetFinishedTasks() {
+        return _finishedTasks;
+    }
+
+    public void AddFinishedTask(CustomAdvancement advancement) {
+        this._finishedTasks.add(advancement);
+        Bukkit.broadcastMessage(_finishedTasks.size() + " tasks completed" + " vs " + _gameManager.advancementManager.GetMaxTasks() + " max tasks");
+        if(AreTasksDone()) {
+            Location portalSpawn = this.GetTeamWorld().GetWorldSpawn(_gameManager).clone();
+            portalSpawn.add(0, 10, 0);
+            //Bukkit.broadcastMessage("Bazinga!!!!!!!!");
+            _gameManager.GenerateEndPortal(portalSpawn);
+        }
+    }
+    public void RemoveFinishedTask(CustomAdvancement advancement) {
+        this._finishedTasks.remove(advancement);
     }
     public Set<Player> GetMembers() {
         return _members;

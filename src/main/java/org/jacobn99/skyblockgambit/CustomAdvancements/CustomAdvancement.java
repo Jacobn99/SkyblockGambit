@@ -25,6 +25,7 @@ public class CustomAdvancement {
         _reward = new ItemStack[1];
         _reward[0] = reward;
         _parentAdvancement = null;
+        Bukkit.broadcastMessage(advancementName + " has been created");
     }
     public CustomAdvancement(String advancementName, ItemStack[] reward, List<CustomAdvancement> customAdvancementList) {
         InitializeVariables(advancementName, customAdvancementList);
@@ -89,9 +90,9 @@ public class CustomAdvancement {
     }
 
     public void GrantAdvancement(Player p, boolean isConditional) {
-        Bukkit.broadcastMessage("Player list: " + _playerList + " isConditional: " + isConditional);
+        //Bukkit.broadcastMessage("Player list: " + _playerList + " isConditional: " + isConditional);
         if(!_playerList.contains(p) && CheckPrequisiteAdvancement(p) || !_playerList.contains(p) && !isConditional) {
-            Bukkit.broadcastMessage("Got here");
+            //Bukkit.broadcastMessage("Got here");
             String command = "advancement grant " + p.getName() + " only minecraft:" + this.GetFileName();
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
             for (ItemStack item : _reward) {

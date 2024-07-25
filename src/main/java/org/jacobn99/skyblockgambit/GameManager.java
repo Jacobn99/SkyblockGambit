@@ -2,12 +2,15 @@ package org.jacobn99.skyblockgambit;
 
 import com.google.gson.Gson;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.units.qual.C;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
+import org.jacobn99.skyblockgambit.CustomAdvancements.CraftX;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
@@ -59,6 +62,7 @@ public class GameManager {
     private CustomItemManager _customItemManager;
     private Team blueTeam;
     private Team redTeam;
+    public CraftX craftX;
     CustomWorld blueWorld;
     CustomWorld redWorld;
     //public List<ProcessGroup> processGroups;
@@ -84,7 +88,7 @@ public class GameManager {
         processes = new HashMap<>();
         killCounts = new HashMap<>();
         _portalManager = new PortalManager(this);
-        advancementManager = new AdvancementManager(_mainPlugin);
+        advancementManager = new AdvancementManager(_mainPlugin, teams);
         _processManager = new ProcessManager();
         _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, this);
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
@@ -92,6 +96,7 @@ public class GameManager {
         _customItemManager = new CustomItemManager(_mainPlugin);
         blueTeam = new Team("blue", this);
         redTeam = new Team("red", this);
+        craftX = new CraftX(advancementManager, _customItemManager, _mainPlugin);
         tickRate = 3;
         minWorldHeight = 94;
         normalVillagerAmount = 2;
@@ -136,18 +141,25 @@ public class GameManager {
 
     public void InitializeTasks() {
         //If statement checks if defaultConfiguration.json (which is used load advancement files that don't exit yet)
-        //and if the enderdragon.json file exists (which has to exist because it is always the last advancement
-        if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json")) && Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
+
+        //if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json")) && Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
+        if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json"))) {
+
             //CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            CustomAdvancement reach_level_32 = new CustomAdvancement("reach_level_32", new ItemStack(Material.DIAMOND),  advancementManager.customAdvancements);
-            CustomAdvancement task3 = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            CustomAdvancement task4 = new CustomAdvancement("task4", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            //CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            CustomAdvancement reach_level_X = new CustomAdvancement("reach_level", new ItemStack(Material.DIAMOND),  advancementManager.customAdvancements);
+            CustomAdvancement kill_two_players = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+            CustomAdvancement craft_item = new CustomAdvancement("craft_item", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
+
+//            advancementManager.ModifyAdvancement(new File(advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "brooo");
+
 
             for (CustomAdvancement a : advancementManager.GetCustomAdvancementList()) {
                 a.LoadFile(advancementManager.GetDefaultConfiguration());
             }
-            advancementManager.RandomizeTasks();}
+            //advancementManager.RandomizeTasks();
+            }
         else {
             Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or default_configuration.json");
         }
@@ -165,20 +177,6 @@ public class GameManager {
             i++;
         }
     }
-//    private void InitializeObjects() {
-//        StarterChestManager _chestManager = new StarterChestManager(_mainPlugin);
-//        World world = Bukkit.getWorld("void_world");
-//        //StarterChest chest1 = new StarterChest()
-//
-//        Generator blueGen1 = new DiamondGenerator(generatorList, new Location(world,124, -60, 163),
-//                new Location(world,122, -61, 163));
-//        Generator blueGen2 = new IronGenerator(generatorList, new Location(world,102, -60, 163),
-//                new Location(world,104, -61, 163));
-//        Generator redGen1 = new IronGenerator(generatorList, new Location(world,101, -60, 4),
-//                new Location(world,103, -61, 4));
-//        Generator redGen2 = new DiamondGenerator(generatorList, new Location(world,123, -60, 4),
-//                new Location(world,121, -61, 4));
-//    }
     public Location FindSurface(Location loc, double maxY, double minY) {
         Location scan = loc;
         for(double i = maxY; i > minY; i--) {
@@ -199,23 +197,29 @@ public class GameManager {
         for(Entity e : disposableEntities) {
             e.remove();
         }
+        InitializeTasks();
+        advancementManager.RandomizeTasks();
+        craftX.WriteToCraftXFile();
+        craftX.UpdateDescription();
+//        advancementManager.ModifyAdvancement(new File(advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "brooo");
+
 
         Reset();
     }
-    public void LogEnabledTasks() {
-        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
-
-        try {
-            Writer writer = Files.newBufferedWriter(file.toPath());
-            Gson gson = new Gson();
-            gson.toJson(advancementManager.enabledAdvancementNames, writer);
-
-            //writer.write("fortnite");
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void LogEnabledTasks() {
+//        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
+//
+//        try {
+//            Writer writer = Files.newBufferedWriter(file.toPath());
+//            Gson gson = new Gson();
+//            gson.toJson(advancementManager.enabledAdvancementNames, writer);
+//
+//            //writer.write("fortnite");
+//            writer.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 public void UpdateSpawns() {
         //if()
@@ -299,9 +303,41 @@ public void UpdateSpawns() {
         }
         return null;
     }
-//    private void InitializeKillCounts() {
-//        for(Player p : participatingPlayers) {
-//            killCounts.put(p, 0);
-//        }
-//    }
+    public void GenerateEndPortal(Location loc) {
+        BlockFace face;
+        loc.subtract(1, 0, 2);
+        face = BlockFace.SOUTH;
+        for(int e = 0; e < 2; e++) {
+            for (int i = 0; i < 3; i++) {
+                Location currentLoc = loc.clone();
+                currentLoc.setX(loc.getX() + i);
+                currentLoc.setZ(loc.getZ() + (e*4));
+                currentLoc.getBlock().setType(Material.END_PORTAL_FRAME);
+                Directional directionalBlock = (Directional) currentLoc.getBlock().getBlockData();
+                directionalBlock.setFacing(face);
+                currentLoc.getBlock().setBlockData(directionalBlock);
+
+                currentLoc = null;
+
+            }
+            face = BlockFace.NORTH;
+        }
+        face = BlockFace.EAST;
+        for(int e = 0; e < 2; e++) {
+            for (int i = 0; i < 3; i++) {
+                Location currentLoc = loc.clone();
+                currentLoc.setZ(loc.getZ() + 1 + i);
+                currentLoc.setX(loc.getX() + (e*4) - 1);
+                currentLoc.getBlock().setType(Material.END_PORTAL_FRAME);
+
+                Directional directionalBlock = (Directional) currentLoc.getBlock().getBlockData();
+                directionalBlock.setFacing(face);
+                currentLoc.getBlock().setBlockData(directionalBlock);
+                currentLoc = null;
+
+            }
+            face = BlockFace.WEST;
+        }
+    }
+
 }

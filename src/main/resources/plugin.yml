@@ -17,3 +17,4 @@ commands:
   end:
   list_custom_items:
   clear_custom_items:
+  grant_advancement:

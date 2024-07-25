@@ -39,7 +39,7 @@ public class CommandExecuter implements CommandExecutor {
         _itemManager = new CustomItemManager(_mainPlugin);
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
-        _advancementManager = new AdvancementManager(_mainPlugin);
+        _advancementManager = new AdvancementManager(_mainPlugin, _gameManager.teams);
         _portalManager = new PortalManager(_gameManager);
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
@@ -65,7 +65,12 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _gameManager.InitializeTasks();
+                _gameManager.GenerateEndPortal(p.getLocation());
+
+//                _gameManager.craftX.WriteToCraftXFile();
+//                _gameManager.craftX.UpdateDescription();
+
+                //_gameManager.InitializeTasks();
 //                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
 //                _worldManager.BuildWorld(_gameManager.redWorld, file, _processManager);
                 //_worldCopier.DuplicateLand(p.getLocation(), file);
@@ -187,6 +192,22 @@ public class CommandExecuter implements CommandExecutor {
             else if (label.equalsIgnoreCase("set_starter_chest")) {
                 _chestManager.SetChestInventory(p);
                 return true;
+            }
+            else if (label.equalsIgnoreCase("grant_advancement")) {
+                if (args.length == 1) {
+                    if(_gameManager.advancementManager.GetAdvancement(args[0]) != null) {
+                        Bukkit.broadcastMessage("Granting advancement");
+                        _gameManager.advancementManager.GrantTeamAdvancement(p, _gameManager.advancementManager.GetAdvancement(args[0]));
+                    }
+                    else {
+                        Bukkit.broadcastMessage("Not a valid advancement");
+                    }
+                    return true;
+                }
+                else {
+                    Bukkit.broadcastMessage("Usage: grant_advancement (advancement name)");
+                    return false;
+                }
             }
 
         }
