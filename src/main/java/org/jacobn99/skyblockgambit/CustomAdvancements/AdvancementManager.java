@@ -2,16 +2,17 @@ package org.jacobn99.skyblockgambit.CustomAdvancements;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.Team;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -24,7 +25,10 @@ public class AdvancementManager {
     private JavaPlugin _mainPlugin;
     public List<CustomAdvancement> customAdvancements;
     //public Map<Player, Integer> playerTasksMap;
-    public List<String> enabledAdvancementNames;
+    public List<String> futureEnabledAdvancementNames;
+    //private List<String> _currentEnabledAdvancementNames;
+    public List<CustomAdvancement> _currentEnabledAdvancements;
+
     private List<Team> _teams;
     //public CraftX craftX;
     //private CustomItemManager _customItemManager;
@@ -32,7 +36,9 @@ public class AdvancementManager {
 
     public AdvancementManager(JavaPlugin mainPlugin, List<Team> teams) {
         customAdvancements = new ArrayList<>();
-        enabledAdvancementNames = new ArrayList<>();
+        futureEnabledAdvancementNames = new ArrayList<>();
+        //_currentEnabledAdvancementNames = new ArrayList<>();
+        _currentEnabledAdvancements = new ArrayList<>();
         //_customItemManager = customItemManager;
         _mainPlugin = mainPlugin;
         gson = new Gson();
@@ -46,38 +52,64 @@ public class AdvancementManager {
         //defaultConfiguration = "{\"display\":{\"icon\":{\"id\":\"minecraft:spyglass\"},\"title\":\"Tasks\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":false,\"hidden\":false},\"parent\":null,\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
 
     }
-
-    public void GrantTeamAdvancement(Player p, CustomAdvancement a) {
-        for (Team team : _teams) {
-            if (team.GetMembers().contains(p) && a != null) {
-                for (Player player : team.GetMembers()) {
-                    Bukkit.broadcastMessage("Granting a team an advancement");
-
-                    a.GrantAdvancement(player, false);
-                    team.AddFinishedTask(a);
+    public void ClearTaskParents() {
+        if(GetCurrentEnabledTasks() != null) {
+            for (CustomAdvancement advancement : GetCustomAdvancementList()) {
+                Bukkit.broadcastMessage("Modifying " + advancement.GetFileName());
+                ModifyAdvancement(advancement.GetFile(), "parent", "null");
+            }
+        }
+        else {
+            Bukkit.broadcastMessage("GetCurrentEnabledTasks() is null");
+        }
+    }
+    public List<CustomAdvancement> GetCurrentEnabledTasks() {
+        if(_currentEnabledAdvancements.isEmpty()) {
+            List<String> currentAdvancementNames = GetCurrentEnabledTaskNames();
+            for (String name : currentAdvancementNames) {
+                CustomAdvancement advancement = GetAdvancement(name);
+                if(advancement != null) {
+                    _currentEnabledAdvancements.add(advancement);
                 }
             }
+            //return _currentEnabledAdvancements;
+        }
+        return _currentEnabledAdvancements;
+    }
+    public List<String> GetCurrentEnabledTaskNames() {
+        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
+        Gson gson = new Gson();
+        List<String> currentAdvancementNames;
+        try {
+            Type listOfMyClassObject = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            Reader reader = Files.newBufferedReader(file.toPath());
+            currentAdvancementNames = gson.fromJson(reader, listOfMyClassObject);
+            reader.close();
+
+            gson = null;
+            return currentAdvancementNames;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    public List<String> GetEnabledTasks() {
-        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
-        List<String> advancementNames;
+    public void GrantTeamAdvancement(Player p, CustomAdvancement a) {
+        if(GetCurrentEnabledTasks().contains(a)) {
+            for (Team team : _teams) {
+                if (team.GetMembers().contains(p) && a != null) {
+                    for (Player player : team.GetMembers()) {
+                        Bukkit.broadcastMessage("Granting a team an advancement");
 
-        try {
-            if (file.exists() || file.length() != 0) {
-                Reader reader = Files.newBufferedReader(file.toPath());
-                Gson gson = new Gson();
-                advancementNames = gson.fromJson(reader, List.class);
-                //Bukkit.broadcastMessage(advancementNames.toString());
-                reader.close();
-                return advancementNames;
-
+                        a.GrantAdvancement(player, false);
+                        team.AddFinishedTask(a);
+                        return;
+                    }
+                }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            Bukkit.broadcastMessage("You must join a team first!");
         }
-        return null;
     }
 
     public void RandomizeTasks() {
@@ -90,40 +122,45 @@ public class AdvancementManager {
         availableAdvancements.remove(GetAdvancement("kill_enderdragon"));
         CustomAdvancement parentAdvancement = null;
 
-        for (int i = 0; i < _maxTasks - 1; i++) {
-            Random rand = new Random();
-            if (!(availableAdvancements.isEmpty())) {
-                randomNumber = rand.nextInt(availableAdvancements.size());
-                currentAdvancement = availableAdvancements.get(randomNumber);
+        if(!customAdvancements.isEmpty()) {
+            for (int i = 0; i < _maxTasks - 1; i++) {
+                Random rand = new Random();
+                //Bukkit.broadcastMessage("availableAdvancements size: " + availableAdvancements.size());
+                if (!(availableAdvancements.isEmpty())) {
+                    randomNumber = rand.nextInt(availableAdvancements.size());
+                    currentAdvancement = availableAdvancements.get(randomNumber);
 
-                if (i == 0) {
-                    parameterChanges.put("title", "Task " + (i + 1));
-                    parameterChanges.put("parent", "minecraft:root");
+                    if (i == 0) {
+                        parameterChanges.put("title", "Task " + (i + 1));
+                        parameterChanges.put("parent", "minecraft:root");
 
-                    ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
+                        ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
+                    } else {
+                        parameterChanges.put("title", "Task " + (i + 1));
+                        parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
+                        currentAdvancement.SetParentAdvancement(parentAdvancement);
+                        ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
+                    }
+                    futureEnabledAdvancementNames.add(currentAdvancement.GetFileName());
+                    parentAdvancement = currentAdvancement;
+                    parameterChanges.clear();
+                    availableAdvancements.remove(randomNumber);
                 } else {
-                    parameterChanges.put("title", "Task " + (i + 1));
-                    parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
-                    currentAdvancement.SetParentAdvancement(parentAdvancement);
-                    ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
+                    Bukkit.broadcastMessage("Not enough tasks");
                 }
-                enabledAdvancementNames.add(currentAdvancement.GetFile().getName());
-                parentAdvancement = currentAdvancement;
-                parameterChanges.clear();
-                availableAdvancements.remove(randomNumber);
-            } else {
-                Bukkit.broadcastMessage("Not enough tasks");
             }
-        }
-        CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), customAdvancements);
-        if (!kill_enderdragon.GetFile().exists()) {
-            kill_enderdragon.LoadFile(defaultConfiguration);
-        }
-        ModifyAdvancement(kill_enderdragon.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
-        kill_enderdragon = null;
+            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), this);
+            if (!kill_enderdragon.GetFile().exists()) {
+                kill_enderdragon.LoadFile(defaultConfiguration);
+            }
+            ModifyAdvancement(kill_enderdragon.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
+            kill_enderdragon = null;
 
-        //ModifyAdvancement(enderdragon.GetFile(), "parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
-
+            //ModifyAdvancement(enderdragon.GetFile(), "parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
+        }
+        else {
+            Bukkit.broadcastMessage("Type /start to get new tasks");
+        }
     }
 
     public void ModifyAdvancement(File file, HashMap<Object, Object> parameterChanges) {

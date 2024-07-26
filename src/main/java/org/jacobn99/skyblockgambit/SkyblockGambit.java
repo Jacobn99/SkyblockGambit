@@ -21,6 +21,8 @@ public final class SkyblockGambit extends JavaPlugin {
         _commandExecuter = new CommandExecuter(this, _gameManager);
 
         setCommandExecuter(_commandExecuter);
+        _gameManager.InitializeTasks();
+
 
 
         //_gameManager.SetSpawns();
@@ -32,8 +34,9 @@ public final class SkyblockGambit extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        //_gameManager.LogEnabledTasks();
         _gameManager.EndGame();
+        _gameManager.LogEnabledTasks();
+
 
     }
 

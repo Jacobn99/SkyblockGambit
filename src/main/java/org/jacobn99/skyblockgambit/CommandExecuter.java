@@ -39,7 +39,7 @@ public class CommandExecuter implements CommandExecutor {
         _itemManager = new CustomItemManager(_mainPlugin);
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
-        _advancementManager = new AdvancementManager(_mainPlugin, _gameManager.teams);
+        //_advancementManager = new AdvancementManager(_mainPlugin, _gameManager.teams);
         _portalManager = new PortalManager(_gameManager);
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
@@ -65,7 +65,10 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _gameManager.GenerateEndPortal(p.getLocation());
+                //_gameManager.advancementManager.ClearTaskParents();
+                //_gameManager.advancementManager.RandomizeTasks();
+                Bukkit.broadcastMessage("current tasks: " + _gameManager.advancementManager.GetCurrentEnabledTaskNames());
+                //_gameManager.GenerateEndPortal(p.getLocation());
 
 //                _gameManager.craftX.WriteToCraftXFile();
 //                _gameManager.craftX.UpdateDescription();

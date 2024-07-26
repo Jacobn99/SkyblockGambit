@@ -144,15 +144,17 @@ public class GameManager {
 
         //if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json")) && Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
         if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json"))) {
+            if(!advancementManager.customAdvancements.isEmpty()) {
+                advancementManager.customAdvancements.clear();
+            }
 
             //CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            //CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            CustomAdvancement reach_level_X = new CustomAdvancement("reach_level", new ItemStack(Material.DIAMOND),  advancementManager.customAdvancements);
-            CustomAdvancement kill_two_players = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            CustomAdvancement craft_item = new CustomAdvancement("craft_item", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-
-//            advancementManager.ModifyAdvancement(new File(advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "brooo");
+            //CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement reach_level_X = new CustomAdvancement("reach_level", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement kill_two_players = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement craft_item = new CustomAdvancement("craft_item", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement get_glowing = new CustomAdvancement("get_glowing", new ItemStack(Material.DIAMOND), advancementManager);
 
 
             for (CustomAdvancement a : advancementManager.GetCustomAdvancementList()) {
@@ -198,6 +200,7 @@ public class GameManager {
             e.remove();
         }
         InitializeTasks();
+        advancementManager.ClearTaskParents();
         advancementManager.RandomizeTasks();
         craftX.WriteToCraftXFile();
         craftX.UpdateDescription();
@@ -206,20 +209,20 @@ public class GameManager {
 
         Reset();
     }
-//    public void LogEnabledTasks() {
-//        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
-//
-//        try {
-//            Writer writer = Files.newBufferedWriter(file.toPath());
-//            Gson gson = new Gson();
-//            gson.toJson(advancementManager.enabledAdvancementNames, writer);
-//
-//            //writer.write("fortnite");
-//            writer.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void LogEnabledTasks() {
+        File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
+
+        try {
+            Writer writer = Files.newBufferedWriter(file.toPath());
+            Gson gson = new Gson();
+            gson.toJson(advancementManager.futureEnabledAdvancementNames, writer);
+
+            //writer.write("fortnite");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 public void UpdateSpawns() {
         //if()

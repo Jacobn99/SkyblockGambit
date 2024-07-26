@@ -19,9 +19,11 @@ public class CustomAdvancement {
     List<CustomAdvancement> _customAdvancementList;
     Set<Player> _playerList;
     CustomAdvancement _parentAdvancement;
+    AdvancementManager _advancementManager;
 
-    public CustomAdvancement(String advancementName, ItemStack reward, List<CustomAdvancement> customAdvancementList) {
-        InitializeVariables(advancementName, customAdvancementList);
+    public CustomAdvancement(String advancementName, ItemStack reward, AdvancementManager advancementManager) {
+        _advancementManager = advancementManager;
+        InitializeVariables(advancementName, _advancementManager.GetCustomAdvancementList());
         _reward = new ItemStack[1];
         _reward[0] = reward;
         _parentAdvancement = null;
@@ -91,15 +93,17 @@ public class CustomAdvancement {
 
     public void GrantAdvancement(Player p, boolean isConditional) {
         //Bukkit.broadcastMessage("Player list: " + _playerList + " isConditional: " + isConditional);
-        if(!_playerList.contains(p) && CheckPrequisiteAdvancement(p) || !_playerList.contains(p) && !isConditional) {
-            //Bukkit.broadcastMessage("Got here");
-            String command = "advancement grant " + p.getName() + " only minecraft:" + this.GetFileName();
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-            for (ItemStack item : _reward) {
-                p.getWorld().dropItem(p.getLocation(), item);
+        if(_advancementManager.GetCurrentEnabledTasks().contains(this)) {
+            if (!_playerList.contains(p) && CheckPrequisiteAdvancement(p) || !_playerList.contains(p) && !isConditional) {
+                //Bukkit.broadcastMessage("Got here");
+                String command = "advancement grant " + p.getName() + " only minecraft:" + this.GetFileName();
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                for (ItemStack item : _reward) {
+                    p.getWorld().dropItem(p.getLocation(), item);
+                }
+                _playerList.add(p);
+                //p.addScoreboardTag(this.GetFileName());
             }
-            _playerList.add(p);
-            //p.addScoreboardTag(this.GetFileName());
         }
     }
 
