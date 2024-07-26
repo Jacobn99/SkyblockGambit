@@ -34,7 +34,15 @@ private AdvancementManager _advancementManager;
             }
         }
     }
-    public void KillCounter(Player killer) {
+    public boolean IsKillFromOtherTeam(Player killer, Player victim) {
+        if(_gameManager.FindPlayerTeam(killer) != null && _gameManager.FindPlayerTeam(victim) != null) {
+            if(!_gameManager.FindPlayerTeam(killer).GetMembers().contains(victim)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public void AddToKillCount(Player killer) {
 //        Player p = (Player) e.getEntity();
 //        Player killer = p.getKiller();
 

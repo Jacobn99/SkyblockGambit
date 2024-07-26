@@ -50,7 +50,7 @@ public class WorldManager {
         //int sideLength;
         Location referenceCorner;
         //referenceCorner = world.GetReferenceCorner();
-        referenceCorner = referenceLocation;
+        referenceCorner = referenceLocation.clone();
         //sideLength = _worldLength;
 
         //Bukkit.broadcastMessage("reference corner: " + referenceCorner);
@@ -77,20 +77,28 @@ public class WorldManager {
     }
     public void SpawnTeamVillagers(List<CustomVillager> customs, CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
+        int spawnRadius = 150;
         //Villager currentVillager = null;
 
 
         for(CustomWorld customWorld : _customWorlds) {
             if(customs.isEmpty()) {
-                Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
+                //Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
+
+                Location refreneceLoc = customWorld.GetReferenceCorner().clone();
+                refreneceLoc.subtract(16, 0, 16);
+                //refreneceLoc.subtract(spawnRadius/2, 0, spawnRadius/2);
+
                 for (int i = 0; i < _gameManager.normalVillagerAmount; i++) {
+                    Location spawnLoc = GenerateSpawnLocation(refreneceLoc, spawnRadius);
+
                     Villager vil = villagerManager.SpawnVillager(spawnLoc, villagerManager.SetRandomProfession());
                     CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), i);
                     //vil.addScoreboardTag("villager" + i);
 
                 }
-                _villagerManager.CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
-                _villagerManager.CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager0", GenerateSpawnLocation(refreneceLoc, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager1", GenerateSpawnLocation(refreneceLoc, spawnRadius), Villager.Profession.NITWIT);
                 templateVillagers.addAll(customs);
             }
             else {

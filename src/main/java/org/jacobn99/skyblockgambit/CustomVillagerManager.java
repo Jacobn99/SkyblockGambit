@@ -21,29 +21,6 @@ public class CustomVillagerManager {
         _gameManager = gameManger;
         //_disposableEntities = disposableEntities;
     }
-    //    public void SpawnTeamVillagers() {
-//        Location spawnLoc = GetBlueSpawn();
-//
-//        for(int i = 0; i < 2; i++) {
-//            SpawnVillager(spawnLoc, Villager.Profession.CLERIC);
-//            SpawnVillager(spawnLoc, Villager.Profession.FARMER);
-//            SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
-//            SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
-//            SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
-//            SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
-//            SpawnVillager(spawnLoc, Villager.Profession.MASON);
-//            SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
-//            SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
-//            SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
-//
-//            CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
-//            CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
-//
-//            spawnLoc = GetRedSpawn();
-//        }
-//    }
 
     public Villager SpawnVillager(Location loc, Villager.Profession profession) {
         // Spawn a villager with all trades unlocked

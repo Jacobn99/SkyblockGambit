@@ -78,7 +78,9 @@ public class EventManager implements Listener {
         Player killer = p.getKiller();
 
         if(_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
-            _twoKillsTask.KillCounter(killer);
+            if(_twoKillsTask.IsKillFromOtherTeam(killer, p)) {
+                _twoKillsTask.AddToKillCount(killer);
+            }
             _twoKillsTask.TwoKillsCheck(killer);
         }
         _gameManager.UpdateSpawns();
