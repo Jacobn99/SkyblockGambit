@@ -27,7 +27,7 @@ public class CustomAdvancement {
         _reward = new ItemStack[1];
         _reward[0] = reward;
         _parentAdvancement = null;
-        Bukkit.broadcastMessage(advancementName + " has been created");
+        //Bukkit.broadcastMessage(advancementName + " has been created");
     }
     public CustomAdvancement(String advancementName, ItemStack[] reward, List<CustomAdvancement> customAdvancementList) {
         InitializeVariables(advancementName, customAdvancementList);

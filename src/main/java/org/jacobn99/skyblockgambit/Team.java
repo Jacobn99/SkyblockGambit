@@ -3,6 +3,7 @@ package org.jacobn99.skyblockgambit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.Portals.Portal;
@@ -18,6 +19,7 @@ public class Team {
     List<Team> _teams;
     GameManager _gameManager;
     List<CustomAdvancement> _finishedTasks;
+    public Inventory killsInventory;
 
 
     public Team(String teamColor, GameManager gameManager) {
@@ -30,6 +32,8 @@ public class Team {
         _teams = _gameManager.teams;
         _participatingPlayers = _gameManager.participatingPlayers;
         _teams.add(this);
+        killsInventory = Bukkit.createInventory(null, 27, "PVP Rewards");
+
     }
     public boolean AreTasksDone() {
         if(_finishedTasks.size() == _gameManager.advancementManager.GetMaxTasks() - 1) {

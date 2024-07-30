@@ -18,3 +18,11 @@ Villager1:
     Trade2: EMERALD, 2, SLIME_BALL, 1
     Trade3: EMERALD, 1, REDSTONE, 4
     Trade4: EMERALD, 5, DISPENSER, 1
+
+Villager2:
+  #FORMAT: bargain 1, amount 1, *bargain 2 (optional), *amount 2 (optional), product, amount of product
+  #bargain = item you give in exchange for product
+  #last item is always the product
+  Trades:
+    Trade0: KILL_SKULL, 1, EMERALD, 10
+    Trade1: KILL_SKULL, 8, MACE, 1

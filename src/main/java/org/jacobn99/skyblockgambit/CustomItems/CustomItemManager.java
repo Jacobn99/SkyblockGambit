@@ -33,6 +33,7 @@ public class CustomItemManager {
         requiredItemsList.add("REDSTONE_KIT");
         requiredItemsList.add("TRADE_BOOST");
         requiredItemsList.add("RAGE_SPELL");
+        requiredItemsList.add("KILL_SKULL");
 
 
 

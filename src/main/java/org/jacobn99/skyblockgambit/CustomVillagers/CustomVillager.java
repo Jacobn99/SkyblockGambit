@@ -1,16 +1,16 @@
-package org.jacobn99.skyblockgambit;
+package org.jacobn99.skyblockgambit.CustomVillagers;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jacobn99.skyblockgambit.ConfigManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class CustomVillager {
     List<MerchantRecipe> recipes;

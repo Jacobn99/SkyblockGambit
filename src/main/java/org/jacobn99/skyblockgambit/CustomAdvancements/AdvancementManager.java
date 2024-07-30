@@ -53,14 +53,14 @@ public class AdvancementManager {
 
     }
     public void ClearTaskParents() {
-        if(GetCurrentEnabledTasks() != null) {
+        if(GetCustomAdvancementList() != null) {
             for (CustomAdvancement advancement : GetCustomAdvancementList()) {
                 Bukkit.broadcastMessage("Modifying " + advancement.GetFileName());
                 ModifyAdvancement(advancement.GetFile(), "parent", "null");
             }
         }
         else {
-            Bukkit.broadcastMessage("GetCurrentEnabledTasks() is null");
+            Bukkit.broadcastMessage("GetCustomAdvancementList() is null");
         }
     }
     public List<CustomAdvancement> GetCurrentEnabledTasks() {
@@ -131,16 +131,18 @@ public class AdvancementManager {
                     currentAdvancement = availableAdvancements.get(randomNumber);
 
                     if (i == 0) {
-                        parameterChanges.put("title", "Task " + (i + 1));
+                        parameterChanges.put("title", currentAdvancement.GetFileName());
                         parameterChanges.put("parent", "minecraft:root");
-
                         ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
                     } else {
-                        parameterChanges.put("title", "Task " + (i + 1));
+                        //parameterChanges.put("title", "Task " + (i + 1));
+                        parameterChanges.put("title", currentAdvancement.GetFileName());
                         parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
                         currentAdvancement.SetParentAdvancement(parentAdvancement);
                         ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
                     }
+                    Bukkit.broadcastMessage("Current: " + currentAdvancement.GetFileName());
+
                     futureEnabledAdvancementNames.add(currentAdvancement.GetFileName());
                     parentAdvancement = currentAdvancement;
                     parameterChanges.clear();
@@ -149,12 +151,12 @@ public class AdvancementManager {
                     Bukkit.broadcastMessage("Not enough tasks");
                 }
             }
-            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), this);
-            if (!kill_enderdragon.GetFile().exists()) {
-                kill_enderdragon.LoadFile(defaultConfiguration);
-            }
-            ModifyAdvancement(kill_enderdragon.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
-            kill_enderdragon = null;
+            //CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), this);
+            CustomAdvancement _kill_enderdragon = GetAdvancement("kill_enderdragon");
+            ModifyAdvancement(_kill_enderdragon.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
+            ModifyAdvancement(_kill_enderdragon.GetFile(), "title", _kill_enderdragon.GetFileName());
+
+            //kill_enderdragon = null;
 
             //ModifyAdvancement(enderdragon.GetFile(), "parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
         }

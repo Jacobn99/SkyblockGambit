@@ -8,21 +8,19 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.checkerframework.checker.units.qual.C;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CraftX;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
-import org.jacobn99.skyblockgambit.GeneratorInfo.DiamondGenerator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.Generator;
-import org.jacobn99.skyblockgambit.GeneratorInfo.IronGenerator;
 import org.jacobn99.skyblockgambit.Portals.Portal;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.Process;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
-import org.jacobn99.skyblockgambit.Processes.Queueable;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
@@ -55,11 +53,12 @@ public class GameManager {
     private ArmorStand redArmorStand;
     private PortalManager _portalManager;
     public AdvancementManager advancementManager;
-    private ProcessManager _processManager;
-    private WorldManager _worldManager;
+    public ProcessManager _processManager;
+    public WorldManager _worldManager;
     private StarterChestManager _chestManager;
     private CustomVillagerManager _customVillagerManager;
     private CustomItemManager _customItemManager;
+    private AnimalSpawner _animalSpawner;
     private Team blueTeam;
     private Team redTeam;
     public CraftX craftX;
@@ -70,11 +69,12 @@ public class GameManager {
     public boolean isWorldGenerated;
     public int minWorldHeight;
     public int normalVillagerAmount;
+    private int _passiveMobCap;
+    World overworld;
 
 
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
-
         disposableEntities = new ArrayList<>();
         generatorList = new ArrayList();
         portals = new ArrayList<>();
@@ -97,14 +97,15 @@ public class GameManager {
         blueTeam = new Team("blue", this);
         redTeam = new Team("red", this);
         craftX = new CraftX(advancementManager, _customItemManager, _mainPlugin);
+        _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
         tickRate = 3;
         minWorldHeight = 94;
         normalVillagerAmount = 2;
         canProceed = true;
         isWorldGenerated = false;
+        _passiveMobCap = 30;
     }
     public void Start() {
-
         Bukkit.broadcastMessage("Starting...");
 
         isRunning = true;
@@ -125,6 +126,7 @@ public class GameManager {
 
         InitializeTeams();
         UpdateSpawns();
+        _animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
             @Override
@@ -201,6 +203,7 @@ public class GameManager {
         }
         InitializeTasks();
         advancementManager.ClearTaskParents();
+        //Bukkit.broadcastMessage("customAdvancements size: " + advancementManager.customAdvancements.size());
         advancementManager.RandomizeTasks();
         craftX.WriteToCraftXFile();
         craftX.UpdateDescription();
@@ -343,4 +346,13 @@ public void UpdateSpawns() {
         }
     }
 
+    public void Sigma() {
+        Map<Integer,Integer> map = new LinkedHashMap<>();
+        List<Integer> bro = new ArrayList<>();
+        List<Integer> yo = new ArrayList<>();
+    }
+
+    public int GetPassiveMobCap() {
+        return _passiveMobCap;
+    }
 }

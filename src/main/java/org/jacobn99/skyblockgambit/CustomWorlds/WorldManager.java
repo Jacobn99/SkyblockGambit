@@ -6,8 +6,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jacobn99.skyblockgambit.CustomVillager;
-import org.jacobn99.skyblockgambit.CustomVillagerManager;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.GameManager;
 import org.jacobn99.skyblockgambit.Portals.Portal;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
@@ -83,22 +83,23 @@ public class WorldManager {
 
         for(CustomWorld customWorld : _customWorlds) {
             if(customs.isEmpty()) {
-                //Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
+                Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
 
-                Location refreneceLoc = customWorld.GetReferenceCorner().clone();
-                refreneceLoc.subtract(16, 0, 16);
-                //refreneceLoc.subtract(spawnRadius/2, 0, spawnRadius/2);
+//                Location refreneceLoc = customWorld.GetReferenceCorner().clone();
+//                refreneceLoc.subtract(16, 0, 16);
 
                 for (int i = 0; i < _gameManager.normalVillagerAmount; i++) {
-                    Location spawnLoc = GenerateSpawnLocation(refreneceLoc, spawnRadius);
+                    //Location spawnLoc = GenerateSpawnLocation(refreneceLoc, spawnRadius);
 
                     Villager vil = villagerManager.SpawnVillager(spawnLoc, villagerManager.SetRandomProfession());
                     CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), i);
                     //vil.addScoreboardTag("villager" + i);
 
                 }
-                _villagerManager.CreateCustomVillager("Villager0", GenerateSpawnLocation(refreneceLoc, spawnRadius), Villager.Profession.NITWIT);
-                _villagerManager.CreateCustomVillager("Villager1", GenerateSpawnLocation(refreneceLoc, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager0", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager1", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager2", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
+
                 templateVillagers.addAll(customs);
             }
             else {

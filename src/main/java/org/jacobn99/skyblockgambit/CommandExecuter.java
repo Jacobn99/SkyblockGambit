@@ -32,6 +32,7 @@ public class CommandExecuter implements CommandExecutor {
     WorldCopier _worldCopier;
     WorldManager _worldManager;
     PortalManager _portalManager;
+    AnimalSpawner _animalSpanwer;
     //ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -41,6 +42,9 @@ public class CommandExecuter implements CommandExecutor {
         _chestManager = new StarterChestManager(_mainPlugin);
         //_advancementManager = new AdvancementManager(_mainPlugin, _gameManager.teams);
         _portalManager = new PortalManager(_gameManager);
+        _worldManager = _gameManager._worldManager;
+        _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
+
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
         //_worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
@@ -65,9 +69,16 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                //_gameManager.advancementManager.ClearTaskParents();
+                p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
+//                Team team = _gameManager.FindPlayerTeam(p);
+//                _animalSpanwer.SpawnAnimals();
+//                Bukkit.broadcastMessage("animal population: " + _animalSpanwer.GetAnimalPopulation(team.GetTeamWorld()));
+
+//                _gameManager.InitializeTasks();
+//                _gameManager.advancementManager.ClearTaskParents();
                 //_gameManager.advancementManager.RandomizeTasks();
-                Bukkit.broadcastMessage("current tasks: " + _gameManager.advancementManager.GetCurrentEnabledTaskNames());
+                //_gameManager.advancementManager.RandomizeTasks();
+                //Bukkit.broadcastMessage("current tasks: " + _gameManager.advancementManager.GetCurrentEnabledTaskNames());
                 //_gameManager.GenerateEndPortal(p.getLocation());
 
 //                _gameManager.craftX.WriteToCraftXFile();
@@ -83,12 +94,12 @@ public class CommandExecuter implements CommandExecutor {
                 //_worldCopier.DuplicateLand(p.getLocation(), file);
                 //Bukkit.broadcast  Message("latest execution time: " + _processManager.GetLatestExecutionTime(_gameManager.processes));
 
-                for(Portal portal : _gameManager.portals) {
-                    Bukkit.broadcastMessage("Portal Loc: " + portal.GetPortalLocation());
-                }
-                for(CustomWorld customWorld : _gameManager.customWorlds) {
-                    Bukkit.broadcastMessage("Reference Corner: " + customWorld.GetReferenceCorner());
-                }
+//                for(Portal portal : _gameManager.portals) {
+//                    Bukkit.broadcastMessage("Portal Loc: " + portal.GetPortalLocation());
+//                }
+//                for(CustomWorld customWorld : _gameManager.customWorlds) {
+//                    Bukkit.broadcastMessage("Reference Corner: " + customWorld.GetReferenceCorner());
+//                }
 //                _worldCopier.DuplicateLand(20, 20, new Location(Bukkit.getWorld("void_world"),-13, 75, -53),
 //                        new Location(Bukkit.getWorld("void_world"), 193, 75, 482));
                 //_gameManager.InitializeTasks();
