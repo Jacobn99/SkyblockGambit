@@ -69,7 +69,10 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
+                _gameManager.GenerateInvaderPortalFrame(p.getLocation());
+                //_gameManager.GrantTeamCompasses();
+                //_worldManager.SpawnTeamVillagers(_gameManager.getCustomVillagers(), _gameManager._customVillagerManager);
+                //p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
 //                Team team = _gameManager.FindPlayerTeam(p);
 //                _animalSpanwer.SpawnAnimals();
 //                Bukkit.broadcastMessage("animal population: " + _animalSpanwer.GetAnimalPopulation(team.GetTeamWorld()));

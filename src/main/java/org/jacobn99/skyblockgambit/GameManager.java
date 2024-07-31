@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
@@ -56,7 +57,7 @@ public class GameManager {
     public ProcessManager _processManager;
     public WorldManager _worldManager;
     private StarterChestManager _chestManager;
-    private CustomVillagerManager _customVillagerManager;
+    public CustomVillagerManager _customVillagerManager;
     private CustomItemManager _customItemManager;
     private AnimalSpawner _animalSpawner;
     private Team blueTeam;
@@ -100,10 +101,10 @@ public class GameManager {
         _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
         tickRate = 3;
         minWorldHeight = 94;
-        normalVillagerAmount = 2;
+        normalVillagerAmount = 10;
         canProceed = true;
         isWorldGenerated = false;
-        _passiveMobCap = 30;
+        _passiveMobCap = 35;
     }
     public void Start() {
         Bukkit.broadcastMessage("Starting...");
@@ -140,7 +141,30 @@ public class GameManager {
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
-
+    public void GrantTeamCompasses() {
+        for(Team team : teams) {
+            for(Player p : team.GetMembers()) {
+                GrantCompass(p, team);
+            }
+        }
+    }
+    public void GrantCompass(Player p, Team team) {
+       // Team team = FindPlayerTeam(p);
+        if (team != null) {
+            ItemStack spawnCompass = new ItemStack(Material.COMPASS);
+//            CompassMeta meta = (CompassMeta) spawnCompass.getItemMeta();
+//            meta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
+//            meta.setLodestoneTracked(true);
+//            spawnCompass.setItemMeta(meta);
+            CompassMeta compassMeta = (CompassMeta) spawnCompass.getItemMeta();
+            compassMeta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
+            compassMeta.setLodestoneTracked(false);
+            compassMeta.setDisplayName("Spawn Compass");
+            spawnCompass.setItemMeta(compassMeta);
+            p.getInventory().addItem(spawnCompass);
+            //p.getWorld().dropItem(p.getLocation(), spawnCompass);
+        }
+    }
     public void InitializeTasks() {
         //If statement checks if defaultConfiguration.json (which is used load advancement files that don't exit yet)
 
@@ -270,7 +294,7 @@ public void UpdateSpawns() {
 
     public void Reset() {
         for(Portal p : portals) {
-            p.Deactivate();
+            p.RemovePortal();
         }
         for(StarterChest chest : starterChestList) {
             chest.DestroyChest();
@@ -309,8 +333,9 @@ public void UpdateSpawns() {
         }
         return null;
     }
-    public void GenerateEndPortal(Location loc) {
+    public void GenerateEndPortal(Location location) {
         BlockFace face;
+        Location loc = location.clone();
         loc.subtract(1, 0, 2);
         face = BlockFace.SOUTH;
         for(int e = 0; e < 2; e++) {
@@ -346,10 +371,33 @@ public void UpdateSpawns() {
         }
     }
 
-    public void Sigma() {
-        Map<Integer,Integer> map = new LinkedHashMap<>();
-        List<Integer> bro = new ArrayList<>();
-        List<Integer> yo = new ArrayList<>();
+    public void GenerateInvaderPortalFrame(Location location) {
+        //BlockFace face;
+        //loc.subtract(1, 0, 2);
+        //face = BlockFace.SOUTH;
+        Location loc = location.clone();
+        loc.subtract(2, 0, 0);
+        for(int e = 0; e < 2; e++) {
+            for (int i = 0; i < 3; i++) {
+                Location currentLoc = loc.clone();
+                currentLoc.setY(loc.getY() + i);
+                currentLoc.setX(loc.getX() + (e*4));
+                currentLoc.getBlock().setType(Material.BEDROCK);
+                currentLoc = null;
+            }
+        }
+        loc.add(1, -1, 0);
+
+        for(int e = 0; e < 2; e++) {
+            for (int i = 0; i < 3; i++) {
+                Location currentLoc = loc.clone();
+                currentLoc.setX(loc.getX() + i);
+                currentLoc.setY(loc.getY() + (e*4));
+                currentLoc.getBlock().setType(Material.BEDROCK);
+                currentLoc = null;
+
+            }
+        }
     }
 
     public int GetPassiveMobCap() {

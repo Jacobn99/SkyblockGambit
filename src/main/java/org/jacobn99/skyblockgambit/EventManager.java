@@ -10,10 +10,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
@@ -23,6 +25,9 @@ import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
 import org.jacobn99.skyblockgambit.CustomItems.RageSpell;
 import org.jacobn99.skyblockgambit.CustomItems.VillagerTradeBoost;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
+import org.jacobn99.skyblockgambit.Processes.ProcessManager;
+import org.jacobn99.skyblockgambit.Processes.Queueable;
 
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;
@@ -36,11 +41,15 @@ public class EventManager implements Listener {
     ReachLevelX _reachLevelX;
     AdvancementManager _advancementManager;
     KillEnderdragon _killEnderdragon;
+    CustomVillagerManager _villagerManager;
+    ProcessManager _processManager;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
         _gameManager = gameManager;
         _advancementManager = _gameManager.advancementManager;
+        _villagerManager = _gameManager._customVillagerManager;
+        _processManager = _gameManager._processManager;
         _borderwall = new Borderwall(_mainPlugin, _gameManager);
         _portalOpener = new PortalOpener(_gameManager);
         _villagerTradeBoost = new VillagerTradeBoost(_gameManager);
@@ -73,6 +82,16 @@ public class EventManager implements Listener {
     }
 
     @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player p = event.getPlayer();
+        Team team = _gameManager.FindPlayerTeam(p);
+        Queueable queueable = () -> _gameManager.GrantCompass(p,team);
+        if(_gameManager.isRunning && team != null) {
+            _processManager.CreateProcess(_gameManager.processes, 20, queueable);
+        }
+    }
+
+    @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player p = (Player) event.getEntity();
         Player killer = p.getKiller();
@@ -97,6 +116,11 @@ public class EventManager implements Listener {
         }
     }
 
+    @EventHandler
+    public void onVillagerAcquireTrade(VillagerAcquireTradeEvent event) {
+        MerchantRecipe recipe = _villagerManager.MakeTradeCheaper(event.getRecipe());
+        event.setRecipe(recipe);
+    }
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
 //        Villager villagerReference;

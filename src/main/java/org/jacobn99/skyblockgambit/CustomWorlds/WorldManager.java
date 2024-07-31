@@ -16,7 +16,6 @@ import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +77,12 @@ public class WorldManager {
     public void SpawnTeamVillagers(List<CustomVillager> customs, CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
         int spawnRadius = 150;
+        List<Integer> bannedProfessions = new ArrayList<>();
+        bannedProfessions.add(5); //Farmer
+        bannedProfessions.add(11); //Nitwit
+        bannedProfessions.add(0); //None
+        bannedProfessions.add(3); //Cartographer
+
         //Villager currentVillager = null;
 
 
@@ -90,12 +95,28 @@ public class WorldManager {
 
                 for (int i = 0; i < _gameManager.normalVillagerAmount; i++) {
                     //Location spawnLoc = GenerateSpawnLocation(refreneceLoc, spawnRadius);
+                    if(bannedProfessions.size() == 15) {
+                        bannedProfessions.clear();
+                        bannedProfessions.add(5); //Farmer
+                        bannedProfessions.add(11); //Nitwit
+                        bannedProfessions.add(0); //None
+                        bannedProfessions.add(3); //Cartographer
+                    }
+                    int professionID = villagerManager.GetRandomProfessionID(bannedProfessions);
+                    Villager.Profession profession = Villager.Profession.values()[professionID];
+                    //Villager.Profession profession = _villagerManager.SetRandomProfession(bannedProfessions);
+                    bannedProfessions.add(professionID);
 
-                    Villager vil = villagerManager.SpawnVillager(spawnLoc, villagerManager.SetRandomProfession());
+                    //bannedProfessions.remove(professionID);
+
+                    Villager vil = villagerManager.SpawnVillager(spawnLoc, profession);
+                    _villagerManager.MakeTradesCheaper(vil);
                     CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), i);
+                    //Bukkit.broadcastMessage("Profession: " + profession.name());
                     //vil.addScoreboardTag("villager" + i);
 
                 }
+                _villagerManager.SpawnVillager(GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.FARMER);
                 _villagerManager.CreateCustomVillager("Villager0", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
                 _villagerManager.CreateCustomVillager("Villager1", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
                 _villagerManager.CreateCustomVillager("Villager2", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
@@ -168,7 +189,7 @@ public class WorldManager {
                 return;
             }
             //Bukkit.broadcastMessage("got here");
-
+            _gameManager.GenerateInvaderPortalFrame(portalLoc);
             Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(_gameManager), portalLoc);
             customWorld.SetWorldPortal(p);
             p.Activate();

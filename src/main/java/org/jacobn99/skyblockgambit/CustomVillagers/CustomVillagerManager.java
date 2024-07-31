@@ -1,11 +1,18 @@
 package org.jacobn99.skyblockgambit.CustomVillagers;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jacobn99.skyblockgambit.GameManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,20 +33,73 @@ public class CustomVillagerManager {
         Villager villager = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
+        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
         _gameManager.disposableEntities.add(villager);
         return villager;
     }
+    public void MakeTradesCheaper(Villager v) {
+        List<MerchantRecipe> newRecipes = new ArrayList<>();
 
-    public Villager.Profession SetRandomProfession() {
+        for(MerchantRecipe recipe : v.getRecipes()) {
+            List<ItemStack> newIngredients = new ArrayList<>();
+            for(ItemStack ingredient : recipe.getIngredients()) {
+                int amount = ingredient.getAmount();
+                int newAmount = 1;
+                ItemStack newIngredient;
+                Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
+
+                if(amount > 1) {
+                    newAmount = Math.round((amount/2));
+                }
+                newIngredient = new ItemStack(ingredient.getType(), newAmount);
+                newIngredients.add(newIngredient);
+                //Bukkit.broadcastMessage("New ingredient: " + ingredient.getType().name() + ", Amount: " + newAmount);
+
+            }
+            recipe.setIngredients(newIngredients);
+            newRecipes.add(recipe);
+        }
+    }
+    public MerchantRecipe MakeTradeCheaper(MerchantRecipe recipe) {
+        List<ItemStack> newIngredients = new ArrayList<>();
+
+        for(ItemStack ingredient : recipe.getIngredients()) {
+            int amount = ingredient.getAmount();
+            int newAmount = 1;
+            ItemStack newIngredient;
+            Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
+
+            if(amount > 1) {
+                newAmount = Math.round((amount/2));
+            }
+            newIngredient = new ItemStack(ingredient.getType(), newAmount);
+            newIngredients.add(newIngredient);
+            //Bukkit.broadcastMessage("New ingredient: " + ingredient.getType().name() + ", Amount: " + newAmount);
+
+        }
+        recipe.setIngredients(newIngredients);
+        return recipe;
+    }
+
+
+    public Integer GetRandomProfessionID(List<Integer> bannedProfessionIDs) {
         Random rand = new Random();
-        int[] allowedProfessions = {0,1,2,3,4,5,6,7,8,9,12,13,14};
         int professionID;
-        professionID = allowedProfessions[rand.nextInt(13)];
 
-        Villager.Profession profession;
+        List<Integer> allowedProfessions = new ArrayList<>();
+        for(int e = 0; e < 14; e++) {
+            if(!bannedProfessionIDs.contains(e)) {
+                allowedProfessions.add(e);
+            }
+        }
 
-        profession = Villager.Profession.values()[professionID];
-        return profession;
+//        for(int i : bannedProfessionIDs) {
+//            allowedProfessions.remove(i);
+//        }
+        professionID = allowedProfessions.get(rand.nextInt(allowedProfessions.size()));
+
+        //Villager.Profession profession = Villager.Profession.values()[professionID];
+        return professionID;
         //_villager.setProfession(profession);
     }
 
@@ -53,7 +113,7 @@ public class CustomVillagerManager {
         }
         villager.setVillagerLevel(5);
         villager.addScoreboardTag("Customized");
-        villager.setInvulnerable(true);
+        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
         _customs.add(custom);
         _gameManager.disposableEntities.add(custom.GetVillager());
         return custom;
