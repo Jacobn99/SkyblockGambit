@@ -4,18 +4,16 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.jacobn99.skyblockgambit.DataManager;
+import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class CustomItemManager {
@@ -23,11 +21,15 @@ public class CustomItemManager {
     File _itemFile;
     List<CustomItems> customItemsList;
     List<String> requiredItemsList;
+    private ItemStackSerialization _itemStackSerialization;
+    private DataManager _dataManager;
 
     public CustomItemManager(JavaPlugin mainPlugin) {
         customItemsList = new ArrayList();
         _mainPlugin = mainPlugin;
         _itemFile = new File(_mainPlugin.getDataFolder(), "custom_items.json");
+        _itemStackSerialization = new ItemStackSerialization();
+        _dataManager = new DataManager();
         requiredItemsList = new ArrayList<>();
         requiredItemsList.add("PORTAL_OPENER");
         requiredItemsList.add("REDSTONE_KIT");
@@ -93,7 +95,7 @@ public class CustomItemManager {
         }
 
         serializedItem = customItemsList.get(index).getItem();
-        item = DeserializeItem(serializedItem);
+        item = (ItemStack) _itemStackSerialization.Deserialize(serializedItem);
 
         return item;
     }
@@ -160,12 +162,12 @@ public class CustomItemManager {
 
     public void AddCustomItem(Player p, String itemName) {
         UpdateCustomItemsList();
-        customItemsList.add(new CustomItems(SerializeItem(p.getInventory().getItemInMainHand()), itemName));
+        customItemsList.add(new CustomItems(_itemStackSerialization.Serialize(p.getInventory().getItemInMainHand()), itemName));
         UpdateItemFile();
     }
     public void AddCustomItem(ItemStack item, String itemName) {
         UpdateCustomItemsList();
-        customItemsList.add(new CustomItems(SerializeItem(item), itemName));
+        customItemsList.add(new CustomItems(_itemStackSerialization.Serialize(item), itemName));
         UpdateItemFile();
     }
 
@@ -175,44 +177,44 @@ public class CustomItemManager {
             Bukkit.broadcastMessage("Not in bounds of index");
         }
         else {
-            customItemsList.set(index, new CustomItems(SerializeItem(p.getInventory().getItemInMainHand()), name));
+            customItemsList.set(index, new CustomItems(_itemStackSerialization.Serialize(p.getInventory().getItemInMainHand()), name));
             UpdateItemFile();
         }
     }
-    public String SerializeItem(ItemStack item) {
-        String encodedItem;
-        try {
-            ByteArrayOutputStream io = new ByteArrayOutputStream();
-            BukkitObjectOutputStream os = new BukkitObjectOutputStream(io);
-
-            os.writeObject(item);
-            os.flush(); //transfers data from buffer in the os ByteArrayOutputStream object to the io ByteArrayOutputStream object
-
-            byte[] itemSerialized = io.toByteArray();
-
-            encodedItem = Base64.getEncoder().encodeToString(itemSerialized);
-
-            return encodedItem;
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ItemStack DeserializeItem(String encodedItem) {
-        byte[] decodedItem;
-        try {
-            decodedItem = Base64.getDecoder().decode(encodedItem);
-            ByteArrayInputStream in = new ByteArrayInputStream(decodedItem);
-            BukkitObjectInputStream is = new BukkitObjectInputStream(in);
-
-            ItemStack newItem = (ItemStack) is.readObject();
-            return newItem;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public String SerializeItem(ItemStack item) {
+//        String encodedItem;
+//        try {
+//            ByteArrayOutputStream io = new ByteArrayOutputStream();
+//            BukkitObjectOutputStream os = new BukkitObjectOutputStream(io);
+//
+//            os.writeObject(item);
+//            os.flush(); //transfers data from buffer in the os ByteArrayOutputStream object to the io ByteArrayOutputStream object
+//
+//            byte[] itemSerialized = io.toByteArray();
+//
+//            encodedItem = Base64.getEncoder().encodeToString(itemSerialized);
+//
+//            return encodedItem;
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public ItemStack DeserializeItem(String encodedItem) {
+//        byte[] decodedItem;
+//        try {
+//            decodedItem = Base64.getDecoder().decode(encodedItem);
+//            ByteArrayInputStream in = new ByteArrayInputStream(decodedItem);
+//            BukkitObjectInputStream is = new BukkitObjectInputStream(in);
+//
+//            ItemStack newItem = (ItemStack) is.readObject();
+//            return newItem;
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 //
 }

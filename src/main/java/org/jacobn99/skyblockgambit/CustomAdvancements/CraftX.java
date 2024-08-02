@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.DataManager;
 import org.jacobn99.skyblockgambit.GameManager;
+import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +34,17 @@ public class CraftX {
     private JavaPlugin _mainPlugin;
     private CustomItemManager _itemManager;
     private Gson _gson;
+    private ItemStackSerialization _itemStackSerialization;
+    private DataManager _dataManager;
     public CraftX(AdvancementManager advancementManager, CustomItemManager itemManager, JavaPlugin mainPlugin) {
-        //_gameManager = gameManager;
         _advancementManager = advancementManager;
         _itemManager = itemManager;
         _mainPlugin = mainPlugin;
         _file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/CraftXConfig.json");
         iteration = 0;
-        //_item = new ItemStack(Material.OAK_PLANKS);
         _gson = new Gson();
+        _itemStackSerialization = new ItemStackSerialization();
+        _dataManager = new DataManager();
 
 
     }
@@ -52,16 +57,8 @@ public class CraftX {
     private ItemStack GetItem() {
         //Type listType = new TypeToken<List<String>>() {}.getType();
         if (_file.exists()) {
-            try {
-                Reader reader = Files.newBufferedReader(_file.toPath());
-                String serializedItem = _gson.fromJson(reader, String.class);
-                _item = _itemManager.DeserializeItem(serializedItem);
-                Bukkit.broadcastMessage("_item: " + _item);
-                return _item;
+            return (ItemStack) _dataManager.GetObjects(_file, _itemStackSerialization).get(0);
 
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
         else {
             Bukkit.broadcastMessage("ERROR: No CraftX file!");
@@ -76,32 +73,20 @@ public class CraftX {
 
     public void WriteToCraftXFile() {
         Random rand = new Random();
-        List<String> possibleItems = GetPossibleItems();
+        List<ItemStack> possibleItems = GetPossibleItems();
         //Bukkit.broadcastMessage("possibleItems: " + possibleItems);
-
+        List<Object> writableContent = new ArrayList<>();
         int index = rand.nextInt(possibleItems.size());
 
+        writableContent.add(possibleItems.get(index));
 
-        try {
-            Writer writer = Files.newBufferedWriter(_file.toPath());
-            _gson.toJson(possibleItems.get(index), writer);
-            //_gson.toJson(_itemManager.SerializeItem(_item), writer);
-            //Bukkit.broadcastMessage("Serialized Item: " + _itemManager.SerializeItem(_item));
-            //writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        _dataManager.WriteToFile(_file, writableContent, _itemStackSerialization);
     }
-    private List<String> GetPossibleItems() {
-        List<String> serializedItems = new ArrayList<>();
+    private List<ItemStack> GetPossibleItems() {
         List<ItemStack> items = new ArrayList<>();
         items.add(new ItemStack(Material.STONE));
         items.add(new ItemStack(Material.BIRCH_PLANKS));
-        for(ItemStack item : items) {
-            serializedItems.add(_itemManager.SerializeItem(item));
-        }
-        return serializedItems;
+        return items;
     }
 
     public void CraftXCheck(CraftItemEvent event) {

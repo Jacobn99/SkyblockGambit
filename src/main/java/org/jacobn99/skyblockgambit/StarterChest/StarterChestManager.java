@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,10 +17,12 @@ public class StarterChestManager {
     File _chestFile;
     JavaPlugin _mainPlugin;
     CustomItemManager _itemManager;
+    ItemStackSerialization _itemStackSerialization;
     public StarterChestManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         _chestFile = new File(_mainPlugin.getDataFolder(), "starting_chest.txt");
         _itemManager = new CustomItemManager(mainPlugin);
+        _itemStackSerialization = new ItemStackSerialization();
     }
     public ItemStack[] GetInventory() {
         return DeserializeInventory(GetSerializedInventory());
@@ -36,7 +39,7 @@ public class StarterChestManager {
         LoadChestFile();
         List<String> serializedInventory = new ArrayList<>();
         for(ItemStack i : inventory) {
-            serializedInventory.add(_itemManager.SerializeItem(i));
+            serializedInventory.add(_itemStackSerialization.Serialize(i));
         }
         try {
             FileWriter writer = new FileWriter(_chestFile);
@@ -65,7 +68,7 @@ public class StarterChestManager {
 
         int i = 0;
         for(String s : serializedInventory) {
-            deserializedItems[i] = _itemManager.DeserializeItem(serializedInventory.get(i));
+            deserializedItems[i] = (ItemStack) _itemStackSerialization.Deserialize(serializedInventory.get(i));
             //deserializedItems.add(_itemManager.DeserializeItem(s));
             i++;
         }
