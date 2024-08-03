@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.jacobn99.skyblockgambit.Team;
 
 import javax.swing.filechooser.FileSystemView;
@@ -100,10 +101,11 @@ public class AdvancementManager {
             for (Team team : _teams) {
                 if (team.GetMembers().contains(p) && a != null) {
                     for (Player player : team.GetMembers()) {
-                        Bukkit.broadcastMessage("Granting a team an advancement");
+                        Bukkit.broadcastMessage("Trying to grant a team an advancement");
 
-                        a.GrantAdvancement(player, false);
-                        team.AddFinishedTask(a);
+                        if(a.GrantAdvancement(player, false)) {
+                            team.AddFinishedTask(a);
+                        }
                         return;
                     }
                 }

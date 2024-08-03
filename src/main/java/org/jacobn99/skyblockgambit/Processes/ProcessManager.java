@@ -61,10 +61,14 @@ public class ProcessManager {
     }
     public void CreateProcess(HashMap<Long, Process> processes, long executionTime, Queueable queueable) {
         Process process = new Process(executionTime, queueable);
+        long worldTime = Bukkit.getWorld("void_world").getFullTime();
+        if(worldTime > worldTime + executionTime) {
+            Bukkit.broadcastMessage("Warning: executionTime > world time");
+        }
         processes.put(executionTime, process);
     }
     public long GetLatestExecutionTime(HashMap<Long, Process> processes) {
-        long latestExecutionTime = Bukkit.getWorld("void_world").getFullTime();
+        long latestExecutionTime = 0;
         for(long executionTime : processes.keySet()) {
             if(executionTime > latestExecutionTime) {
                 latestExecutionTime = executionTime;

@@ -81,7 +81,7 @@ public class CommandExecuter implements CommandExecutor {
                 //_gameManager.GenerateInvaderPortalFrame(p.getLocation());
                 //_gameManager.GrantTeamCompasses();
                 //_worldManager.SpawnTeamVillagers(_gameManager.getCustomVillagers(), _gameManager._customVillagerManager);
-                //p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
+                p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
 //                Team team = _gameManager.FindPlayerTeam(p);
 //                _animalSpanwer.SpawnAnimals();
 //                Bukkit.broadcastMessage("animal population: " + _animalSpanwer.GetAnimalPopulation(team.GetTeamWorld()));

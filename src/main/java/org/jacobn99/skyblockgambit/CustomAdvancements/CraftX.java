@@ -32,17 +32,13 @@ public class CraftX {
     private int iteration;
     private File _file;
     private JavaPlugin _mainPlugin;
-    private CustomItemManager _itemManager;
-    private Gson _gson;
     private ItemStackSerialization _itemStackSerialization;
     private DataManager _dataManager;
-    public CraftX(AdvancementManager advancementManager, CustomItemManager itemManager, JavaPlugin mainPlugin) {
+    public CraftX(AdvancementManager advancementManager, JavaPlugin mainPlugin) {
         _advancementManager = advancementManager;
-        _itemManager = itemManager;
         _mainPlugin = mainPlugin;
         _file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/CraftXConfig.json");
         iteration = 0;
-        _gson = new Gson();
         _itemStackSerialization = new ItemStackSerialization();
         _dataManager = new DataManager();
 
@@ -57,12 +53,13 @@ public class CraftX {
     private ItemStack GetItem() {
         //Type listType = new TypeToken<List<String>>() {}.getType();
         if (_file.exists()) {
-            return (ItemStack) _dataManager.GetObjects(_file, _itemStackSerialization).get(0);
+            List<Object> items = _dataManager.GetObjects(_file, _itemStackSerialization);
+            if(!items.isEmpty()) {
+                return (ItemStack) items.get(0);
+            }
 
         }
-        else {
-            Bukkit.broadcastMessage("ERROR: No CraftX file!");
-        }
+        Bukkit.broadcastMessage("ERROR: No CraftX file!");
         return null;
     }
 //    public void LoadFile() {

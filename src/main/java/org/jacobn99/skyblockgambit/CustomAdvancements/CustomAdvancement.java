@@ -91,10 +91,10 @@ public class CustomAdvancement {
         }
     }
 
-    public void GrantAdvancement(Player p, boolean isConditional) {
+    public boolean GrantAdvancement(Player p, boolean isConditional) {
         //Bukkit.broadcastMessage("Player list: " + _playerList + " isConditional: " + isConditional);
         if(_advancementManager.GetCurrentEnabledTasks().contains(this)) {
-            if (!_playerList.contains(p) && CheckPrequisiteAdvancement(p) || !_playerList.contains(p) && !isConditional) {
+            if ((!_playerList.contains(p) && CheckPrequisiteAdvancement(p)) || (!_playerList.contains(p) && !isConditional)) {
                 //Bukkit.broadcastMessage("Got here");
                 String command = "advancement grant " + p.getName() + " only minecraft:" + this.GetFileName();
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
@@ -102,9 +102,11 @@ public class CustomAdvancement {
                     p.getWorld().dropItem(p.getLocation(), item);
                 }
                 _playerList.add(p);
+                return true;
                 //p.addScoreboardTag(this.GetFileName());
             }
         }
+        return false;
     }
 
     public void RemoveAdvancement(Player p, String advancement) {

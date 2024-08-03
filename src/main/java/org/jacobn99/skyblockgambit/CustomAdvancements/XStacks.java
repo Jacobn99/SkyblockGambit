@@ -4,131 +4,129 @@ import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.DataManager;
 import org.jacobn99.skyblockgambit.GameManager;
+import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
+import org.jacobn99.skyblockgambit.Team;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class XStacks {
-//    GameManager _gameManager;
-//    CustomAdvancement _advancement;
-//    private ItemStack _item;
-//    private AdvancementManager _advancementManager;
-//    private int iteration;
-//    private File _file;
-//    private JavaPlugin _mainPlugin;
-//    private CustomItemManager _itemManager;
-//    private Gson _gson;
-//    private List<ItemStack> _possibleTtems;
-//    public XStacks(AdvancementManager advancementManager, CustomItemManager itemManager, JavaPlugin mainPlugin) {
-//        //_gameManager = gameManager;
-//        _advancementManager = advancementManager;
-//        _itemManager = itemManager;
-//        _mainPlugin = mainPlugin;
-//        _file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/XStacksConfig.json");
-//        iteration = 0;
-//        //_item = new ItemStack(Material.OAK_PLANKS);
-//        _gson = new Gson();
-//
-//
-//    }
-//    public void UpdateDescription() {
-//        //Bukkit.broadcastMessage("item: " + item)
-//        _item = GetItem();
-//        Bukkit.broadcastMessage("item: " + _item.getType().name());
-//        _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "Craft " + _item.getType().name());
-//    }
-//    private ItemStack GetItem() {
-//        //Type listType = new TypeToken<List<String>>() {}.getType();
-//        if (_file.exists()) {
-//            try {
-//                Reader reader = Files.newBufferedReader(_file.toPath());
-//                String serializedItem = _gson.fromJson(reader, String.class);
-//                _item = _itemManager.DeserializeItem(serializedItem);
-//                Bukkit.broadcastMessage("_item: " + _item);
-//                return _item;
-//
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//        else {
-//            Bukkit.broadcastMessage("ERROR: No CraftX file!");
-//        }
-//        return null;
-//    }
-////    public void LoadFile() {
-////        if(!_file.exists()) {
-////            _
-////        }
-////    }
-//
-//    public void WriteToCraftXFile() {
-//        Random rand = new Random();
-//        List<String> possibleItems = GetPossibleItems();
-//        //Bukkit.broadcastMessage("possibleItems: " + possibleItems);
-//
-//        int index = rand.nextInt(possibleItems.size());
-//
-//
-//        try {
-//            Writer writer = Files.newBufferedWriter(_file.toPath());
-//            _gson.toJson(possibleItems.get(index), writer);
-//            //_gson.toJson(_itemManager.SerializeItem(_item), writer);
-//            //Bukkit.broadcastMessage("Serialized Item: " + _itemManager.SerializeItem(_item));
-//            //writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
+    GameManager _gameManager;
+    CustomAdvancement _advancement;
+    private Map<ItemStack, Integer> _itemMap;
+    private ItemStack _item;
+    private AdvancementManager _advancementManager;
+    private int iteration;
+    private File _dataFile;
+    private JavaPlugin _mainPlugin;
+    private ItemStackSerialization _itemStackSerialization;
+    private DataManager _dataManager;
+    private List<ItemStack> _possibleItems;
+
+    public XStacks(AdvancementManager advancementManager, GameManager gameManager, JavaPlugin mainPlugin) {
+        _advancementManager = advancementManager;
+        //_itemManager = itemManager;
+        _mainPlugin = mainPlugin;
+        _gameManager = gameManager;
+        _dataFile = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/XStacksData.json");
+        iteration = 0;
+        _itemStackSerialization = new ItemStackSerialization();
+        _dataManager = new DataManager();
+        _possibleItems = new ArrayList<>();
+        _possibleItems.add(new ItemStack(Material.HAY_BLOCK));
+        _itemMap = new HashMap<>();
+        //_item = GetItem();
+        InitializeItem();
+
+    }
+    public void UpdateDescription() {
+        //Bukkit.broadcastMessage("item: " + item)
+        //_item = GetItem();
+        Bukkit.broadcastMessage("item: " + _item.getType().name());
+        _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/x_stacks.json"), "description", "Get " + _itemMap.get(_item) + " " + _item.getType().name());
+    }
+    private void InitializeItem() {
+        //Type listType = new TypeToken<List<String>>() {}.getType();
+        if (_dataFile.exists()) {
+            List<String> items = _dataManager.GetSerializedObjects(_dataFile);
+            if (items != null) {
+                if (items.size() > 1) {
+                    _item = (ItemStack) _itemStackSerialization.Deserialize(items.get(0));
+                    _itemMap.put(_item, Integer.valueOf(items.get(1)));
+                }
+            }
+        }
+        else {
+            Bukkit.broadcastMessage("ERROR: No XStacks file!");
+        }
+
+        //return null;
+    }
+//    public void LoadFile() {
+//        if(!_file.exists()) {
+//            _
 //        }
 //    }
-//    private void InitializePossibleItems() {
-//        List<ItemStack> possibleTtems = new ArrayList<>();
-//        items.add(new ItemStack(Material.STONE));
-//        items.add(new ItemStack(Material.BIRCH_PLANKS));
-//    }
-//    private List<String> GetPossibleItems() {
-//        List<String> serializedItems = new ArrayList<>();
-//        List<ItemStack> possibleTtems = new ArrayList<>();
-//        items.add(new ItemStack(Material.STONE));
-//        items.add(new ItemStack(Material.BIRCH_PLANKS));
-//        for(ItemStack item : items) {
-//            serializedItems.add(_itemManager.SerializeItem(item));
-//        }
-//        return serializedItems;
-//    }
-//
-//    public void CraftXCheck(CraftItemEvent event) {
-//        ItemStack result = event.getInventory().getResult();
-//        Player p = (Player) event.getWhoClicked();
-//
-//        // Bukkit.broadcastMessage("iteration: " + iteration);
-//
-//        if (iteration == 0) {
-//            _advancement = _advancementManager.GetAdvancement("craft_item");
-//            //_item = GetItem();
-//            iteration++;
-//        }
-//        if (_advancement != null) {
-//            if (result.getType() == _item.getType()) {
-//                Bukkit.broadcastMessage("bazinga");
-//                _advancementManager.GrantTeamAdvancement(p, _advancement);
-//                //_advancement.GrantAdvancement(p, false);
-//            }
-//        }
-//        else {
-//            Bukkit.broadcastMessage("ERROR: No craft advancement");
-//        }
-//    }
-//}
+
+    public void WriteToXStacksFile() {
+        Random rand = new Random();
+        List<ItemStack> possibleItems = GetPossibleItems();
+        //Bukkit.broadcastMessage("possibleItems: " + possibleItems);
+        List<Object> writableContent = new ArrayList<>();
+        int index = rand.nextInt(possibleItems.size());
+        _dataFile.delete();
+
+        writableContent.add(possibleItems.get(index));
+        writableContent.add(rand.nextInt(200));
+
+        int i = 0;
+        for(Object o : writableContent) {
+            if(i == 0) {
+                //Bukkit.broadcastMessage(i + ": " + o.getClass().getName());
+                _dataManager.AddObjectToFile(_dataFile, o, _itemStackSerialization);
+            }
+            else if(i==1) {
+                _dataManager.AddObjectToFile(_dataFile, o, null);
+            }
+            i++;
+        }
+        //_dataManager.WriteToFile(_dataFile, writableContent, _itemStackSerialization);
+    }
+    private List<ItemStack> GetPossibleItems() {
+        return _possibleItems;
+    }
+    public void XStacksCheck(InventoryClickEvent event) {
+        int count = 0;
+        Player p = (Player) event.getWhoClicked();
+        //Bukkit.broadcastMessage(p.getName());
+        Inventory inventory = event.getInventory();
+        Team team = _gameManager.FindPlayerTeam(p);
+        //Bukkit.broadcastMessage(team.GetTeamColor());
+
+        if(team != null) {
+            if(inventory == team.killsInventory) {
+                for (ItemStack item : inventory.getContents()) {
+                    if (item != null) {
+                        if (item.getType().equals(_item.getType())) {
+                            count += item.getAmount();
+                        }
+                    }
+                }
+            }
+        }
+        if(count >= _itemMap.get(_item)) {
+            _advancement = _advancementManager.GetAdvancement("x_stacks");
+            _advancementManager.GrantTeamAdvancement(p, _advancement);
+        }
+    }
 }

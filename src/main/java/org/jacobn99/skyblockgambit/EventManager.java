@@ -2,6 +2,7 @@ package org.jacobn99.skyblockgambit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -11,10 +12,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
@@ -43,6 +44,8 @@ public class EventManager implements Listener {
     KillEnderdragon _killEnderdragon;
     CustomVillagerManager _villagerManager;
     ProcessManager _processManager;
+    private XStacks _xStacks;
+    World world;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _itemManager = new CustomItemManager(_mainPlugin);
@@ -57,8 +60,17 @@ public class EventManager implements Listener {
         _twoKillsTask = new TwoKillsTask(_gameManager, _advancementManager);
         _reachLevelX = new ReachLevelX(_gameManager, _advancementManager);
         _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
+        _xStacks = _gameManager.xStacks;
+        world = Bukkit.getWorld("void_world");
         //_craftX = new CraftX(_gameManager, _advancementManager);
     }
+    @EventHandler
+    public void onInventoryInteract(InventoryClickEvent event) {
+        if(_gameManager.isRunning) {
+            _xStacks.XStacksCheck(event);
+        }
+    }
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if(_gameManager.isRunning) {
@@ -87,7 +99,7 @@ public class EventManager implements Listener {
         Team team = _gameManager.FindPlayerTeam(p);
         Queueable queueable = () -> _gameManager.GrantCompass(p,team);
         if(_gameManager.isRunning && team != null) {
-            _processManager.CreateProcess(_gameManager.processes, 20, queueable);
+            _processManager.CreateProcess(_gameManager.processes, world.getFullTime() + 20, queueable);
         }
     }
 

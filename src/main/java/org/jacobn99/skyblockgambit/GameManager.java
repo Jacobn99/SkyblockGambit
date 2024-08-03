@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CraftX;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
+import org.jacobn99.skyblockgambit.CustomAdvancements.XStacks;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
@@ -60,6 +61,7 @@ public class GameManager {
     public CustomVillagerManager _customVillagerManager;
     private CustomItemManager _customItemManager;
     private AnimalSpawner _animalSpawner;
+    public XStacks xStacks;
     private Team blueTeam;
     private Team redTeam;
     public CraftX craftX;
@@ -97,7 +99,8 @@ public class GameManager {
         _customItemManager = new CustomItemManager(_mainPlugin);
         blueTeam = new Team("blue", this);
         redTeam = new Team("red", this);
-        craftX = new CraftX(advancementManager, _customItemManager, _mainPlugin);
+        craftX = new CraftX(advancementManager, _mainPlugin);
+        xStacks = new XStacks(advancementManager, this, _mainPlugin);
         _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
         tickRate = 3;
         minWorldHeight = 94;
@@ -127,7 +130,7 @@ public class GameManager {
 
         InitializeTeams();
         UpdateSpawns();
-        _animalSpawner.SpawnAnimals();
+        //_animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
             @Override
@@ -135,6 +138,7 @@ public class GameManager {
                 if(!isRunning) {
                     this.cancel();
                 }
+                _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
                 //RenewGenerators(tickRate);
                 _portalManager.PortalUpdate(portals);
@@ -181,6 +185,7 @@ public class GameManager {
             CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), advancementManager);
             CustomAdvancement craft_item = new CustomAdvancement("craft_item", new ItemStack(Material.DIAMOND), advancementManager);
             CustomAdvancement get_glowing = new CustomAdvancement("get_glowing", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement x_stacks = new CustomAdvancement("x_stacks", new ItemStack(Material.DIAMOND), advancementManager);
 
 
             for (CustomAdvancement a : advancementManager.GetCustomAdvancementList()) {
@@ -229,6 +234,8 @@ public class GameManager {
         advancementManager.ClearTaskParents();
         //Bukkit.broadcastMessage("customAdvancements size: " + advancementManager.customAdvancements.size());
         advancementManager.RandomizeTasks();
+        xStacks.WriteToXStacksFile();
+        xStacks.UpdateDescription();
         craftX.WriteToCraftXFile();
         craftX.UpdateDescription();
 //        advancementManager.ModifyAdvancement(new File(advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "brooo");

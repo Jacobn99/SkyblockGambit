@@ -46,7 +46,7 @@ public class CustomVillagerManager {
                 int amount = ingredient.getAmount();
                 int newAmount = 1;
                 ItemStack newIngredient;
-                Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
+                //Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
 
                 if(amount > 1) {
                     newAmount = Math.round((amount/2));
@@ -67,7 +67,7 @@ public class CustomVillagerManager {
             int amount = ingredient.getAmount();
             int newAmount = 1;
             ItemStack newIngredient;
-            Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
+            //Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
 
             if(amount > 1) {
                 newAmount = Math.round((amount/2));

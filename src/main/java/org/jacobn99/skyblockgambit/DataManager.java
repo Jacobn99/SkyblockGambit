@@ -9,14 +9,13 @@ import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.Serialization.DeserializeMethod;
 import org.jacobn99.skyblockgambit.Serialization.SerializeMethod;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataManager {
     GameManager _gameManager;
@@ -40,12 +39,38 @@ public class DataManager {
 
 
     }
-//    public void UpdateDescription(File file) {
-//        //Bukkit.broadcastMessage("item: " + item)
-//        _item = GetItem(file);
-//        Bukkit.broadcastMessage("item: " + _item.getType().name());
-//        _advancementManager.ModifyAdvancement(file, "description", "Craft " + _item.getType().name());
-//    }
+    public void LoadFile(File file) {
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public List<String> GetSerializedObjects(File file) {
+        Type listType = new TypeToken<List<String>>() {}.getType();
+        List<String> serializedObjects;
+        if (file.exists()) {
+            try {
+                Reader reader = Files.newBufferedReader(file.toPath());
+                serializedObjects = _gson.fromJson(reader, listType);
+                return serializedObjects;
+
+            } catch (Exception e) {
+                Bukkit.broadcastMessage("ERROR: File formated incorrectly or is empty so deleting file (GetSerializedObjects)");
+                Bukkit.getConsoleSender().sendMessage("ERROR: File formated incorrectly or is empty so deleting file (GetSerializedObjects)");
+                file.delete();
+                return null;
+                //throw new RuntimeException(e);
+            }
+        }
+        else {
+            Bukkit.broadcastMessage("ERROR: Missing data file!");
+        }
+        return null;
+    }
     public List<Object> GetObjects(File file, DeserializeMethod deserializeMethod) {
         Type listType = new TypeToken<List<String>>() {}.getType();
         List<String> serializedObjects;
@@ -62,6 +87,8 @@ public class DataManager {
                 return deserializedObjects;
 
             } catch (IOException e) {
+                file.delete();
+                Bukkit.getConsoleSender().sendMessage("ERROR: File formated incorrectly or is empty so deleting file (GetObjects)");
                 throw new RuntimeException(e);
             }
         }
@@ -70,12 +97,41 @@ public class DataManager {
         }
         return null;
     }
-//    public void LoadFile() {
-//        if(!_file.exists()) {
-//            _
-//        }
-//    }
+    public void AddObjectToFile(File file, Object o, SerializeMethod serializeMethod) {
+        String addedObject;
+        List<String> serializedObjects;
+        //Type listType = new TypeToken<List<String>>() {}.getType();
 
+        if (serializeMethod != null) {
+            addedObject = serializeMethod.Serialize(o);
+        }
+        else if(o instanceof Integer) {
+            addedObject = Integer.toString((Integer) o);
+        }
+        else {
+            Bukkit.broadcastMessage("ERROR: Data Input error");
+            return;
+        }
+
+        try {
+            serializedObjects = GetSerializedObjects(file);
+
+            if(serializedObjects == null) {
+                serializedObjects = new ArrayList<>();
+            }
+            //Bukkit.broadcastMessage(addedObject);
+            Bukkit.broadcastMessage("serializedObjects: " + serializedObjects);
+
+            serializedObjects.add(addedObject);
+
+            Writer writer = Files.newBufferedWriter(file.toPath()); //careful, this line immedietly clears the file
+
+            _gson.toJson(serializedObjects, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void WriteToFile(File file, List<Object> objects, SerializeMethod serializeMethod) {
 //        Random rand = new Random();
 //        //List<String> possibleItems = GetPossibleItems();
