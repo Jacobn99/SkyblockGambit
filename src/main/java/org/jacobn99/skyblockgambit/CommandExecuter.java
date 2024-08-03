@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
@@ -15,11 +14,8 @@ import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
-import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CommandExecuter implements CommandExecutor {
@@ -44,6 +40,7 @@ public class CommandExecuter implements CommandExecutor {
         //_advancementManager = new AdvancementManager(_mainPlugin, _gameManager.teams);
         _portalManager = new PortalManager(_gameManager);
         _worldManager = _gameManager._worldManager;
+        _worldCopier = _worldManager._worldCopier;
         _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
         _DataManager = new DataManager();
 
@@ -71,6 +68,12 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
+                //CustomWorld redWorld = new CustomWorld(_worldManager, new Location(Bukkit.getWorld("void_world"), 21,  100, 62), _gameManager.customWorlds);
+
+                _worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
+                //_worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
+                //p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
+
 //                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/gamer.json");
 //
 //                List<Object> objects = new ArrayList<>();
@@ -81,7 +84,6 @@ public class CommandExecuter implements CommandExecutor {
                 //_gameManager.GenerateInvaderPortalFrame(p.getLocation());
                 //_gameManager.GrantTeamCompasses();
                 //_worldManager.SpawnTeamVillagers(_gameManager.getCustomVillagers(), _gameManager._customVillagerManager);
-                p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
 //                Team team = _gameManager.FindPlayerTeam(p);
 //                _animalSpanwer.SpawnAnimals();
 //                Bukkit.broadcastMessage("animal population: " + _animalSpanwer.GetAnimalPopulation(team.GetTeamWorld()));

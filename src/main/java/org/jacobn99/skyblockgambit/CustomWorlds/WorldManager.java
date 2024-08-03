@@ -18,13 +18,14 @@ import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 public class WorldManager {
     private Random rand;
     private List<CustomWorld> _customWorlds;
-    private WorldCopier _worldCopier;
+    public WorldCopier _worldCopier;
     private JavaPlugin _mainPlugin;
     private int _worldLength;
     private GameManager _gameManager;
@@ -34,7 +35,7 @@ public class WorldManager {
     public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager, CustomVillagerManager customVillagerManager) {
         rand = new Random();
         _mainPlugin = mainPlugin;
-        _worldLength = 150;
+        _worldLength = 180;
 
         _gameManager = gameManager;
         _portalManager = portalManager;
@@ -43,6 +44,12 @@ public class WorldManager {
         _customWorlds = _gameManager.customWorlds;
         _villagerManager = customVillagerManager;
     }
+//    public void ClearWorlds() {
+//        HashMap<Long, Process> _processes = _gameManager.processes;
+//        for(CustomWorld customWorld : _customWorlds) {
+//            _processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
+//        }
+//    }
     public Location GenerateSpawnLocation(Location referenceLocation, int spawnRadius) {
         int x;
         int z;
@@ -207,7 +214,7 @@ public class WorldManager {
         long executionTime = processManager.GetLatestExecutionTime(_gameManager.processes) + 10;
         //Bukkit.broadcastMessage("latestExecutionTime: " + executionTime);
 
-        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetReferenceCorner(), worldFile);
+        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), worldFile);
 
         Process process = new Process(executionTime, queueable);
         //processManager.GetLatestExecutionTime(_gameManager.processes);
@@ -215,7 +222,7 @@ public class WorldManager {
         _gameManager.processes.put(executionTime, process);
 
         //File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
-        _worldCopier.DuplicateLand(newWorld.GetReferenceCorner(), worldFile);
+        _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), worldFile);
     }
     public int get_worldLength() {
         return _worldLength;

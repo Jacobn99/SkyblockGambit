@@ -7,8 +7,6 @@ import org.bukkit.entity.*;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
-import org.jacobn99.skyblockgambit.Processes.Queueable;
-import org.joml.sampling.BestCandidateSampling;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +57,7 @@ public class AnimalSpawner {
 
             for (CustomWorld customWorld : _gameManager.customWorlds) {
                 animalCount = GetAnimalPopulation(customWorld);
-                Location referenceLoc = customWorld.GetReferenceCorner().clone();
+                Location referenceLoc = customWorld.GetMiddleLoc().clone();
                 referenceLoc.subtract(0, 0, _worldManager.get_worldLength() / 2);
 
                 if (animalCount < _gameManager.GetPassiveMobCap()) {
@@ -92,7 +90,7 @@ public class AnimalSpawner {
     //public int GetAnimalPopulation(Player p) {
 
         int animalCount = 0;
-        Location middleLoc = customWorld.GetReferenceCorner().clone();
+        Location middleLoc = customWorld.GetMiddleLoc().clone();
         middleLoc.subtract(0, 0, _worldManager.get_worldLength()/2);
         middleLoc.add(_worldManager.get_worldLength()/2, 0, _worldManager.get_worldLength()/2);
 

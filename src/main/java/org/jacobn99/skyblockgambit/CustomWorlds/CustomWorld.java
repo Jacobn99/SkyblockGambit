@@ -23,7 +23,7 @@ public class CustomWorld {
         _worldPortal = null;
     }
 
-    public Location GetReferenceCorner() {
+    public Location GetMiddleLoc() {
         return _referenceCorner;
     }
     public Location GetWorldSpawn(GameManager _gameManager) {

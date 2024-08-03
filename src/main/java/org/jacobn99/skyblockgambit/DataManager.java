@@ -28,16 +28,8 @@ public class DataManager {
     //private CustomItemManager _itemManager;
     private Gson _gson;
     public DataManager() {
-        //_gameManager = gameManager;
-        //_advancementManager = advancementManager;
-        //_itemManager = itemManager;
-        //_mainPlugin = mainPlugin;
-        //_file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/CraftXConfig.json");
         iteration = 0;
-        //_item = new ItemStack(Material.OAK_PLANKS);
         _gson = new Gson();
-
-
     }
     public void LoadFile(File file) {
         if(!file.exists()) {

@@ -46,4 +46,8 @@ public class Process {
     public long get_executionTime() {
         return _executionTime;
     }
+
+    public void set_executionTime(long _executionTime) {
+        this._executionTime = _executionTime;
+    }
 }

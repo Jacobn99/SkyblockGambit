@@ -16,7 +16,7 @@ public class ProcessManager {
 
     public void HandleProcesses(HashMap<Long, Process> processes) {
         World world = Bukkit.getWorld("void_world");
-        Iterator it = processes.entrySet().iterator();
+        //Iterator it = processes.entrySet().iterator();
         List<Process> markedProcesses = new ArrayList<>();
 
         if(processes.size() > 0) {
@@ -56,14 +56,15 @@ public class ProcessManager {
         for(Process process : markedProcesses) {
             processes.remove(process.get_executionTime());
             process = null;
+            //previousProcess = null;
         }
         markedProcesses.clear();
     }
     public void CreateProcess(HashMap<Long, Process> processes, long executionTime, Queueable queueable) {
-        Process process = new Process(executionTime, queueable);
         long worldTime = Bukkit.getWorld("void_world").getFullTime();
-        if(worldTime > worldTime + executionTime) {
-            Bukkit.broadcastMessage("Warning: executionTime > world time");
+        Process process = new Process(executionTime, queueable);
+        if(worldTime > executionTime) {
+            Bukkit.broadcastMessage("Warning: executionTime < world time");
         }
         processes.put(executionTime, process);
     }

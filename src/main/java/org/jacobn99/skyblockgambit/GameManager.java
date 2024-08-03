@@ -130,6 +130,7 @@ public class GameManager {
 
         InitializeTeams();
         UpdateSpawns();
+        GrantTeamCompasses();
         //_animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
