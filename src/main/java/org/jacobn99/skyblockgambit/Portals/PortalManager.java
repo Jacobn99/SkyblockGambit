@@ -25,6 +25,9 @@ public class PortalManager {
         for (Portal portal : portals) {
             //Bukkit.broadcastMessage("portal Location: " + portal.GetPortalLocation());
             if(portal.isActivated) {
+                if(CheckPortalBreak(portal)) {
+                    portal.Activate();
+                }
                 //Bukkit.broadcastMessage("Got here");
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (IsInPortal(portal, p)) {
@@ -35,6 +38,12 @@ public class PortalManager {
                 }
             }
         }
+    }
+    public boolean CheckPortalBreak(Portal portal) {
+        if(portal.GetPortalLocation().getBlock().getType() != Material.NETHER_PORTAL) {
+            return true;
+        }
+        return false;
     }
     public boolean IsInPortal(Portal portal, Player p) {
         Location playerLoc = p.getLocation();

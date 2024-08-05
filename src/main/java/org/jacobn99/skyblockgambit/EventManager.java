@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -22,10 +23,7 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.*;
-import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
-import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
-import org.jacobn99.skyblockgambit.CustomItems.RageSpell;
-import org.jacobn99.skyblockgambit.CustomItems.VillagerTradeBoost;
+import org.jacobn99.skyblockgambit.CustomItems.*;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
@@ -45,6 +43,7 @@ public class EventManager implements Listener {
     CustomVillagerManager _villagerManager;
     ProcessManager _processManager;
     private XStacks _xStacks;
+    private GeneratorConstructor _generatorContructor;
     World world;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -60,13 +59,16 @@ public class EventManager implements Listener {
         _twoKillsTask = new TwoKillsTask(_gameManager, _advancementManager);
         _reachLevelX = new ReachLevelX(_gameManager, _advancementManager);
         _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
+        _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager);
         _xStacks = _gameManager.xStacks;
+        //_generatorContructor = new GeneratorConstructor(_gener.generators, _itemManager);
         world = Bukkit.getWorld("void_world");
         //_craftX = new CraftX(_gameManager, _advancementManager);
     }
     @EventHandler
     public void onInventoryInteract(InventoryClickEvent event) {
         if(_gameManager.isRunning) {
+            _generatorContructor.SelectGeneratorCheck(event);
             _xStacks.XStacksCheck(event);
         }
     }
@@ -121,7 +123,10 @@ public class EventManager implements Listener {
 
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
-        if (_gameManager.isRunning && event.getPlayer().getItemInUse() != null) {
+        //Bukkit.broadcastMessage("isRunning: " + _gameManager.isRunning + " and itemInUse: " + event.getPlayer().getInventory().getItemInMainHand());
+        if (_gameManager.isRunning && event.getPlayer().getInventory().getItemInMainHand() != null &&
+                (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+            _generatorContructor.GeneratorConstructorCheck(event);
             _portalOpener.PortalOpenerCheck(event, _itemManager);
             _villagerTradeBoost.TradeBoostCheck(event, _itemManager);
             _rageSpell.RageSpellCheck(event, _itemManager);

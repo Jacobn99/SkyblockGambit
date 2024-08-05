@@ -19,6 +19,8 @@ import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.Generator;
+import org.jacobn99.skyblockgambit.GeneratorInfo.GeneratorManager;
+import org.jacobn99.skyblockgambit.GeneratorInfo.ItemGenerator;
 import org.jacobn99.skyblockgambit.Portals.Portal;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.Process;
@@ -38,7 +40,7 @@ public class GameManager {
 //    private Location redSpawn;
     long tickRate;
     public boolean isRunning;
-    private ArrayList<Generator> generatorList;
+    //public ArrayList<Generator> generatorList;
     public ArrayList<Entity> disposableEntities;
     public List<Portal> portals;
     public List<CustomWorld> customWorlds;
@@ -51,8 +53,8 @@ public class GameManager {
     public HashMap<Long, Process> processes;
     public Map<Player, Integer> killCounts;
     JavaPlugin _mainPlugin;
-    private ArmorStand blueArmorStand;
-    private ArmorStand redArmorStand;
+//    private ArmorStand blueArmorStand;
+//    private ArmorStand redArmorStand;
     private PortalManager _portalManager;
     public AdvancementManager advancementManager;
     public ProcessManager _processManager;
@@ -61,6 +63,7 @@ public class GameManager {
     public CustomVillagerManager _customVillagerManager;
     private CustomItemManager _customItemManager;
     private AnimalSpawner _animalSpawner;
+    public GeneratorManager _generatorManager;
     public XStacks xStacks;
     private Team blueTeam;
     private Team redTeam;
@@ -79,7 +82,7 @@ public class GameManager {
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         disposableEntities = new ArrayList<>();
-        generatorList = new ArrayList();
+        //generatorList = new ArrayList();
         portals = new ArrayList<>();
         starterChestList = new ArrayList<>();
         customVillagers = new ArrayList();
@@ -108,6 +111,7 @@ public class GameManager {
         canProceed = true;
         isWorldGenerated = false;
         _passiveMobCap = 35;
+        _generatorManager = new GeneratorManager();
     }
     public void Start() {
         Bukkit.broadcastMessage("Starting...");
@@ -130,8 +134,7 @@ public class GameManager {
 
         InitializeTeams();
         UpdateSpawns();
-        GrantTeamCompasses();
-        //_animalSpawner.SpawnAnimals();
+        _animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
             @Override
@@ -141,20 +144,20 @@ public class GameManager {
                 }
                 _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
-                //RenewGenerators(tickRate);
+                RenewGenerators(tickRate);
                 _portalManager.PortalUpdate(portals);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
-    public void GrantTeamCompasses() {
-        for(Team team : teams) {
-            for(Player p : team.GetMembers()) {
-                GrantCompass(p, team);
-            }
-        }
-    }
+//    public void GrantTeamCompasses() {
+//        for(Team team : teams) {
+//            for(Player p : team.GetMembers()) {
+//                GrantCompass(p, team);
+//            }
+//        }
+//    }
+
     public void GrantCompass(Player p, Team team) {
-       // Team team = FindPlayerTeam(p);
         if (team != null) {
             ItemStack spawnCompass = new ItemStack(Material.COMPASS);
 //            CompassMeta meta = (CompassMeta) spawnCompass.getItemMeta();
@@ -201,6 +204,15 @@ public class GameManager {
     }
     public void InitializeTeams() {
         AssignTeamWorlds();
+
+
+        for(Team team : teams) {
+            for(Player p : team.GetMembers()) {
+                p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
+                advancementManager.GrantRootAdvancement(p);
+                GrantCompass(p, team);
+            }
+        }
     }
     public void AssignTeamWorlds() {
         int i = 0;
@@ -278,29 +290,29 @@ public void UpdateSpawns() {
 
     private void RenewGenerators(long tickRate) {
 //        ItemStack fuel = new ItemStack(Material.STONE, 1);
-        for(Generator g : generatorList) {
-            if(g.GetLocation() != null && g.IsFuelAvailable()) {
+        for(ItemGenerator g : _generatorManager.GetGenerators()) {
+            //if(g.GetLocation() != null && g.IsFuelAvailable()) {
                 if (g.GetGenerateTimeRemaining() <= 0) {
                     g.Generate();
                     //g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
-                    g.AddGenerateTime(g.GetGenerateDelay() + tickRate);
+                    //g.AddGenerateTime(g.GetGenerateDelay() + tickRate);
                     //break;
                 }
-                if (g.GetFuelTimeRemaining() <= 0) {
-                    g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
-                    g.AddFuelTime(g.GetFuelDelay() + tickRate);
-                    //break;
-                }
-                //Bukkit.broadcastMessage("Time Remaining: " + g.GetTimeRemaining());
+//                if (g.GetFuelTimeRemaining() <= 0) {
+//                    g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
+//                    g.AddFuelTime(g.GetFuelDelay() + tickRate);
+//                    //break;
+//                }
+//                //Bukkit.broadcastMessage("Time Remaining: " + g.GetTimeRemaining());
                 g.AddGenerateTime(-tickRate);
-                g.AddFuelTime(-tickRate);
+//                g.AddFuelTime(-tickRate);
                 //g.AddTime();
-            }
         }
     }
 
 
     public void Reset() {
+        //List<Generator> _generators = _generatorManager.generators;
         for(Portal p : portals) {
             p.RemovePortal();
         }
@@ -309,7 +321,7 @@ public void UpdateSpawns() {
         }
 
         objects.addAll(portals);
-        objects.addAll(generatorList);
+        objects.addAll(_generatorManager.generators);
         objects.addAll(customVillagers);
         objects.addAll(disposableEntities);
         objects.addAll(starterChestList);
@@ -321,7 +333,7 @@ public void UpdateSpawns() {
         //teams.clear();
         disposableEntities.clear();
         customVillagers.clear();
-        generatorList.clear();
+        _generatorManager.generators.clear();
         starterChestList.clear();
         processes.clear();
 

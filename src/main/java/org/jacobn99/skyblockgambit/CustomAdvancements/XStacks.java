@@ -52,7 +52,7 @@ public class XStacks {
     public void UpdateDescription() {
         //Bukkit.broadcastMessage("item: " + item)
         //_item = GetItem();
-        Bukkit.broadcastMessage("item: " + _item.getType().name());
+        //Bukkit.broadcastMessage("item: " + _item.getType().name());
         _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/x_stacks.json"), "description", "Get " + _itemMap.get(_item) + " " + _item.getType().name());
     }
     private void InitializeItem() {

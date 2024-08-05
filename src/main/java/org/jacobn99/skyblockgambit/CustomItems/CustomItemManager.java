@@ -36,6 +36,7 @@ public class CustomItemManager {
         requiredItemsList.add("TRADE_BOOST");
         requiredItemsList.add("RAGE_SPELL");
         requiredItemsList.add("KILL_SKULL");
+        requiredItemsList.add("GENERATOR_CONSTRUCTOR");
 
 
 

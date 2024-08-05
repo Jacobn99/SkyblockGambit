@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class AdvancementManager {
     private Gson gson;
-    private String advancementsPath;
+    public String advancementsPath;
     private String defaultConfiguration;
     private JavaPlugin _mainPlugin;
     public List<CustomAdvancement> customAdvancements;
@@ -47,11 +47,22 @@ public class AdvancementManager {
         _teams = teams;
 //        craftX = new CraftX(this, _customItemManager, _mainPlugin);
         //playerTasksMap = new HashMap<>();
+        String worldFilePath = Bukkit.getWorld("void_world").getWorldFolder().getAbsolutePath();
+        //String worldFilePath = Bukkit;
 
-        advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
-                + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
+        advancementsPath = worldFilePath.replace('\\', '/')
+                + "/datapacks/task_advancements/data/minecraft/advancement/";
+        if(advancementsPath.toCharArray()[0] != 'C') {
+            advancementsPath = "C:" + advancementsPath;
+        }
+//        advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
+//                + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
         //defaultConfiguration = "{\"display\":{\"icon\":{\"id\":\"minecraft:spyglass\"},\"title\":\"Tasks\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":false,\"hidden\":false},\"parent\":null,\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
 
+    }
+    public void GrantRootAdvancement(Player p) {
+        String command = "advancement grant " + p.getName() + " only minecraft:root";
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
     }
     public void ClearTaskParents() {
         if(GetCustomAdvancementList() != null) {
@@ -117,6 +128,7 @@ public class AdvancementManager {
     public void RandomizeTasks() {
         int randomNumber;
         CustomAdvancement currentAdvancement;
+        CustomAdvancement firstAdvancement = null;
         HashMap<Object, Object> parameterChanges = new HashMap<>();
 
         ArrayList<CustomAdvancement> availableAdvancements = new ArrayList();
@@ -136,10 +148,19 @@ public class AdvancementManager {
                         parameterChanges.put("title", currentAdvancement.GetFileName());
                         parameterChanges.put("parent", "minecraft:root");
                         ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
+                        firstAdvancement = currentAdvancement;
                     } else {
                         //parameterChanges.put("title", "Task " + (i + 1));
+                        if(currentAdvancement.GetFileName().equalsIgnoreCase( "reach_level")) {
+                            parameterChanges.put("parent", "minecraft:root");
+                            ModifyAdvancement(firstAdvancement.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
+
+                        }
+                        else {
+                            parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
+                        }
                         parameterChanges.put("title", currentAdvancement.GetFileName());
-                        parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
+                        //parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
                         currentAdvancement.SetParentAdvancement(parentAdvancement);
                         ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
                     }

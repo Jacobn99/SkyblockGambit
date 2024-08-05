@@ -50,13 +50,14 @@ public class WorldManager {
 //            _processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
 //        }
 //    }
-    public Location GenerateSpawnLocation(Location referenceLocation, int spawnRadius) {
+    public Location GenerateSpawnLocation(Location middleLocation, int spawnRadius) {
         int x;
         int z;
         //int sideLength;
         Location referenceCorner;
         //referenceCorner = world.GetReferenceCorner();
-        referenceCorner = referenceLocation.clone();
+        referenceCorner = middleLocation.clone();
+        referenceCorner.add(0, 0, (-_worldLength)/2);
         //sideLength = _worldLength;
 
         //Bukkit.broadcastMessage("reference corner: " + referenceCorner);
@@ -199,7 +200,7 @@ public class WorldManager {
             _gameManager.GenerateInvaderPortalFrame(portalLoc);
             Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(_gameManager), portalLoc);
             customWorld.SetWorldPortal(p);
-            p.Activate();
+            //p.Activate();
 
             ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc, EntityType.ARMOR_STAND);
             armorStand.setGlowing(true);

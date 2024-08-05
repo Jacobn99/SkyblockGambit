@@ -16,6 +16,7 @@ import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
+import javax.swing.filechooser.FileSystemView;
 import java.util.List;
 
 public class CommandExecuter implements CommandExecutor {
@@ -37,7 +38,7 @@ public class CommandExecuter implements CommandExecutor {
         _itemManager = new CustomItemManager(_mainPlugin);
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
-        //_advancementManager = new AdvancementManager(_mainPlugin, _gameManager.teams);
+        _advancementManager = _gameManager.advancementManager;
         _portalManager = new PortalManager(_gameManager);
         _worldManager = _gameManager._worldManager;
         _worldCopier = _worldManager._worldCopier;
@@ -68,9 +69,14 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
+//                String file = ;
+//                Bukkit.broadcastMessage("update folder: " + file);
                 //CustomWorld redWorld = new CustomWorld(_worldManager, new Location(Bukkit.getWorld("void_world"), 21,  100, 62), _gameManager.customWorlds);
-
-                _worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
+                Bukkit.broadcastMessage("advancement file path??: " + _advancementManager.advancementsPath);
+//                Bukkit.broadcastMessage("world file path: " + Bukkit.getServer().getWorldContainer().getAbsolutePath());
+//                Bukkit.broadcastMessage("HomeDirectory: " + FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/'));
+//                Bukkit.broadcastMessage("data file path: " + _mainPlugin.getDataFolder().getAbsolutePath());
+                //_worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
                 //_worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
                 //p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
 

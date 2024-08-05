@@ -64,28 +64,33 @@ public class DataManager {
         return null;
     }
     public List<Object> GetObjects(File file, DeserializeMethod deserializeMethod) {
-        Type listType = new TypeToken<List<String>>() {}.getType();
-        List<String> serializedObjects;
-        List<Object> deserializedObjects = new ArrayList<>();
-        if (file.exists()) {
-            try {
-                Reader reader = Files.newBufferedReader(file.toPath());
-                serializedObjects = _gson.fromJson(reader, listType);
-                for(String s : serializedObjects) {
-                    deserializedObjects.add(deserializeMethod.Deserialize(s));
-                }
-                //Bukkit.broadcastMessage("_item: " + _item);
-                //return _item;
-                return deserializedObjects;
+        try {
+            Type listType = new TypeToken<List<String>>() {
+            }.getType();
+            List<String> serializedObjects;
+            List<Object> deserializedObjects = new ArrayList<>();
+            if (file.exists()) {
+                try {
+                    Reader reader = Files.newBufferedReader(file.toPath());
+                    serializedObjects = _gson.fromJson(reader, listType);
+                    for (String s : serializedObjects) {
+                        deserializedObjects.add(deserializeMethod.Deserialize(s));
+                    }
+                    //Bukkit.broadcastMessage("_item: " + _item);
+                    //return _item;
+                    return deserializedObjects;
 
-            } catch (IOException e) {
-                file.delete();
-                Bukkit.getConsoleSender().sendMessage("ERROR: File formated incorrectly or is empty so deleting file (GetObjects)");
-                throw new RuntimeException(e);
+                } catch (IOException e) {
+                    file.delete();
+                    Bukkit.getConsoleSender().sendMessage("ERROR: File formated incorrectly or is empty so deleting file (GetObjects)");
+                    throw new RuntimeException(e);
+                }
+            } else {
+                Bukkit.broadcastMessage("ERROR: Missing data file!");
             }
         }
-        else {
-            Bukkit.broadcastMessage("ERROR: Missing data file!");
+        catch(Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -112,7 +117,7 @@ public class DataManager {
                 serializedObjects = new ArrayList<>();
             }
             //Bukkit.broadcastMessage(addedObject);
-            Bukkit.broadcastMessage("serializedObjects: " + serializedObjects);
+            //Bukkit.broadcastMessage("serializedObjects: " + serializedObjects);
 
             serializedObjects.add(addedObject);
 
