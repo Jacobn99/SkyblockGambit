@@ -10,14 +10,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.VillagerAcquireTradeEvent;
 import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
@@ -27,6 +26,9 @@ import org.jacobn99.skyblockgambit.CustomItems.*;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;
@@ -44,6 +46,8 @@ public class EventManager implements Listener {
     ProcessManager _processManager;
     private XStacks _xStacks;
     private GeneratorConstructor _generatorContructor;
+    private NetherManager _netherManager;
+
     World world;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -61,6 +65,7 @@ public class EventManager implements Listener {
         _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
         _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager);
         _xStacks = _gameManager.xStacks;
+        _netherManager = _gameManager.netherManager;
         //_generatorContructor = new GeneratorConstructor(_gener.generators, _itemManager);
         world = Bukkit.getWorld("void_world");
         //_craftX = new CraftX(_gameManager, _advancementManager);
@@ -132,6 +137,17 @@ public class EventManager implements Listener {
             _rageSpell.RageSpellCheck(event, _itemManager);
         }
     }
+    @EventHandler
+    public void onPortalEntry(PlayerPortalEvent event) {
+        //Bukkit.broadcastMessage("portal entered");
+        Player p = event.getPlayer();
+        //event.setCancelled(true);
+
+        if(_gameManager.isRunning) {
+            _netherManager.netherPortalLocations.put(p, p.getLocation());
+            _netherManager.CorrectNetherSpawning(event);
+        }
+    }
 
     @EventHandler
     public void onVillagerAcquireTrade(VillagerAcquireTradeEvent event) {
@@ -168,15 +184,24 @@ public class EventManager implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onBlockBreak(BlockBreakEvent event) {
-//        Block block = event.getBlock();
-//
-//        Location borderLocation = _borderwall.GetBorderLocation();
-//        double blockZ = block.getLocation().getZ();
-//
-//        if (blockZ >= borderLocation.getZ() - 0.5 && blockZ <= borderLocation.getZ() + 0.5) {
-//            event.setCancelled(true);
-//        }
-//    }
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if(_gameManager.isRunning) {
+            if(_netherManager.ProtectNetherSpawns(event.getBlock())) {
+                event.getPlayer().sendMessage("Can't place/break blocks in a " + _netherManager.protectionLength/2 + " by " + _netherManager.protectHeight + " by " + _netherManager.protectionLength/2 + " area around team portal");
+                event.setCancelled(true);
+            }
+
+        }
+    }
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if(_gameManager.isRunning) {
+            if(_netherManager.ProtectNetherSpawns(event.getBlock())) {
+                event.getPlayer().sendMessage("Can't place/break blocks in a " + _netherManager.protectionLength/2 + " by " + _netherManager.protectHeight + " by " + _netherManager.protectionLength/2 + " area around team portal");
+                event.setCancelled(true);
+            }
+
+        }
+    }
 }

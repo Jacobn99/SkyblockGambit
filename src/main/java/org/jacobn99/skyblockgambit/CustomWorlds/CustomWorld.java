@@ -1,5 +1,6 @@
 package org.jacobn99.skyblockgambit.CustomWorlds;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jacobn99.skyblockgambit.GameManager;
 import org.jacobn99.skyblockgambit.Portals.Portal;
@@ -28,7 +29,7 @@ public class CustomWorld {
     }
     public Location GetWorldSpawn(GameManager _gameManager) {
         if(_worldSpawn == null) {
-            _worldSpawn = _manager.GenerateSpawnLocation(this._referenceCorner, _manager.get_worldLength());
+            _worldSpawn = _manager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), this._referenceCorner, 300, _gameManager.minWorldHeight, _manager.get_worldLength());
             //Bukkit.broadcastMessage("ERROR: _worldSpawn == null");
         }
         return _worldSpawn.clone();

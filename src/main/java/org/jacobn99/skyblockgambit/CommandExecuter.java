@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.generator.structure.Structure;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
@@ -39,7 +40,7 @@ public class CommandExecuter implements CommandExecutor {
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
         _advancementManager = _gameManager.advancementManager;
-        _portalManager = new PortalManager(_gameManager);
+        _portalManager = new PortalManager(_gameManager, _gameManager._processManager);
         _worldManager = _gameManager._worldManager;
         _worldCopier = _worldManager._worldCopier;
         _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
@@ -69,10 +70,21 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
+                NetherManager netherManager = new NetherManager(_gameManager, _gameManager._processManager, _worldManager);
+                netherManager.ClearSpawnPortalArea(p.getLocation());
+                //netherManager.GenerateNetherPortal(p.getLocation().add(3, 0, 0));
+//                World nether = Bukkit.getWorld("void_world_nether");
+//                Location loc = _gameManager.FindSurface(p.getLocation(), 100, 30);
+//                if(loc != null) {
+//                    p.teleport(loc);
+//                }
+//                Bukkit.broadcastMessage("a nether fortress loc: " + Bukkit)
+//                Bukkit.broadcastMessage("loc again: " + nether.locateNearestStructure(new Location(nether, 0, 0 ,0), StructureType.NETHER_FORTRESS, 5000, false));
+//                Bukkit.broadcastMessage("loc: " + p.getWorld().locateNearestStructure(p.getLocation(), StructureType.NETHER_FORTRESS, 5000, false));
 //                String file = ;
 //                Bukkit.broadcastMessage("update folder: " + file);
                 //CustomWorld redWorld = new CustomWorld(_worldManager, new Location(Bukkit.getWorld("void_world"), 21,  100, 62), _gameManager.customWorlds);
-                Bukkit.broadcastMessage("advancement file path??: " + _advancementManager.advancementsPath);
+                //Bukkit.broadcastMessage("advancement file path??: " + _advancementManager.advancementsPath);
 //                Bukkit.broadcastMessage("world file path: " + Bukkit.getServer().getWorldContainer().getAbsolutePath());
 //                Bukkit.broadcastMessage("HomeDirectory: " + FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/'));
 //                Bukkit.broadcastMessage("data file path: " + _mainPlugin.getDataFolder().getAbsolutePath());

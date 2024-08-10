@@ -65,7 +65,7 @@ public class AnimalSpawner {
                     spawnTarget = rand.nextInt(difference);
 
                     for (int i = 0; i < spawnTarget; i++) {
-                        Location animalLoc = _worldManager.GenerateSpawnLocation(referenceLoc, 160);
+                        Location animalLoc = _worldManager.GenerateSpawnLocation(Bukkit.getWorld("void_world"),referenceLoc, 300, _gameManager.minWorldHeight, 160);
                         //Location animalLoc = customWorld.GetWorldSpawn(_gameManager);
                         Entity entity = animalLoc.getWorld().spawnEntity(animalLoc, RandomAnimalType());
                         entity.setGlowing(true);

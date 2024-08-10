@@ -4,13 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jacobn99.skyblockgambit.GeneratorInfo.Generator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.GeneratorManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.ItemGenerator;
 

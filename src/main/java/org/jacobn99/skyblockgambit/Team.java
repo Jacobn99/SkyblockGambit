@@ -19,11 +19,13 @@ public class Team {
     List<Team> _teams;
     GameManager _gameManager;
     List<CustomAdvancement> _finishedTasks;
+    Location _netherSpawn;
     public Inventory killsInventory;
 
 
     public Team(String teamColor, GameManager gameManager) {
         _gameManager = gameManager;
+        _netherSpawn = null;
         _finishedTasks = new ArrayList<>();
         _members = new HashSet<>();
         _teamWorld = null;
@@ -94,4 +96,11 @@ public class Team {
         this._teamColor = _teamColor;
     }
 
+    public Location GetNetherSpawn() {
+        return _netherSpawn;
+    }
+
+    public void SetNetherSpawn(Location _netherSpawn) {
+        this._netherSpawn = _netherSpawn;
+    }
 }

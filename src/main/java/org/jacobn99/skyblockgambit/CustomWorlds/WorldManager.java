@@ -2,6 +2,7 @@ package org.jacobn99.skyblockgambit.CustomWorlds;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
@@ -50,7 +51,7 @@ public class WorldManager {
 //            _processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
 //        }
 //    }
-    public Location GenerateSpawnLocation(Location middleLocation, int spawnRadius) {
+    public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY, int minY, int spawnRadius) {
         int x;
         int z;
         //int sideLength;
@@ -61,29 +62,35 @@ public class WorldManager {
         //sideLength = _worldLength;
 
         //Bukkit.broadcastMessage("reference corner: " + referenceCorner);
-        for(int i = 0; i < 20; i++) {
+        for(int i = 0; i < 50; i++) {
             x = rand.nextInt(spawnRadius);
             z = rand.nextInt(spawnRadius);
 
-            Location loc = new Location(Bukkit.getWorld("void_world"), referenceCorner.getX() + x, referenceCorner.getY(), referenceCorner.getZ() + z);
-            loc = _gameManager.FindSurface(loc, 300, _gameManager.minWorldHeight);
+            Location loc = new Location(world, referenceCorner.getX() + x, referenceCorner.getY(), referenceCorner.getZ() + z);
+            loc = _gameManager.FindSurface(loc, maxY, minY);
 
             if(loc != null) {
                 return loc;
             }
         }
+        Bukkit.broadcastMessage("Loc was null");
         return referenceCorner;
     }
-    //public void AddPostGenerationObjects(List<CustomVillager> customs) {
     public void AddPostGenerationObjects(StarterChestManager _chestManager, CustomVillagerManager villagerManager, List<CustomVillager> customs) {
-        SpawnStarterChests(_chestManager);
-        SpawnPortals();
-        SpawnTeamVillagers(customs, villagerManager);
-        _gameManager.isWorldGenerated = true;
-        Bukkit.broadcastMessage("World has been generated");
+        try {
+            SpawnStarterChests(_chestManager);
+            SpawnPortals();
+            SpawnTeamVillagers(customs, villagerManager);
+            _gameManager.isWorldGenerated = true;
+            Bukkit.broadcastMessage("World has been generated");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
     public void SpawnTeamVillagers(List<CustomVillager> customs, CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
+        World world = Bukkit.getWorld("void_world");
         int spawnRadius = 150;
         List<Integer> bannedProfessions = new ArrayList<>();
         bannedProfessions.add(5); //Farmer
@@ -124,10 +131,10 @@ public class WorldManager {
                     //vil.addScoreboardTag("villager" + i);
 
                 }
-                _villagerManager.SpawnVillager(GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.FARMER);
-                _villagerManager.CreateCustomVillager("Villager0", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
-                _villagerManager.CreateCustomVillager("Villager1", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
-                _villagerManager.CreateCustomVillager("Villager2", GenerateSpawnLocation(spawnLoc, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.SpawnVillager(GenerateSpawnLocation(world,spawnLoc, 300, _gameManager.minWorldHeight, spawnRadius), Villager.Profession.FARMER);
+                _villagerManager.CreateCustomVillager("Villager0", GenerateSpawnLocation(world, spawnLoc,300, _gameManager.minWorldHeight, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager1", GenerateSpawnLocation(world, spawnLoc,300, _gameManager.minWorldHeight, spawnRadius), Villager.Profession.NITWIT);
+                _villagerManager.CreateCustomVillager("Villager2", GenerateSpawnLocation(world, spawnLoc,300, _gameManager.minWorldHeight, spawnRadius), Villager.Profession.NITWIT);
 
                 templateVillagers.addAll(customs);
             }
@@ -143,22 +150,6 @@ public class WorldManager {
                 }
             }
         }
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.FARMER);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.ARMORER);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.BUTCHER);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.CARTOGRAPHER);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.FISHERMAN);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.FLETCHER);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.LIBRARIAN);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.MASON);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.SHEPHERD);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.TOOLSMITH);
-//            _gameManager.SpawnVillager(spawnLoc, Villager.Profession.WEAPONSMITH);
-
-//            _gameManager.CreateCustomVillager("Villager0", spawnLoc, Villager.Profession.NITWIT);
-//            _gameManager.CreateCustomVillager("Villager1", spawnLoc, Villager.Profession.NITWIT);
-
-            //spawnLoc = GetRedSpawn();
     }
 
     public void SpawnStarterChests(StarterChestManager chestManager) {

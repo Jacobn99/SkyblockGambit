@@ -3,18 +3,32 @@ package org.jacobn99.skyblockgambit.Portals;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.units.qual.A;
+import org.jacobn99.skyblockgambit.AreaDetection;
 import org.jacobn99.skyblockgambit.GameManager;
+import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class PortalManager {
     Random rand = new Random();
-    GameManager _gameManager;
+    private GameManager _gameManager;
+    private ProcessManager _processManager;
+    private Map<Player, Long> _invaders;
+    private AreaDetection _areaDetection;
+    World world;
 
-    public PortalManager(GameManager gameManager) {
+    public PortalManager(GameManager gameManager, ProcessManager processManager) {
         _gameManager = gameManager;
+        _processManager = processManager;
+        world = Bukkit.getWorld("void_world");
+        _invaders = new HashMap<>();
+        _areaDetection = new AreaDetection();
     }
     public void TeleportIsland(Player p, Location islandSpawn) {
         Location location;
@@ -29,14 +43,21 @@ public class PortalManager {
                     portal.Activate();
                 }
                 //Bukkit.broadcastMessage("Got here");
-                for (Player p : Bukkit.getOnlinePlayers()) {
+                for (Player p : _gameManager.participatingPlayers) {
                     if (IsInPortal(portal, p)) {
                         TeleportIsland(p, portal.GetOpposingIslandLocation());
                         portal.Deactivate();
                         Bukkit.broadcastMessage("guy");
+                        _invaders.put(p, (long) 2400);
+                        //_processManager.CreateProcess(_gameManager.processes, world.getFullTime() + 2400, ()-> p.teleport(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetWorldSpawn(_gameManager)));
                     }
                 }
             }
+        }
+    }
+    public void UpdateInvaderTimer() {
+        for(Map.Entry<Player, Long> entry : _invaders.entrySet()) {
+
         }
     }
     public boolean CheckPortalBreak(Portal portal) {
@@ -50,19 +71,20 @@ public class PortalManager {
         Location portalLoc = portal.GetPortalLocation();
 
         //Bukkit.broadcastMessage("player Loc: " + playerLoc + ", portalLoc: " + portalLoc);
-
-        if (playerLoc.getX() > portalLoc.getX() - 1 && playerLoc.getX() < portalLoc.getX() + 2) {
-//            Bukkit.broadcastMessage("x good");
-            if (playerLoc.getZ() > portalLoc.getZ() && playerLoc.getZ() < portalLoc.getZ() + 0.8) {
-//                Bukkit.broadcastMessage("z good");
-                if (playerLoc.getY() >= portalLoc.getY() && playerLoc.getY() < portalLoc.getY() + 3) {
-//                    Bukkit.broadcastMessage("y good");
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return _areaDetection.IsInArea(p.getLocation(), portalLoc.getX() + 2, portalLoc.getX() - 1,
+                portalLoc.getY(), portalLoc.getY() + 3, portalLoc.getZ(), portalLoc.getZ() + 0.8);
+//        if (playerLoc.getX() > portalLoc.getX() - 1 && playerLoc.getX() < portalLoc.getX() + 2) {
+////            Bukkit.broadcastMessage("x good");
+//            if (playerLoc.getZ() > portalLoc.getZ() && playerLoc.getZ() < portalLoc.getZ() + 0.8) {
+////                Bukkit.broadcastMessage("z good");
+//                if (playerLoc.getY() >= portalLoc.getY() && playerLoc.getY() < portalLoc.getY() + 3) {
+////                    Bukkit.broadcastMessage("y good");
+//                    return true;
+//                }
+//            }
+//        }
+//
+//        return false;
     }
 
     private Location FindRandomSpawn(Location islandSpawn, GameManager gameManager) {

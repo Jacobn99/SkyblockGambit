@@ -18,7 +18,6 @@ import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
-import org.jacobn99.skyblockgambit.GeneratorInfo.Generator;
 import org.jacobn99.skyblockgambit.GeneratorInfo.GeneratorManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.ItemGenerator;
 import org.jacobn99.skyblockgambit.Portals.Portal;
@@ -64,6 +63,7 @@ public class GameManager {
     private CustomItemManager _customItemManager;
     private AnimalSpawner _animalSpawner;
     public GeneratorManager _generatorManager;
+    public NetherManager netherManager;
     public XStacks xStacks;
     private Team blueTeam;
     private Team redTeam;
@@ -93,9 +93,9 @@ public class GameManager {
 
         processes = new HashMap<>();
         killCounts = new HashMap<>();
-        _portalManager = new PortalManager(this);
         advancementManager = new AdvancementManager(_mainPlugin, teams);
         _processManager = new ProcessManager();
+        _portalManager = new PortalManager(this, _processManager);
         _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, this);
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
         _chestManager = new StarterChestManager(_mainPlugin);
@@ -105,6 +105,7 @@ public class GameManager {
         craftX = new CraftX(advancementManager, _mainPlugin);
         xStacks = new XStacks(advancementManager, this, _mainPlugin);
         _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
+        netherManager = new NetherManager(this, _processManager, _worldManager);
         tickRate = 3;
         minWorldHeight = 94;
         normalVillagerAmount = 10;
@@ -158,19 +159,24 @@ public class GameManager {
 //    }
 
     public void GrantCompass(Player p, Team team) {
-        if (team != null) {
-            ItemStack spawnCompass = new ItemStack(Material.COMPASS);
+        try {
+            if (team != null) {
+                ItemStack spawnCompass = new ItemStack(Material.COMPASS);
 //            CompassMeta meta = (CompassMeta) spawnCompass.getItemMeta();
 //            meta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
 //            meta.setLodestoneTracked(true);
 //            spawnCompass.setItemMeta(meta);
-            CompassMeta compassMeta = (CompassMeta) spawnCompass.getItemMeta();
-            compassMeta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
-            compassMeta.setLodestoneTracked(false);
-            compassMeta.setDisplayName("Spawn Compass");
-            spawnCompass.setItemMeta(compassMeta);
-            p.getInventory().addItem(spawnCompass);
-            //p.getWorld().dropItem(p.getLocation(), spawnCompass);
+                CompassMeta compassMeta = (CompassMeta) spawnCompass.getItemMeta();
+                compassMeta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
+                compassMeta.setLodestoneTracked(false);
+                compassMeta.setDisplayName("Spawn Compass");
+                spawnCompass.setItemMeta(compassMeta);
+                p.getInventory().addItem(spawnCompass);
+                //p.getWorld().dropItem(p.getLocation(), spawnCompass);
+            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
         }
     }
     public void InitializeTasks() {
@@ -224,17 +230,34 @@ public class GameManager {
         }
     }
     public Location FindSurface(Location loc, double maxY, double minY) {
-        Location scan = loc;
+        List<Material> notSurfaceMaterials = new ArrayList<>();
+        notSurfaceMaterials.add(Material.CAVE_AIR);
+        notSurfaceMaterials.add(Material.AIR);
+        notSurfaceMaterials.add(Material.WATER);
+        notSurfaceMaterials.add(Material.VOID_AIR);
+        notSurfaceMaterials.add(Material.LAVA);
+        notSurfaceMaterials.add(Material.TALL_GRASS);
+
+        Location scan = loc.clone();
         for(double i = maxY; i > minY; i--) {
             scan.setY(i);
 
-            if(scan.getBlock().getType() != Material.AIR) {
-                if(Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 1, (int)scan.getZ()).getType() == Material.AIR &&
-                        Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 2, (int)scan.getZ()).getType() == Material.AIR) {
+            //Bukkit.broadcastMessage("current loc: " + scan.getX() + ", " + scan.getY() + ", " + scan.getZ() + ", block type: " + scan.getBlock().getType().name());
+            Location block1Loc = scan.clone().add(0, 1, 0);
+            Location block2Loc = scan.clone().add(0, 2, 0);
+            //Block block2 = Bukkit.getWorld("void_world").getBlockAt((int)scan.getX(), (int)scan.getY() + 2, (int)scan.getZ());
+            if(!notSurfaceMaterials.contains(scan.getBlock().getType())) {
+                if(block1Loc.getBlock().getType() == Material.AIR && block2Loc.getBlock().getType() == Material.AIR) {
+//                    Bukkit.broadcastMessage("block 1: " + block1Loc.getBlock().getType().name() + ", Location: " + block1Loc);
+//                    Bukkit.broadcastMessage("block 2: " + block2Loc.getBlock().getType().name() + ", Location: " + block2Loc);
+
                     scan.setY(scan.getY() + 1);
+                    //Bukkit.broadcastMessage("found loc: " + scan);
                     return scan;
                 }
             }
+            block1Loc = null;
+            block2Loc = null;
         }
         return null;
     }
