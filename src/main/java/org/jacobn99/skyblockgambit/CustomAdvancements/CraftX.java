@@ -81,8 +81,10 @@ public class CraftX {
     }
     private List<ItemStack> GetPossibleItems() {
         List<ItemStack> items = new ArrayList<>();
-        items.add(new ItemStack(Material.STONE));
-        items.add(new ItemStack(Material.BIRCH_PLANKS));
+        items.add(new ItemStack(Material.CAKE));
+        items.add(new ItemStack(Material.ANVIL));
+        items.add(new ItemStack(Material.HAY_BLOCK));
+        items.add(new ItemStack(Material.BLACKSTONE_SLAB));
         return items;
     }
 
@@ -97,7 +99,7 @@ public class CraftX {
             //_item = GetItem();
             iteration++;
         }
-        if (_advancement != null) {
+        if (_advancement != null && _item != null) {
             if (result.getType() == _item.getType()) {
                 Bukkit.broadcastMessage("bazinga");
                 _advancementManager.GrantTeamAdvancement(p, _advancement);

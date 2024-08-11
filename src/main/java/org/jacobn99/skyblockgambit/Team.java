@@ -21,6 +21,7 @@ public class Team {
     List<CustomAdvancement> _finishedTasks;
     Location _netherSpawn;
     public Inventory killsInventory;
+    private int _generatorCount;
 
 
     public Team(String teamColor, GameManager gameManager) {
@@ -34,9 +35,18 @@ public class Team {
         _teams = _gameManager.teams;
         _participatingPlayers = _gameManager.participatingPlayers;
         _teams.add(this);
+        _generatorCount = 0;
         killsInventory = Bukkit.createInventory(null, 27, "PVP Rewards");
 
     }
+
+    public int GetGeneratorCount() {
+        return _generatorCount;
+    }
+    public void AddToGeneratorCount() {
+        _generatorCount += 1;
+    }
+
     public boolean AreTasksDone() {
         if(_finishedTasks.size() == _gameManager.advancementManager.GetMaxTasks() - 1) {
             return true;

@@ -63,7 +63,7 @@ public class EventManager implements Listener {
         _twoKillsTask = new TwoKillsTask(_gameManager, _advancementManager);
         _reachLevelX = new ReachLevelX(_gameManager, _advancementManager);
         _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
-        _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager);
+        _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager, _gameManager);
         _xStacks = _gameManager.xStacks;
         _netherManager = _gameManager.netherManager;
         //_generatorContructor = new GeneratorConstructor(_gener.generators, _itemManager);

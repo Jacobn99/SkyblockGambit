@@ -8,9 +8,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jacobn99.skyblockgambit.GameManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.GeneratorManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.ItemGenerator;
-
+import org.jacobn99.skyblockgambit.Team;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,16 +19,21 @@ public class GeneratorConstructor {
     private List<ItemGenerator> _generators;
     private CustomItemManager _itemManager;
     private GeneratorManager _generateManager;
+    private GameManager _gameManager;
     Inventory generatorSelector;
-    public GeneratorConstructor(List<ItemGenerator> generators, GeneratorManager generatorManager, CustomItemManager itemManager) {
+    public GeneratorConstructor(List<ItemGenerator> generators, GeneratorManager generatorManager, CustomItemManager itemManager, GameManager gameManager) {
         _generators = generators;
         _itemManager = itemManager;
         _generateManager = generatorManager;
+        _gameManager = gameManager;
         InitializeSelectorInventory();
     }
     public void InitializeSelectorInventory() {
         generatorSelector = Bukkit.createInventory(null, 9, "Select a generator!");
         generatorSelector.setItem(0, GenerateGeneratorSymbol(Material.DIAMOND));
+        generatorSelector.setItem(1, GenerateGeneratorSymbol(Material.REDSTONE));
+        generatorSelector.setItem(2, GenerateGeneratorSymbol(Material.EMERALD));
+        generatorSelector.setItem(3, GenerateGeneratorSymbol(Material.IRON_INGOT));
     }
     private ItemStack GenerateGeneratorSymbol(Material material) {
         String itemName;
@@ -56,8 +62,8 @@ public class GeneratorConstructor {
                 }
             }
         }
-        Bukkit.broadcastMessage("count: " + count);
-        Bukkit.broadcastMessage("target count: " + item.getAmount());
+//        Bukkit.broadcastMessage("count: " + count);
+//        Bukkit.broadcastMessage("target count: " + item.getAmount());
 
         if(count >= item.getAmount()) {
             return true;
@@ -79,13 +85,21 @@ public class GeneratorConstructor {
             ItemGenerator generator = _generateManager.GetGeneratorType(event.getCurrentItem().getType());
             if(generator != null) {
                 Player p = (Player) event.getWhoClicked();
-                if(HasFunds(p.getInventory(), generator.GetCost())) {
-                    Bukkit.broadcastMessage("Creating a " + event.getCurrentItem().getType().name().toLowerCase() + " generator!");
-                    generator.CreateGenerator(event.getWhoClicked().getLocation());
-                    event.getWhoClicked().closeInventory();
+                Team team = _gameManager.FindPlayerTeam(p);
+
+                if(HasFunds(p.getInventory(), generator.GetCost()) && team != null) {
+                    if(team.GetGeneratorCount() < _generateManager.maxGenerators) {
+                        p.sendMessage("Creating a " + event.getCurrentItem().getType().name().toLowerCase() + " generator!");
+                        generator.CreateGenerator(event.getWhoClicked().getLocation());
+                        team.AddToGeneratorCount();
+                        event.getWhoClicked().closeInventory();
+                    }
+                    else {
+                        p.sendMessage("You have reached the generator limit");
+                    }
                 }
                 else {
-                    Bukkit.broadcastMessage("Not enough funds (poor)");
+                    p.sendMessage("Not enough funds (poor)");
                 }
             }
         }

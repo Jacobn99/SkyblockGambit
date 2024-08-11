@@ -102,6 +102,7 @@ public class WorldManager {
 
 
         for(CustomWorld customWorld : _customWorlds) {
+            Bukkit.broadcastMessage("customs size: " + customs.size());
             if(customs.isEmpty()) {
                 Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
 
@@ -141,6 +142,7 @@ public class WorldManager {
             else {
                 int iterations = 0;
                 for(CustomVillager customVillager : templateVillagers) {
+                    //Villager villager = (Villager) _villagerManager.SpawnVillager(customWorld.GetWorldSpawn(_gameManager), customVillager.GetVillager().getProfession());
                     Villager villager = (Villager) customVillager.GetVillager().copy(customWorld.GetWorldSpawn(_gameManager));
                     villager.setRecipes(customs.get(iterations).GetVillager().getRecipes());
 

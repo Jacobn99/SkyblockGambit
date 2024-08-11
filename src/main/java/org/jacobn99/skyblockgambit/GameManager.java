@@ -145,7 +145,7 @@ public class GameManager {
                 }
                 _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
-                RenewGenerators(tickRate);
+                _generatorManager.RenewGenerators(tickRate);
                 _portalManager.PortalUpdate(portals);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
@@ -311,27 +311,27 @@ public void UpdateSpawns() {
         return starterChestList;
     }
 
-    private void RenewGenerators(long tickRate) {
-//        ItemStack fuel = new ItemStack(Material.STONE, 1);
-        for(ItemGenerator g : _generatorManager.GetGenerators()) {
-            //if(g.GetLocation() != null && g.IsFuelAvailable()) {
-                if (g.GetGenerateTimeRemaining() <= 0) {
-                    g.Generate();
-                    //g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
-                    //g.AddGenerateTime(g.GetGenerateDelay() + tickRate);
-                    //break;
-                }
-//                if (g.GetFuelTimeRemaining() <= 0) {
-//                    g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
-//                    g.AddFuelTime(g.GetFuelDelay() + tickRate);
+//    private void RenewGenerators(long tickRate) {
+////        ItemStack fuel = new ItemStack(Material.STONE, 1);
+//        for(ItemGenerator g : _generatorManager.GetGenerators()) {
+//            //if(g.GetLocation() != null && g.IsFuelAvailable()) {
+//                if (g.GetGenerateTimeRemaining() <= 0) {
+//                    g.Generate();
+//                    //g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
+//                    //g.AddGenerateTime(g.GetGenerateDelay() + tickRate);
 //                    //break;
 //                }
-//                //Bukkit.broadcastMessage("Time Remaining: " + g.GetTimeRemaining());
-                g.AddGenerateTime(-tickRate);
-//                g.AddFuelTime(-tickRate);
-                //g.AddTime();
-        }
-    }
+////                if (g.GetFuelTimeRemaining() <= 0) {
+////                    g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
+////                    g.AddFuelTime(g.GetFuelDelay() + tickRate);
+////                    //break;
+////                }
+////                //Bukkit.broadcastMessage("Time Remaining: " + g.GetTimeRemaining());
+//                g.AddGenerateTime(-tickRate);
+////                g.AddFuelTime(-tickRate);
+//                //g.AddTime();
+//        }
+//    }
 
 
     public void Reset() {

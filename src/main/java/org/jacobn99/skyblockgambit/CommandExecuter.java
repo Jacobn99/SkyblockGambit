@@ -70,8 +70,9 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                NetherManager netherManager = new NetherManager(_gameManager, _gameManager._processManager, _worldManager);
-                netherManager.ClearSpawnPortalArea(p.getLocation());
+                _advancementManager.RandomizeTasks();
+//                NetherManager netherManager = new NetherManager(_gameManager, _gameManager._processManager, _worldManager);
+//                netherManager.ClearSpawnPortalArea(p.getLocation());
                 //netherManager.GenerateNetherPortal(p.getLocation().add(3, 0, 0));
 //                World nether = Bukkit.getWorld("void_world_nether");
 //                Location loc = _gameManager.FindSurface(p.getLocation(), 100, 30);
