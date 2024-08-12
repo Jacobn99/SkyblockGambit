@@ -22,7 +22,7 @@ public class KillEnderdragon {
         //Bukkit.broadcastMessage("Exp level: " + p.getLevel());
         if(event.getEntity().getKiller() != null && event.getEntity() instanceof EnderDragon) {
             Player p = event.getEntity().getKiller();
-            _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("kill_enderdragon"));
+            _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("kill_enderdragon"), true);
         }
     }
 }

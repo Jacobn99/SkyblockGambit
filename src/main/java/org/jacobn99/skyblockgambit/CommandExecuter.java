@@ -36,7 +36,7 @@ public class CommandExecuter implements CommandExecutor {
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
         _gameManager = gameManager;
-        _itemManager = new CustomItemManager(_mainPlugin);
+        _itemManager = _gameManager._customItemManager;
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
         _advancementManager = _gameManager.advancementManager;
@@ -70,7 +70,9 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _advancementManager.RandomizeTasks();
+                int slot = _gameManager.FindInInventory(p.getInventory(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")));
+                Bukkit.broadcastMessage("Slot: " + slot);
+                //_advancementManager.RandomizeTasks();
 //                NetherManager netherManager = new NetherManager(_gameManager, _gameManager._processManager, _worldManager);
 //                netherManager.ClearSpawnPortalArea(p.getLocation());
                 //netherManager.GenerateNetherPortal(p.getLocation().add(3, 0, 0));
@@ -244,7 +246,8 @@ public class CommandExecuter implements CommandExecutor {
                 if (args.length == 1) {
                     if(_gameManager.advancementManager.GetAdvancement(args[0]) != null) {
                         Bukkit.broadcastMessage("Granting advancement");
-                        _gameManager.advancementManager.GrantTeamAdvancement(p, _gameManager.advancementManager.GetAdvancement(args[0]));
+                        _gameManager.advancementManager.GrantTeamAdvancement(p,
+                                _gameManager.advancementManager.GetAdvancement(args[0]), false);
                     }
                     else {
                         Bukkit.broadcastMessage("Not a valid advancement");
@@ -253,6 +256,22 @@ public class CommandExecuter implements CommandExecutor {
                 }
                 else {
                     Bukkit.broadcastMessage("Usage: grant_advancement (advancement name)");
+                    return false;
+                }
+            }
+            else if (label.equalsIgnoreCase("clear_world")) {
+                if (args.length == 1) {
+                    String worldName = args[0];
+                    for(Team team : _gameManager.teams) {
+                        if(team.GetTeamColor().equalsIgnoreCase(worldName)) {
+                            //Bukkit.broadcastMessage(team.GetTeamColor() + ": " + team.GetTeamWorld().GetMiddleLoc());
+                            _worldCopier.ClearWorld(team.GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
+                        }
+                    }
+                    return true;
+                }
+                else {
+                    Bukkit.broadcastMessage("Usage: clear_world (team name)");
                     return false;
                 }
             }

@@ -5,8 +5,10 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
@@ -60,8 +62,8 @@ public class GameManager {
     public WorldManager _worldManager;
     private StarterChestManager _chestManager;
     public CustomVillagerManager _customVillagerManager;
-    private CustomItemManager _customItemManager;
-    private AnimalSpawner _animalSpawner;
+    public CustomItemManager _customItemManager;
+    public AnimalSpawner _animalSpawner;
     public GeneratorManager _generatorManager;
     public NetherManager netherManager;
     public XStacks xStacks;
@@ -134,8 +136,8 @@ public class GameManager {
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 
         InitializeTeams();
-        UpdateSpawns();
-        _animalSpawner.SpawnAnimals();
+//        UpdateSpawns();
+//        _animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
             @Override
@@ -146,18 +148,22 @@ public class GameManager {
                 _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
                 _generatorManager.RenewGenerators(tickRate);
-                _portalManager.PortalUpdate(portals);
+                _portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
-//    public void GrantTeamCompasses() {
-//        for(Team team : teams) {
-//            for(Player p : team.GetMembers()) {
-//                GrantCompass(p, team);
-//            }
-//        }
-//    }
-
+    public int FindInInventory(Inventory inventory, ItemStack item) {
+        int slot = 0;
+        for(ItemStack i : inventory.getContents()) {
+            if(i != null) {
+                if (i.equals(item)) {
+                    return slot;
+                }
+            }
+            slot++;
+        }
+        return -1;
+    }
     public void GrantCompass(Player p, Team team) {
         try {
             if (team != null) {
@@ -214,7 +220,7 @@ public class GameManager {
 
         for(Team team : teams) {
             for(Player p : team.GetMembers()) {
-                p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
+//                p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
                 advancementManager.GrantRootAdvancement(p);
                 GrantCompass(p, team);
             }

@@ -43,11 +43,17 @@ public class XStacks {
         _itemStackSerialization = new ItemStackSerialization();
         _dataManager = new DataManager();
         _possibleItems = new ArrayList<>();
-        _possibleItems.add(new ItemStack(Material.HAY_BLOCK));
         _itemMap = new HashMap<>();
         //_item = GetItem();
         InitializeItem();
 
+    }
+    private void InitializePossibleItems() {
+        _possibleItems.add(new ItemStack(Material.STONE));
+        _possibleItems.add(new ItemStack(Material.POTATO));
+        _possibleItems.add(new ItemStack(Material.WHEAT));
+        _possibleItems.add(new ItemStack(Material.BAKED_POTATO));
+        _possibleItems.add(new ItemStack(Material.BREAD));
     }
     public void UpdateDescription() {
         //Bukkit.broadcastMessage("item: " + item)
@@ -56,7 +62,8 @@ public class XStacks {
         _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/x_stacks.json"), "description", "Get " + _itemMap.get(_item) + " " + _item.getType().name());
     }
     private void InitializeItem() {
-        //Type listType = new TypeToken<List<String>>() {}.getType();
+        InitializePossibleItems();
+
         if (_dataFile.exists()) {
             List<String> items = _dataManager.GetSerializedObjects(_dataFile);
             if (items != null) {
@@ -69,14 +76,7 @@ public class XStacks {
         else {
             Bukkit.broadcastMessage("ERROR: No XStacks file!");
         }
-
-        //return null;
     }
-//    public void LoadFile() {
-//        if(!_file.exists()) {
-//            _
-//        }
-//    }
 
     public void WriteToXStacksFile() {
         Random rand = new Random();
@@ -126,7 +126,7 @@ public class XStacks {
         }
         if(count >= _itemMap.get(_item)) {
             _advancement = _advancementManager.GetAdvancement("x_stacks");
-            _advancementManager.GrantTeamAdvancement(p, _advancement);
+            _advancementManager.GrantTeamAdvancement(p, _advancement, true);
         }
     }
 }

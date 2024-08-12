@@ -28,7 +28,7 @@ private AdvancementManager _advancementManager;
                 _advancement = _advancementManager.GetAdvancement("kill_two_players");
                 if(_advancement != null) {
 //                    Bukkit.broadcastMessage("granting advancement");
-                    _advancementManager.GrantTeamAdvancement(killer, _advancement);
+                    _advancementManager.GrantTeamAdvancement(killer, _advancement, true);
                     //_advancement.GrantAdvancement(killer, false);
                 }
             }

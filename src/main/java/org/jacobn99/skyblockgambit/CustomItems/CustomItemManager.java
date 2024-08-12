@@ -182,40 +182,4 @@ public class CustomItemManager {
             UpdateItemFile();
         }
     }
-//    public String SerializeItem(ItemStack item) {
-//        String encodedItem;
-//        try {
-//            ByteArrayOutputStream io = new ByteArrayOutputStream();
-//            BukkitObjectOutputStream os = new BukkitObjectOutputStream(io);
-//
-//            os.writeObject(item);
-//            os.flush(); //transfers data from buffer in the os ByteArrayOutputStream object to the io ByteArrayOutputStream object
-//
-//            byte[] itemSerialized = io.toByteArray();
-//
-//            encodedItem = Base64.getEncoder().encodeToString(itemSerialized);
-//
-//            return encodedItem;
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public ItemStack DeserializeItem(String encodedItem) {
-//        byte[] decodedItem;
-//        try {
-//            decodedItem = Base64.getDecoder().decode(encodedItem);
-//            ByteArrayInputStream in = new ByteArrayInputStream(decodedItem);
-//            BukkitObjectInputStream is = new BukkitObjectInputStream(in);
-//
-//            ItemStack newItem = (ItemStack) is.readObject();
-//            return newItem;
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        } catch (ClassNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
 }

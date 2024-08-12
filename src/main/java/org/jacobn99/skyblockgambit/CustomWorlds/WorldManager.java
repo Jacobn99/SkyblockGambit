@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
@@ -17,6 +18,8 @@ import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
+import org.jacobn99.skyblockgambit.Team;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +86,14 @@ public class WorldManager {
             SpawnTeamVillagers(customs, villagerManager);
             _gameManager.isWorldGenerated = true;
             Bukkit.broadcastMessage("World has been generated");
-        }
+            for(Team team : _gameManager.teams) {
+                for(Player p : team.GetMembers()) {
+                    p.teleport(team.GetTeamWorld().GetWorldSpawn(_gameManager));
+                }
+            }
+            _gameManager.UpdateSpawns();
+            _gameManager._animalSpawner.SpawnAnimals();
+         }
         catch(Exception e) {
             e.printStackTrace();
         }

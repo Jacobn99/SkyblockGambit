@@ -41,12 +41,13 @@ public class CraftX {
         iteration = 0;
         _itemStackSerialization = new ItemStackSerialization();
         _dataManager = new DataManager();
+        _item = GetItem();
 
 
     }
     public void UpdateDescription() {
         //Bukkit.broadcastMessage("item: " + item)
-        _item = GetItem();
+        //_item = GetItem();
         Bukkit.broadcastMessage("item: " + _item.getType().name());
         _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "Craft " + _item.getType().name());
     }
@@ -96,13 +97,13 @@ public class CraftX {
 
         if (iteration == 0) {
             _advancement = _advancementManager.GetAdvancement("craft_item");
-            //_item = GetItem();
+            _item = GetItem();
             iteration++;
         }
         if (_advancement != null && _item != null) {
             if (result.getType() == _item.getType()) {
                 Bukkit.broadcastMessage("bazinga");
-                _advancementManager.GrantTeamAdvancement(p, _advancement);
+                _advancementManager.GrantTeamAdvancement(p, _advancement, true);
                 //_advancement.GrantAdvancement(p, false);
             }
         }

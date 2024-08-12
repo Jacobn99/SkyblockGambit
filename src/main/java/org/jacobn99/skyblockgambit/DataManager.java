@@ -82,7 +82,7 @@ public class DataManager {
 
                 } catch (IOException e) {
                     file.delete();
-                    Bukkit.getConsoleSender().sendMessage("ERROR: File formated incorrectly or is empty so deleting file (GetObjects)");
+                    Bukkit.broadcastMessage("ERROR: File formated incorrectly or is empty so deleting file (GetObjects)");
                     throw new RuntimeException(e);
                 }
             } else {

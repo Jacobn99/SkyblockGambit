@@ -13,13 +13,15 @@ public class PortalOpener {
     }
     public void PortalOpenerCheck(PlayerInteractEvent event, CustomItemManager itemManager) {
         Player p = event.getPlayer();
-        if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
-            Bukkit.broadcastMessage("What the sigma?");
-            Team team = _gameManager.FindPlayerTeam(p);
+        if (event.getItem() != null) {
+            if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
+                Bukkit.broadcastMessage("What the sigma?");
+                Team team = _gameManager.FindPlayerTeam(p);
 
-            if (team != null) {
-                if (team.GetTeamWorld().GetWorldPortal() != null) {
-                    team.GetTeamWorld().GetWorldPortal().Activate();
+                if (team != null) {
+                    if (team.GetTeamWorld().GetWorldPortal() != null) {
+                        team.GetTeamWorld().GetWorldPortal().Activate();
+                    }
                 }
             }
         }

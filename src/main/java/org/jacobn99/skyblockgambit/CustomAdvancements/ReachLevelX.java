@@ -15,17 +15,27 @@ public class ReachLevelX {
         _gameManager = gameManager;
         _advancementManager = advancementManager;
         _level = 10;
-        _advancement = _advancementManager.GetAdvancement("reach_level");
+        _advancement = null;
+    }
+    private CustomAdvancement GetReachAdvancement() {
+        if(_advancement == null) {
+            _advancement = _advancementManager.GetAdvancement("reach_level");
+        }
+        return _advancement;
     }
 
     public void ReachLevelXCheck(Player p) {
         //Bukkit.broadcastMessage("Exp level: " + p.getLevel());
-        if(p.getLevel() >= _level && _advancement != null) {
-            //Bukkit.broadcastMessage("Swag");
+        CustomAdvancement advancement = GetReachAdvancement();
+        if (_advancement != null) {
+            //Bukkit.broadcastMessage("got here");
+            if (p.getLevel() >= _level) {
+                //Bukkit.broadcastMessage("Swag");
 
-            _advancementManager.GrantTeamAdvancement(p, _advancement);
-            //_advancement.GrantAdvancement(p, false);
+                _advancementManager.GrantTeamAdvancement(p, _advancement, true);
+                //_advancement.GrantAdvancement(p, false);
+            }
+
         }
-
     }
 }

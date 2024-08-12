@@ -107,14 +107,14 @@ public class AdvancementManager {
         }
     }
 
-    public void GrantTeamAdvancement(Player p, CustomAdvancement a) {
+    public void GrantTeamAdvancement(Player p, CustomAdvancement a, boolean isConditional) {
         if(GetCurrentEnabledTasks().contains(a)) {
             for (Team team : _teams) {
                 if (team.GetMembers().contains(p) && a != null) {
                     for (Player player : team.GetMembers()) {
                         Bukkit.broadcastMessage("Trying to grant a team an advancement");
 
-                        if(a.GrantAdvancement(player, true)) {
+                        if(a.GrantAdvancement(player, isConditional)) {
                             team.AddFinishedTask(a);
                         }
                         return;
@@ -155,52 +155,6 @@ public class AdvancementManager {
                     }
 
                     availableAdvancements.remove(randomNumber);
-//                    randomNumber = rand.nextInt(availableAdvancements.size());
-//                    currentAdvancement = availableAdvancements.get(randomNumber);
-//
-//                    if (i == 0) {
-//                        parameterChanges.put("title", currentAdvancement.GetFileName());
-//                        parameterChanges.put("parent", "minecraft:root");
-//                        ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
-//                        firstAdvancement = currentAdvancement;
-//                    }
-//                    else {
-//                        //parameterChanges.put("title", "Task " + (i + 1));
-//                        if(currentAdvancement.GetFileName().equalsIgnoreCase( "reach_level")) {
-//                            parameterChanges.put("parent", "minecraft:root");
-//                            ModifyAdvancement(firstAdvancement.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
-//                            if(secondAdvancement != null) {
-//                                ModifyAdvancement(secondAdvancement.GetFile(), "parent", "minecraft:reach_level");
-//                            }
-//                            //parameterChanges.put("title", currentAdvancement.GetFileName());
-//                            //currentAdvancement.SetParentAdvancement();
-//                            //ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
-//                        }
-//                        else {
-//                            parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
-//                            currentAdvancement.SetParentAdvancement(parentAdvancement);
-//
-//                        }
-//
-//                        if(i==1) {
-//                            secondAdvancement = currentAdvancement;
-//                        }
-//                        parameterChanges.put("title", currentAdvancement.GetFileName());
-//                        //currentAdvancement.SetParentAdvancement(parentAdvancement);
-//                        ModifyAdvancement(currentAdvancement.GetFile(), parameterChanges);
-//                    }
-//                    Bukkit.broadcastMessage("Current: " + currentAdvancement.GetFileName());
-//
-//                    futureEnabledAdvancementNames.add(currentAdvancement.GetFileName());
-//                    if(!currentAdvancement.GetFileName().equalsIgnoreCase("reach_level") || i == 0) {
-//                        parentAdvancement = currentAdvancement;
-//                    }
-//                    else {
-//                        Bukkit.broadcastMessage("i: " + i);
-//                    }
-//                    Bukkit.broadcastMessage(parentAdvancement.GetFileName());
-//                    parameterChanges.clear();
-//                    availableAdvancements.remove(randomNumber);
                 } else {
                     Bukkit.broadcastMessage("Not enough tasks");
                 }

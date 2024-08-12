@@ -74,8 +74,11 @@ public class GeneratorConstructor {
     }
     public void GeneratorConstructorCheck(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        if(event.getItem().equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
-            p.openInventory(generatorSelector);
+        ItemStack item = event.getItem();
+        if(event.getItem() != null) {
+            if (item.equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
+                p.openInventory(generatorSelector);
+            }
         }
     }
     public void SelectGeneratorCheck(InventoryClickEvent event) {

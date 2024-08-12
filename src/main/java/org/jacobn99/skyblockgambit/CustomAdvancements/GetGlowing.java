@@ -21,7 +21,7 @@ public class GetGlowing {
         if(event.getEntity() instanceof Player) {
             Player p = (Player) event.getEntity();
             if(p.isGlowing()) {
-                _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("get_glowing"));
+                _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("get_glowing"), true);
             }
         }
     }
