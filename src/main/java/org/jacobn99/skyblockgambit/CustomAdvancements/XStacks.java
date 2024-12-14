@@ -20,7 +20,7 @@ import org.jacobn99.skyblockgambit.Team;
 import java.io.File;
 import java.util.*;
 
-public class XStacks {
+public class XStacks implements AdvancementType{
     GameManager _gameManager;
     CustomAdvancement _advancement;
     private Map<ItemStack, Integer> _itemMap;
@@ -128,5 +128,13 @@ public class XStacks {
             _advancement = _advancementManager.GetAdvancement("x_stacks");
             _advancementManager.GrantTeamAdvancement(p, _advancement, true);
         }
+    }
+
+    public Material GetSymbol() {
+        return Material.BUNDLE;
+    }
+
+    public String GetDescription() {
+        return "Get " + _itemMap.get(_item) + " " + _item.getType().name().toLowerCase().replace('_', ' ');
     }
 }

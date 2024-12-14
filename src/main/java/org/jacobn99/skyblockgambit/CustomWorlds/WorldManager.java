@@ -77,20 +77,22 @@ public class WorldManager {
             }
         }
         Bukkit.broadcastMessage("Loc was null");
-        return referenceCorner;
+        return null;
     }
     public void AddPostGenerationObjects(StarterChestManager _chestManager, CustomVillagerManager villagerManager, List<CustomVillager> customs) {
         try {
+            Bukkit.broadcastMessage("World has been generated");
+            _gameManager.isWorldGenerated = true;
+
             SpawnStarterChests(_chestManager);
             SpawnPortals();
             SpawnTeamVillagers(customs, villagerManager);
-            _gameManager.isWorldGenerated = true;
-            Bukkit.broadcastMessage("World has been generated");
-            for(Team team : _gameManager.teams) {
-                for(Player p : team.GetMembers()) {
-                    p.teleport(team.GetTeamWorld().GetWorldSpawn(_gameManager));
-                }
-            }
+            _gameManager.InitializeTeams();
+//            for(Team team : _gameManager.teams) {
+//                for(Player p : team.GetMembers()) {
+//                    p.teleport(team.GetTeamWorld().GetWorldSpawn(_gameManager));
+//                }
+//            }
             _gameManager.UpdateSpawns();
             _gameManager._animalSpawner.SpawnAnimals();
          }

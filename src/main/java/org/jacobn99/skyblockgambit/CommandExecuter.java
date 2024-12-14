@@ -8,6 +8,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.generator.structure.Structure;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
@@ -70,8 +72,16 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                int slot = _gameManager.FindInInventory(p.getInventory(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")));
-                Bukkit.broadcastMessage("Slot: " + slot);
+                //Team team = _gameManager.FindPlayerTeam(p);
+                Inventory tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+
+                _advancementManager.InitializeTaskInventory(tasksInventory);
+                //team.killsInventory.setContents(_advancementManager.CreateTaskInventory(p).getContents());
+                //team.killsInventory.setItem(0, new ItemStack(Material.DIAMOND));
+
+                p.openInventory(tasksInventory);
+//                int slot = _gameManager.FindInInventory(p.getInventory(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")));
+//                Bukkit.broadcastMessage("Slot: " + slot);
                 //_advancementManager.RandomizeTasks();
 //                NetherManager netherManager = new NetherManager(_gameManager, _gameManager._processManager, _worldManager);
 //                netherManager.ClearSpawnPortalArea(p.getLocation());

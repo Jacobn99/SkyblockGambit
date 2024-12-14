@@ -5,8 +5,11 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jacobn99.skyblockgambit.Team;
@@ -34,6 +37,9 @@ public class AdvancementManager {
     //public CraftX craftX;
     //private CustomItemManager _customItemManager;
     private int _maxTasks;
+    private boolean _advancementCompatible;
+    File alternateTaskData;
+    //public Inventory advancementInventory;
 
     public AdvancementManager(JavaPlugin mainPlugin, List<Team> teams) {
         customAdvancements = new ArrayList<>();
@@ -45,42 +51,37 @@ public class AdvancementManager {
         gson = new Gson();
         _maxTasks = 4;
         _teams = teams;
-//        craftX = new CraftX(this, _customItemManager, _mainPlugin);
-        //playerTasksMap = new HashMap<>();
+        _advancementCompatible = true;
+        alternateTaskData = new File(_mainPlugin.getDataFolder() + "/alternate_task_data");
+        //advancementInventory = Bukkit.createInventory(null, 9, "Tasks");
         String worldFilePath = Bukkit.getWorld("void_world").getWorldFolder().getAbsolutePath();
-        //String worldFilePath = Bukkit;
-
         advancementsPath = worldFilePath.replace('\\', '/')
                 + "/datapacks/task_advancements/data/minecraft/advancement/";
-        if(advancementsPath.toCharArray()[0] != 'C') {
-            advancementsPath = "C:" + advancementsPath;
-        }
-//        advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
-//                + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
-        //defaultConfiguration = "{\"display\":{\"icon\":{\"id\":\"minecraft:spyglass\"},\"title\":\"Tasks\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":false,\"hidden\":false},\"parent\":null,\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
-
     }
     public void GrantRootAdvancement(Player p) {
         String command = "advancement grant " + p.getName() + " only minecraft:root";
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
     }
     public void ClearTaskParents() {
-        if(GetCustomAdvancementList() != null) {
-            for (CustomAdvancement advancement : GetCustomAdvancementList()) {
-                Bukkit.broadcastMessage("Modifying " + advancement.GetFileName());
-                ModifyAdvancement(advancement.GetFile(), "parent", "null");
+        if(_advancementCompatible) {
+            if (GetCustomAdvancementList() != null) {
+                for (CustomAdvancement advancement : GetCustomAdvancementList()) {
+                    Bukkit.broadcastMessage("Modifying " + advancement.GetFileName());
+                    ModifyAdvancement(advancement.GetFile(), "parent", "null");
+                }
+            } else {
+                Bukkit.broadcastMessage("GetCustomAdvancementList() is null");
             }
-        }
-        else {
-            Bukkit.broadcastMessage("GetCustomAdvancementList() is null");
         }
     }
     public List<CustomAdvancement> GetCurrentEnabledTasks() {
         if(_currentEnabledAdvancements.isEmpty()) {
+            int i = 0;
             List<String> currentAdvancementNames = GetCurrentEnabledTaskNames();
             for (String name : currentAdvancementNames) {
                 CustomAdvancement advancement = GetAdvancement(name);
                 if(advancement != null) {
+                    advancement.SetOrder(i);
                     _currentEnabledAdvancements.add(advancement);
                 }
             }
@@ -127,21 +128,20 @@ public class AdvancementManager {
 
     public void RandomizeTasks() {
         int randomNumber;
-        CustomAdvancement currentAdvancement;
+        CustomAdvancement currentAdvancement = null;
         CustomAdvancement firstAdvancement = null;
         HashMap<Object, Object> parameterChanges = new HashMap<>();
-
         ArrayList<CustomAdvancement> availableAdvancements = new ArrayList();
+        List<CustomAdvancement> usedAdvancements = new ArrayList<>();
+        CustomAdvancement parentAdvancement = null;
+
         availableAdvancements.addAll(customAdvancements);
         availableAdvancements.remove(GetAdvancement("kill_enderdragon"));
-        CustomAdvancement parentAdvancement = null;
-        List<CustomAdvancement> usedAdvancements = new ArrayList<>();
-        CustomAdvancement secondAdvancement = null;
+
 
         if(!customAdvancements.isEmpty()) {
             for (int i = 0; i < _maxTasks - 1; i++) {
                 Random rand = new Random();
-                //Bukkit.broadcastMessage("availableAdvancements size: " + availableAdvancements.size());
                 if (!(availableAdvancements.isEmpty())) {
                     randomNumber = rand.nextInt(availableAdvancements.size());
                     currentAdvancement = availableAdvancements.get(randomNumber);
@@ -202,48 +202,91 @@ public class AdvancementManager {
     }
 
     public void ModifyAdvancement(File file, HashMap<Object, Object> parameterChanges) {
-        ChangeAdvancementFile(file, parameterChanges);
+        if(_advancementCompatible) {
+            ChangeAdvancementFile(file, parameterChanges);
+        }
     }
 
     public void ModifyAdvancement(File file, Object key, Object newValue) {
         HashMap<Object, Object> parameterChanges = new HashMap<>();
         parameterChanges.put(key, newValue);
 
-        ChangeAdvancementFile(file, parameterChanges);
+        if(_advancementCompatible) {
+            ChangeAdvancementFile(file, parameterChanges);
+        }
     }
+    /*private void ModifyAlternativeGUI(Object key, Object newValue) {
+
+    }*/
 
     private void ChangeAdvancementFile(File file, HashMap<Object, Object> parameterChanges) {
         Writer writer;
         Reader reader;
-        if (parameterChanges != null && !parameterChanges.isEmpty()) {
-            try {
-                reader = Files.newBufferedReader(file.toPath());
-                Map<Object, Object> map = gson.fromJson(reader, Map.class);
-                writer = Files.newBufferedWriter(file.toPath());
+        if(_advancementCompatible) {
+            if (parameterChanges != null && !parameterChanges.isEmpty()) {
+                try {
+                    reader = Files.newBufferedReader(file.toPath());
+                    Map<Object, Object> map = gson.fromJson(reader, Map.class);
+                    writer = Files.newBufferedWriter(file.toPath());
 
-                for (Map.Entry<Object, Object> entry : map.entrySet()) {
-                    if (parameterChanges.containsKey(entry.getKey())) {
-                        entry.setValue(parameterChanges.get(entry.getKey()));
-                        //Bukkit.broadcastMessage(file.getName() + ": " + entry.getKey() + " has been changed to " + parameterChanges.get(entry.getKey()));
-                    } else if (ContainsChar(String.valueOf(entry.getValue()), '{')) {
-                        Map<Object, Object> innerMap = new Gson().fromJson(new Gson().toJson(entry.getValue()), Map.class);
+                    for (Map.Entry<Object, Object> entry : map.entrySet()) {
+                        if (parameterChanges.containsKey(entry.getKey())) {
+                            entry.setValue(parameterChanges.get(entry.getKey()));
+                            //Bukkit.broadcastMessage(file.getName() + ": " + entry.getKey() + " has been changed to " + parameterChanges.get(entry.getKey()));
+                        } else if (ContainsChar(String.valueOf(entry.getValue()), '{')) {
+                            Map<Object, Object> innerMap = new Gson().fromJson(new Gson().toJson(entry.getValue()), Map.class);
 
-                        for (Map.Entry<Object, Object> innerEntry : innerMap.entrySet()) {
-                            if (parameterChanges.containsKey(innerEntry.getKey())) {
-                                innerEntry.setValue(parameterChanges.get(innerEntry.getKey()));
-                                map.replace(entry.getKey(), innerMap);
-                                //Bukkit.broadcastMessage(file.getName() + ": " + innerEntry.getKey() + " has been changed to " + parameterChanges.get(innerEntry.getKey()));
+                            for (Map.Entry<Object, Object> innerEntry : innerMap.entrySet()) {
+                                if (parameterChanges.containsKey(innerEntry.getKey())) {
+                                    innerEntry.setValue(parameterChanges.get(innerEntry.getKey()));
+                                    map.replace(entry.getKey(), innerMap);
+                                    //Bukkit.broadcastMessage(file.getName() + ": " + innerEntry.getKey() + " has been changed to " + parameterChanges.get(innerEntry.getKey()));
+                                }
                             }
                         }
                     }
+                    gson.toJson(map, writer);
+                    writer.close();
+                    reader.close();
+                } catch (IllegalStateException | JsonSyntaxException | IOException exception) {
+                    Bukkit.broadcastMessage("error");
+                    exception.printStackTrace();
                 }
-                gson.toJson(map, writer);
-                writer.close();
-                reader.close();
-            } catch (IllegalStateException | JsonSyntaxException | IOException exception) {
-                Bukkit.broadcastMessage("error");
-                exception.printStackTrace();
             }
+        }
+        else {
+            ModifyAlternativeGUI(file.getName(), parameterChanges);
+        }
+    }
+    private void ModifyAlternativeGUI(String advancementName, HashMap<Object, Object> parameterChanges) {
+        CustomAdvancement advancement = GetAdvancement(advancementName);
+        List<String> lore = new ArrayList<>();
+        int order = advancement.GetOrder();
+
+        for (Team team : _teams) {
+            ItemStack item = team.tasksInventory.getItem(order);
+            ItemMeta meta = item.getItemMeta();
+            for (Object key : parameterChanges.keySet()) {
+                String s = (String) key;
+
+                switch (s) {
+                    case "title":
+                        meta.setDisplayName((String) parameterChanges.get(key));
+                        break;
+                    case "description":
+                        lore.add((String) parameterChanges.get(key));
+                        meta.setLore(lore);
+                        break;
+                    default:
+                        break;
+                }
+                lore.clear();
+            }
+            item.setItemMeta(meta);
+            team.tasksInventory.setItem(order, item);
+
+            item = null;
+            meta = null;
         }
     }
 
@@ -283,6 +326,36 @@ public class AdvancementManager {
         }
         return null;
     }
+    //public Inventory CreateTaskInventory(Player p) {
+    public void InitializeTaskInventory(Inventory inventory) {
+        int i = 0;
+        List<String> lore = new ArrayList<>();
+
+        for(CustomAdvancement a : GetCurrentEnabledTasks()) {
+            ItemStack item = new ItemStack(a.GetType().GetSymbol());
+            ItemMeta meta = item.getItemMeta();
+
+            lore.add(a.GetType().GetDescription());
+            meta.setDisplayName(a.GetFileName().toLowerCase().replace('_', ' '));
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+            Bukkit.broadcastMessage("Item: " + item);
+            Bukkit.broadcastMessage("Lore: " + lore.get(0));
+            Bukkit.broadcastMessage("Display name: " + a.GetFileName().toLowerCase().replace('_', ' '));
+            inventory.setItem(i, item);
+
+            item = null;
+            meta = null;
+            lore.clear();
+            i++;
+        }
+        //return inventory;
+    }
+//    private void UpdateAlternativeGUIs(int order) {
+//        for(Team team : _teams) {
+//            team.tasksInventory.getItem()
+//        }
+//    }
 
     public String GetAdvancementPath() {
         return advancementsPath;

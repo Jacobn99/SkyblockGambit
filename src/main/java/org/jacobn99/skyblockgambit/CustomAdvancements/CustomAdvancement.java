@@ -20,23 +20,29 @@ public class CustomAdvancement {
     Set<Player> _playerList;
     CustomAdvancement _parentAdvancement;
     AdvancementManager _advancementManager;
+    AdvancementType _type;
+    private int _order;
+    //private Material _symbol;
 
-    public CustomAdvancement(String advancementName, ItemStack reward, AdvancementManager advancementManager) {
+    public CustomAdvancement(String advancementName, AdvancementType type, ItemStack reward, AdvancementManager advancementManager) {
         _advancementManager = advancementManager;
         InitializeVariables(advancementName, _advancementManager.GetCustomAdvancementList());
         _reward = new ItemStack[1];
         _reward[0] = reward;
         _parentAdvancement = null;
+        _type = type;
         //Bukkit.broadcastMessage(advancementName + " has been created");
     }
-    public CustomAdvancement(String advancementName, ItemStack[] reward, List<CustomAdvancement> customAdvancementList) {
+    public CustomAdvancement(String advancementName, AdvancementType type, ItemStack[] reward, List<CustomAdvancement> customAdvancementList) {
         InitializeVariables(advancementName, customAdvancementList);
         _reward = reward;
+        _type = type;
+
     }
     private void InitializeVariables(String advancementName, List<CustomAdvancement> customAdvancementList) {
         _customAdvancementList = customAdvancementList;
         _advancementsPath = FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/')
-                + "/Spigot/void_world/datapacks/task_advancements/data/minecraft/advancement/";
+                + "/LocalHost/void_world/datapacks/task_advancements/data/minecraft/advancement/";
         _file = new File( _advancementsPath + advancementName + ".json");
         _customAdvancementList.add(this);
         _playerList = new HashSet<>();
@@ -77,6 +83,18 @@ public class CustomAdvancement {
     public void SetPlayerList(Set<Player> _playerList) {
         this._playerList = _playerList;
     }
+    public AdvancementType GetType() {
+        return _type;
+    }
+
+//    public Material GetSymbol() {
+//        return _symbol;
+//    }
+//
+//    public void SetSymbol(Material _symbol) {
+//        this._symbol = _symbol;
+//    }
+
     public boolean CheckPrequisiteAdvancement(Player p) {
         if(_parentAdvancement != null) {
             if(_parentAdvancement.GetPlayerList().contains(p)) {
@@ -89,6 +107,12 @@ public class CustomAdvancement {
         else {
             return true;
         }
+    }
+    public int GetOrder() {
+        return _order;
+    }
+    public void SetOrder(int o) {
+        _order = o;
     }
 
     public boolean GrantAdvancement(Player p, boolean isConditional) {

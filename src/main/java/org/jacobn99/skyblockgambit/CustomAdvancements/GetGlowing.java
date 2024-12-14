@@ -1,12 +1,13 @@
 package org.jacobn99.skyblockgambit.CustomAdvancements;
 
+import org.bukkit.Material;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.jacobn99.skyblockgambit.GameManager;
 
-public class GetGlowing {
+public class GetGlowing implements AdvancementType{
     GameManager _gameManager;
     //CustomAdvancement _advancement;
     private AdvancementManager _advancementManager;
@@ -24,5 +25,15 @@ public class GetGlowing {
                 _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("get_glowing"), true);
             }
         }
+    }
+
+    @Override
+    public Material GetSymbol() {
+        return Material.SPECTRAL_ARROW;
+    }
+
+    @Override
+    public String GetDescription() {
+        return "Get the glowing effect";
     }
 }

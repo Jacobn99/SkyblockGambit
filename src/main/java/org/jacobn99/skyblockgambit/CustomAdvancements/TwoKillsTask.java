@@ -1,13 +1,14 @@
 package org.jacobn99.skyblockgambit.CustomAdvancements;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jacobn99.skyblockgambit.GameManager;
 
 import java.util.List;
 import java.util.Map;
 
-public class TwoKillsTask {
+public class TwoKillsTask implements AdvancementType {
 GameManager _gameManager;
 Map<Player, Integer> _killCounts;
 CustomAdvancement _advancement;
@@ -50,5 +51,15 @@ private AdvancementManager _advancementManager;
         _killCounts.replace(killer, _killCounts.get(killer) + 1);
         Bukkit.broadcastMessage(killer.getName() + " has " + _killCounts.get(killer) + " kills!");
         //}
+    }
+
+    @Override
+    public Material GetSymbol() {
+        return Material.SKELETON_SKULL;
+    }
+
+    @Override
+    public String GetDescription() {
+        return "Kill two players";
     }
 }

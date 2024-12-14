@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.Portals.Portal;
@@ -21,11 +22,14 @@ public class Team {
     List<CustomAdvancement> _finishedTasks;
     Location _netherSpawn;
     public Inventory killsInventory;
+    public Inventory tasksInventory;
     private int _generatorCount;
+    AdvancementManager _advancementManager;
 
 
-    public Team(String teamColor, GameManager gameManager) {
+    public Team(String teamColor, AdvancementManager advancementManger, GameManager gameManager) {
         _gameManager = gameManager;
+        _advancementManager = advancementManger;
         _netherSpawn = null;
         _finishedTasks = new ArrayList<>();
         _members = new HashSet<>();
@@ -37,6 +41,9 @@ public class Team {
         _teams.add(this);
         _generatorCount = 0;
         killsInventory = Bukkit.createInventory(null, 27, "PVP Rewards");
+        tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+        _advancementManager.InitializeTaskInventory(tasksInventory);
+        _gameManager.nonClickableInventories.add(tasksInventory);
 
     }
 

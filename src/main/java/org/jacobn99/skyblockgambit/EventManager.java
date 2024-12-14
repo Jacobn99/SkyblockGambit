@@ -75,6 +75,9 @@ public class EventManager implements Listener {
         if(_gameManager.isRunning) {
             _generatorContructor.SelectGeneratorCheck(event);
             _xStacks.XStacksCheck(event);
+            if(_gameManager.nonClickableInventories.contains(event.getInventory())) {
+                event.setCancelled(true);
+            }
         }
     }
 

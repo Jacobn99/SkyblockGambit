@@ -1,13 +1,14 @@
 package org.jacobn99.skyblockgambit.CustomAdvancements;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.jacobn99.skyblockgambit.GameManager;
 
-public class KillEnderdragon {
+public class KillEnderdragon implements AdvancementType {
     GameManager _gameManager;
     CustomAdvancement _advancement;
     private AdvancementManager _advancementManager;
@@ -24,5 +25,15 @@ public class KillEnderdragon {
             Player p = event.getEntity().getKiller();
             _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("kill_enderdragon"), true);
         }
+    }
+
+    @Override
+    public Material GetSymbol() {
+        return Material.DRAGON_HEAD;
+    }
+
+    @Override
+    public String GetDescription() {
+        return "Kill the ender dragon";
     }
 }

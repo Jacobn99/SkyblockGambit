@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CraftX {
+public class CraftX implements AdvancementType {
     GameManager _gameManager;
     CustomAdvancement _advancement;
     private ItemStack _item;
@@ -47,8 +47,8 @@ public class CraftX {
     }
     public void UpdateDescription() {
         //Bukkit.broadcastMessage("item: " + item)
-        //_item = GetItem();
-        Bukkit.broadcastMessage("item: " + _item.getType().name());
+        _item = GetItem();
+        //Bukkit.broadcastMessage("item: " + _item.getType().name());
         _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "Craft " + _item.getType().name());
     }
     private ItemStack GetItem() {
@@ -63,11 +63,6 @@ public class CraftX {
         Bukkit.broadcastMessage("ERROR: No CraftX file!");
         return null;
     }
-//    public void LoadFile() {
-//        if(!_file.exists()) {
-//            _
-//        }
-//    }
 
     public void WriteToCraftXFile() {
         Random rand = new Random();
@@ -100,6 +95,7 @@ public class CraftX {
             _item = GetItem();
             iteration++;
         }
+        Bukkit.broadcastMessage(_advancement.GetFileName() + ", " + _item.getType().name() + ", " + result.getType().name());
         if (_advancement != null && _item != null) {
             if (result.getType() == _item.getType()) {
                 Bukkit.broadcastMessage("bazinga");
@@ -110,5 +106,15 @@ public class CraftX {
         else {
             Bukkit.broadcastMessage("ERROR: No craft advancement");
         }
+    }
+
+    @Override
+    public Material GetSymbol() {
+        return Material.CRAFTING_TABLE;
+    }
+
+    @Override
+    public String GetDescription() {
+        return "Craft " + _item.getType().name().replace('_', ' ');
     }
 }

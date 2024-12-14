@@ -11,10 +11,7 @@ import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
-import org.jacobn99.skyblockgambit.CustomAdvancements.CraftX;
-import org.jacobn99.skyblockgambit.CustomAdvancements.CustomAdvancement;
-import org.jacobn99.skyblockgambit.CustomAdvancements.XStacks;
+import org.jacobn99.skyblockgambit.CustomAdvancements.*;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
@@ -79,6 +76,7 @@ public class GameManager {
     public int normalVillagerAmount;
     private int _passiveMobCap;
     World overworld;
+    public List<Inventory> nonClickableInventories;
 
 
     public GameManager(JavaPlugin mainPlugin) {
@@ -91,8 +89,9 @@ public class GameManager {
         customWorlds = new ArrayList<>();
         objects = new ArrayList<>();
         teams = new ArrayList<>();
-        participatingPlayers = new HashSet<>();
+        nonClickableInventories = new ArrayList<>();
 
+        participatingPlayers = new HashSet<>();
         processes = new HashMap<>();
         killCounts = new HashMap<>();
         advancementManager = new AdvancementManager(_mainPlugin, teams);
@@ -102,8 +101,8 @@ public class GameManager {
         _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
         _chestManager = new StarterChestManager(_mainPlugin);
         _customItemManager = new CustomItemManager(_mainPlugin);
-        blueTeam = new Team("blue", this);
-        redTeam = new Team("red", this);
+        blueTeam = new Team("blue", advancementManager, this);
+        redTeam = new Team("red", advancementManager, this);
         craftX = new CraftX(advancementManager, _mainPlugin);
         xStacks = new XStacks(advancementManager, this, _mainPlugin);
         _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
@@ -135,9 +134,9 @@ public class GameManager {
         _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 
-        InitializeTeams();
+        //InitializeTeams();
 //        UpdateSpawns();
-//        _animalSpawner.SpawnAnimals();
+        _animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
             @Override
@@ -168,17 +167,12 @@ public class GameManager {
         try {
             if (team != null) {
                 ItemStack spawnCompass = new ItemStack(Material.COMPASS);
-//            CompassMeta meta = (CompassMeta) spawnCompass.getItemMeta();
-//            meta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
-//            meta.setLodestoneTracked(true);
-//            spawnCompass.setItemMeta(meta);
                 CompassMeta compassMeta = (CompassMeta) spawnCompass.getItemMeta();
                 compassMeta.setLodestone(team.GetTeamWorld().GetWorldSpawn(this));
                 compassMeta.setLodestoneTracked(false);
                 compassMeta.setDisplayName("Spawn Compass");
                 spawnCompass.setItemMeta(compassMeta);
                 p.getInventory().addItem(spawnCompass);
-                //p.getWorld().dropItem(p.getLocation(), spawnCompass);
             }
         }
         catch(Exception e) {
@@ -187,8 +181,6 @@ public class GameManager {
     }
     public void InitializeTasks() {
         //If statement checks if defaultConfiguration.json (which is used load advancement files that don't exit yet)
-
-        //if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json")) && Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "enderdragon.json"))) {
         if(Files.exists(Paths.get(advancementManager.GetAdvancementPath() + "default_configuration.json"))) {
             if(!advancementManager.customAdvancements.isEmpty()) {
                 advancementManager.customAdvancements.clear();
@@ -196,12 +188,12 @@ public class GameManager {
 
             //CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
             //CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager);
-            CustomAdvancement reach_level_X = new CustomAdvancement("reach_level", new ItemStack(Material.DIAMOND), advancementManager);
-            CustomAdvancement kill_two_players = new CustomAdvancement("kill_two_players", new ItemStack(Material.DIAMOND), advancementManager);
-            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), advancementManager);
-            CustomAdvancement craft_item = new CustomAdvancement("craft_item", new ItemStack(Material.DIAMOND), advancementManager);
-            CustomAdvancement get_glowing = new CustomAdvancement("get_glowing", new ItemStack(Material.DIAMOND), advancementManager);
-            CustomAdvancement x_stacks = new CustomAdvancement("x_stacks", new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement reach_level_X = new CustomAdvancement("reach_level", new ReachLevelX(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement kill_two_players = new CustomAdvancement("kill_two_players", new TwoKillsTask(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new KillEnderdragon(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement craft_item = new CustomAdvancement("craft_item", new CraftX(advancementManager, _mainPlugin),new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement get_glowing = new CustomAdvancement("get_glowing", new GetGlowing(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
+            CustomAdvancement x_stacks = new CustomAdvancement("x_stacks", new XStacks(advancementManager,this, _mainPlugin), new ItemStack(Material.DIAMOND), advancementManager);
 
 
             for (CustomAdvancement a : advancementManager.GetCustomAdvancementList()) {
@@ -210,7 +202,7 @@ public class GameManager {
             //advancementManager.RandomizeTasks();
             }
         else {
-            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (enderdragon.json and/or default_configuration.json");
+            Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (default_configuration.json)");
         }
 
     }
@@ -220,7 +212,7 @@ public class GameManager {
 
         for(Team team : teams) {
             for(Player p : team.GetMembers()) {
-//                p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
+                p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
                 advancementManager.GrantRootAdvancement(p);
                 GrantCompass(p, team);
             }
@@ -301,10 +293,6 @@ public class GameManager {
     }
 
 public void UpdateSpawns() {
-        //if()
-//    blueSpawn = blueWorld.GetWorldSpawn();
-//    redSpawn =  redWorld.GetWorldSpawn();
-
     if(isWorldGenerated) {
         for (Team t : teams) {
             for (Player p : t.GetMembers()) {

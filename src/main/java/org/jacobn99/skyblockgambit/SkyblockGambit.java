@@ -1,5 +1,6 @@
 package org.jacobn99.skyblockgambit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 
@@ -24,7 +25,6 @@ public final class SkyblockGambit extends JavaPlugin {
         _gameManager.InitializeTasks();
 
 
-
         //_gameManager.SetSpawns();
 //        _gameManager.redSpawn = defaultSpawn;
 //        _gameManager.blueSpawn = defaultSpawn;
@@ -34,8 +34,10 @@ public final class SkyblockGambit extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        _gameManager.EndGame();
-        _gameManager.LogEnabledTasks();
+        if (_gameManager != null) {
+            _gameManager.EndGame();
+            _gameManager.LogEnabledTasks();
+        }
 
 
     }

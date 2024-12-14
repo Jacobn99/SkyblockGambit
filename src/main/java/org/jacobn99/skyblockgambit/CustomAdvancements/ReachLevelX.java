@@ -1,12 +1,13 @@
 package org.jacobn99.skyblockgambit.CustomAdvancements;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jacobn99.skyblockgambit.GameManager;
 
 import java.util.Map;
 
-public class ReachLevelX {
+public class ReachLevelX implements AdvancementType {
     GameManager _gameManager;
     CustomAdvancement _advancement;
     private int _level;
@@ -37,5 +38,15 @@ public class ReachLevelX {
             }
 
         }
+    }
+
+    @Override
+    public Material GetSymbol() {
+        return Material.EXPERIENCE_BOTTLE;
+    }
+
+    @Override
+    public String GetDescription() {
+        return "Reach level " + _level;
     }
 }
