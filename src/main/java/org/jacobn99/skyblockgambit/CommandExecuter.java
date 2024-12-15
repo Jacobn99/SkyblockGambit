@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
+import org.jacobn99.skyblockgambit.CustomWorlds.NaturalCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
@@ -66,128 +67,10 @@ public class CommandExecuter implements CommandExecutor {
             } if (label.equalsIgnoreCase("end")) {
                 sender.sendMessage(ChatColor.RED + "end");
                 _gameManager.EndGame();
-                //_gameManager = new GameManager(_mainPlugin);
-
-
-                //_gameManager.blueTeam.add(p);
-//                _gameManager.redTeam.clear();
-                //Bukkit.broadcastMessage("red team: " + _gameManager.GetRedTeamList());
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                Location pLoc = p.getLocation();
-                _worldCopier.CloneLand(pLoc.getX(), pLoc.getZ(), pLoc.getX() + 50, pLoc.getZ() + 50);
-//                Bukkit.broadcastMessage("data: " + data);
-
-//                //Team team = _gameManager.FindPlayerTeam(p);
-//                Inventory tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
-//
-//                _advancementManager.InitializeTaskInventory(tasksInventory);
-//                //team.killsInventory.setContents(_advancementManager.CreateTaskInventory(p).getContents());
-//                //team.killsInventory.setItem(0, new ItemStack(Material.DIAMOND));
-//
-//                p.openInventory(tasksInventory);
-
-
-
-//                int slot = _gameManager.FindInInventory(p.getInventory(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")));
-//                Bukkit.broadcastMessage("Slot: " + slot);
-                //_advancementManager.RandomizeTasks();
-//                NetherManager netherManager = new NetherManager(_gameManager, _gameManager._processManager, _worldManager);
-//                netherManager.ClearSpawnPortalArea(p.getLocation());
-                //netherManager.GenerateNetherPortal(p.getLocation().add(3, 0, 0));
-//                World nether = Bukkit.getWorld("void_world_nether");
-//                Location loc = _gameManager.FindSurface(p.getLocation(), 100, 30);
-//                if(loc != null) {
-//                    p.teleport(loc);
-//                }
-//                Bukkit.broadcastMessage("a nether fortress loc: " + Bukkit)
-//                Bukkit.broadcastMessage("loc again: " + nether.locateNearestStructure(new Location(nether, 0, 0 ,0), StructureType.NETHER_FORTRESS, 5000, false));
-//                Bukkit.broadcastMessage("loc: " + p.getWorld().locateNearestStructure(p.getLocation(), StructureType.NETHER_FORTRESS, 5000, false));
-//                String file = ;
-//                Bukkit.broadcastMessage("update folder: " + file);
-                //CustomWorld redWorld = new CustomWorld(_worldManager, new Location(Bukkit.getWorld("void_world"), 21,  100, 62), _gameManager.customWorlds);
-                //Bukkit.broadcastMessage("advancement file path??: " + _advancementManager.advancementsPath);
-//                Bukkit.broadcastMessage("world file path: " + Bukkit.getServer().getWorldContainer().getAbsolutePath());
-//                Bukkit.broadcastMessage("HomeDirectory: " + FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath().replace('\\', '/'));
-//                Bukkit.broadcastMessage("data file path: " + _mainPlugin.getDataFolder().getAbsolutePath());
-                //_worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
-                //_worldCopier.ClearWorld(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
-                //p.openInventory(_gameManager.FindPlayerTeam(p).killsInventory);
-
-//                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/gamer.json");
-//
-//                List<Object> objects = new ArrayList<>();
-//                objects.add(new ItemStack(Material.CAKE));
-//                _DataManager.WriteToFile(file, objects, new ItemStackSerialization());
-//                objects = _DataManager.GetObjects(file, new ItemStackSerialization());
-//                Bukkit.broadcastMessage(objects.get(0).toString());
-                //_gameManager.GenerateInvaderPortalFrame(p.getLocation());
-                //_gameManager.GrantTeamCompasses();
-                //_worldManager.SpawnTeamVillagers(_gameManager.getCustomVillagers(), _gameManager._customVillagerManager);
-//                Team team = _gameManager.FindPlayerTeam(p);
-//                _animalSpanwer.SpawnAnimals();
-//                Bukkit.broadcastMessage("animal population: " + _animalSpanwer.GetAnimalPopulation(team.GetTeamWorld()));
-
-//                _gameManager.InitializeTasks();
-//                _gameManager.advancementManager.ClearTaskParents();
-                //_gameManager.advancementManager.RandomizeTasks();
-                //_gameManager.advancementManager.RandomizeTasks();
-                //Bukkit.broadcastMessage("current tasks: " + _gameManager.advancementManager.GetCurrentEnabledTaskNames());
-                //_gameManager.GenerateEndPortal(p.getLocation());
-
-//                _gameManager.craftX.WriteToCraftXFile();
-//                _gameManager.craftX.UpdateDescription();
-
-                //_gameManager.InitializeTasks();
-//                File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
-//                _worldManager.BuildWorld(_gameManager.redWorld, file, _processManager);
-                //_worldCopier.DuplicateLand(p.getLocation(), file);
-
-                //_worldCopier.PasteChunkPiece(_worldCopier.GetChunkPieceData(file.getAbsolutePath()), 0, p.getLocation());
-//
-                //_worldCopier.DuplicateLand(p.getLocation(), file);
-                //Bukkit.broadcast  Message("latest execution time: " + _processManager.GetLatestExecutionTime(_gameManager.processes));
-
-//                for(Portal portal : _gameManager.portals) {
-//                    Bukkit.broadcastMessage("Portal Loc: " + portal.GetPortalLocation());
-//                }
-//                for(CustomWorld customWorld : _gameManager.customWorlds) {
-//                    Bukkit.broadcastMessage("Reference Corner: " + customWorld.GetReferenceCorner());
-//                }
-//                _worldCopier.DuplicateLand(20, 20, new Location(Bukkit.getWorld("void_world"),-13, 75, -53),
-//                        new Location(Bukkit.getWorld("void_world"), 193, 75, 482));
-                //_gameManager.InitializeTasks();
-                //Bukkit.broadcastMessage(_advancementManager.GetEnabledTasks().toString());
-
-//                HashMap<Object, Object> parameterChanges = new HashMap<>();
-//
-//                parameterChanges.put("parent", "task_advancements:tasks/root");
-//                parameterChanges.put("title", "Task 120");
-//                parameterChanges.put("show_toast", true);
-//                //parameterChanges.put("announce_to_chat", "true");
-
-                //_gameManager.InitializeTasks();
-                //_gameManager.LogEnabledTasks();
-                //_advancementManager.ModifyAdvancement("task1.json", "title", "task 69");
-                //JsonManager _jsonManager = new JsonManager();
-                //Map<Object,Object> outermostEntries = _jsonManager.JsonFileToMap(new File(_advancementManager.GetAdvancementPath() + "task1.json"));
-                //_jsonManager.ModifyJsonFile(new File(_advancementManager.GetAdvancementPath() + "task1.json"), "title", "69");
-
-//                String json = "{\"display\":{\"icon\":{\"id\":\"minecraft:map\"},\"title\":\"Task 120\",\"description\":\"...\",\"frame\":\"task\",\"show_toast\":true,\"announce_to_chat\":true,\"hidden\":false},\"parent\":\"task_advancements:tasks/root\",\"criteria\":{\"requirement\":{\"trigger\":\"minecraft:impossible\"}}}";
-//                Gson gson = new Gson();
-//                Map<Object,Object> map = gson.fromJson(json, Map.class);
-
-
-
-//                HashMap<String, Object> parameterChanges = new HashMap<>();
-//                parameterChanges.put("parent", "task_advancements:tasks/root");
-//                parameterChanges.put("title", "Task 120");
-//                parameterChanges.put("show_toast", true);
-//                //parameterChanges.put("announce_to_chat", "true");
-//
-//                AdvancementManager _advancementManager = new AdvancementManager();
-//                _advancementManager.ChangeAdvancementFile("task1.json", parameterChanges);
+                _worldManager.ClearWorlds();
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
                 //_chestManager.SetChestInventory(p);

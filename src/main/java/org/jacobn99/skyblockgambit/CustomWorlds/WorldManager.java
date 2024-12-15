@@ -36,10 +36,21 @@ public class WorldManager {
     private PortalManager _portalManager;
     private ProcessManager _processManager;
     private CustomVillagerManager _villagerManager;
+    final private int _pieceHeight;
+    final private int _pieceLength;
+    final private int _chunkWorldSize;
+
     public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager, CustomVillagerManager customVillagerManager) {
         rand = new Random();
         _mainPlugin = mainPlugin;
+
+        _pieceHeight = 100;
+        _pieceLength = 16;
+        _chunkWorldSize = 3;
+        // USE THIS IF GOING BACK TO NATURAL GEN
+//        _worldLength = _chunkWorldSize * _pieceLength;
         _worldLength = 180;
+
 
         _gameManager = gameManager;
         _portalManager = portalManager;
@@ -48,12 +59,12 @@ public class WorldManager {
         _customWorlds = _gameManager.customWorlds;
         _villagerManager = customVillagerManager;
     }
-//    public void ClearWorlds() {
-//        HashMap<Long, Process> _processes = _gameManager.processes;
-//        for(CustomWorld customWorld : _customWorlds) {
-//            _processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
-//        }
-//    }
+    public void ClearWorlds() {
+        HashMap<Long, Process> _processes = _gameManager.processes;
+        for(CustomWorld customWorld : _customWorlds) {
+            _processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
+        }
+    }
     public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY, int minY, int spawnRadius) {
         int x;
         int z;
@@ -232,5 +243,15 @@ public class WorldManager {
     }
     public int get_worldLength() {
         return _worldLength;
+    }
+    public int get_pieceHeight() {
+        return _pieceHeight;
+    }
+    public int get_pieceLength() {
+        return _pieceLength;
+    }
+
+    public int get_chunkWorldSize() {
+        return _chunkWorldSize;
     }
 }

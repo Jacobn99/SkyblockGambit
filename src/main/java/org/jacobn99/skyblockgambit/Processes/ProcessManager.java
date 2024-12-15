@@ -9,14 +9,16 @@ import java.util.*;
 
 public class ProcessManager {
     List<HashMap<Long, Process>> processGroups;
+    boolean _taskDone = false;
 
     public ProcessManager() {
         processGroups = new ArrayList<>();
+        _taskDone = false;
     }
 
     public void HandleProcesses(HashMap<Long, Process> processes) {
+
         World world = Bukkit.getWorld("void_world");
-        //Iterator it = processes.entrySet().iterator();
         List<Process> markedProcesses = new ArrayList<>();
 
         if(processes.size() > 0) {
@@ -30,35 +32,20 @@ public class ProcessManager {
             long currentKey = executionTimes.get(i);
             Process process = processes.get(currentKey);
 
-            if (world.getFullTime() >= currentKey) {
-                if(!process._isDone) {
-                    markedProcesses.add(process);
-                    process.set_isDone(true);
-                    process.ExecuteFunction();
-                }
+            if (world.getFullTime() >= currentKey && !this._taskDone) {
+                this._taskDone = true;
+                markedProcesses.add(process);
+                process.set_isDone(true);
+                process.ExecuteFunction();
             }
         }
-//        while(it.hasNext()) {
-//            //try {
-//            Map.Entry item = (Map.Entry) it.next();
-//            long executionTime = (long) item.getKey();
-//            Process process = processes.get(executionTime);
-//
-//            if (world.getFullTime() >= executionTime) {
-//                if(!process._isDone) {
-//                    markedProcesses.add(process);
-//                    process.set_isDone(true);
-//                    process.ExecuteFunction();
-//                }
-//            }
-//        }
 
         for(Process process : markedProcesses) {
             processes.remove(process.get_executionTime());
             process = null;
-            //previousProcess = null;
         }
         markedProcesses.clear();
+        this._taskDone = false;
     }
     public void CreateProcess(HashMap<Long, Process> processes, long executionTime, Queueable queueable) {
         long worldTime = Bukkit.getWorld("void_world").getFullTime();

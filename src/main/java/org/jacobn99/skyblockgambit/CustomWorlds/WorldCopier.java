@@ -27,9 +27,6 @@ public class WorldCopier {
     int blocksGeneratedPerExecution;
     int maxYLevel;
     int minYLevel;
-    int pieceHeight;
-    int pieceLength;
-    int chunkWorldSize;
     World _world;
 
     public WorldCopier(JavaPlugin mainPlugin, HashMap<Long, Process> processes, ProcessManager processManager) {
@@ -40,83 +37,13 @@ public class WorldCopier {
         _processManager = processManager;
 
         timeBetweenExecution = 1; //in ticks
-//        pieceHeight = 100;
-        pieceHeight = 100;
-        pieceLength = 16;
+//        pieceHeight = ;
+//        pieceLength = 16;
         blocksGeneratedPerExecution = 25000;
-        chunkWorldSize = 3;
-        maxYLevel = 200;
-        minYLevel = -60;
+//        chunkWorldSize = 3;
+        maxYLevel = 100;
+        minYLevel = 0;
         _world = Bukkit.getWorld("void_world");
-//        _worldName = "void_world";
-    }
-
-    public void CloneLand(double oldX, double oldZ, double newX, double newZ) {
-        long loopIterations = 0;
-        for(int y = 0; y < (this.maxYLevel - this.minYLevel)/this.pieceHeight; y++) {
-            for(int x = 0; x < this.chunkWorldSize; x++) {
-                for(int z = 0; z < this.chunkWorldSize; z++) {
-                    int xDistance = x * this.pieceLength;
-                    int zDistance = z * this.pieceLength;
-                    int yDistance = y * this.pieceHeight;
-
-                    Location copyLoc = new Location(this._world,
-                            (int)(oldX + xDistance), this.maxYLevel - yDistance, (int)(oldZ + zDistance));
-
-                    Location pasteLoc = new Location(this._world,
-                            (int)(newX + xDistance), this.maxYLevel - yDistance, (int)(newZ - zDistance));
-
-                    _processManager.CreateProcess(_processes,
-                            timeBetweenExecution * (loopIterations) + _world.getFullTime(),
-                            () -> clonePiece(copyLoc, pasteLoc));
-//                    clonePiece(copyLoc, pasteLoc);
-                    loopIterations+=1;
-
-                }
-            }
-        }
-    }
-
-
-    private void clonePiece(Location copyLoc, Location pasteLoc) {
-        List<SerializedBlock> data = CopyPiece(copyLoc);
-        PastePiece(data, pasteLoc);
-    }
-    private List<SerializedBlock> CopyPiece(Location topLeftLoc) {
-        double referenceX = topLeftLoc.getX();
-        double referenceY = topLeftLoc.getY();
-        double referenceZ = topLeftLoc.getZ();
-
-        List<SerializedBlock> dataList = new ArrayList<>();
-
-
-        for (int y = 0; y < pieceHeight; y++) {
-            for (int x = 0; x < this.pieceLength; x++) {
-                for (int z = 0; z < this.pieceHeight; z++) {
-                    Block currentBlock = this._world.getBlockAt(
-                            (int)(referenceX + x), ((int)referenceY - y), ((int)referenceZ + z));
-
-//                    if(currentBlock.getType() != Material.AIR) {
-                        //x, y, z are in reference to the location they were copied from (not exact coordinates)
-                    dataList.add(new SerializedBlock(currentBlock.getBlockData(), x, y, z));
-//                    }
-                }
-            }
-        }
-        return dataList;
-    }
-
-    private void PastePiece(List<SerializedBlock> dataList, Location newLoc) {
-        double referenceX = newLoc.getX();
-        double referenceY = newLoc.getY();
-        double referenceZ = newLoc.getZ();
-
-        for(SerializedBlock block : dataList) {
-            this._world.getBlockAt(
-                    (int)(referenceX + block.get_x()),
-                    (int)(referenceY - block.get_y()),
-                    (int)(referenceZ + block.get_z()) ).setBlockData(block.get_data());
-        }
     }
 
     public void DuplicateLand(Location newLoc, File file) {
