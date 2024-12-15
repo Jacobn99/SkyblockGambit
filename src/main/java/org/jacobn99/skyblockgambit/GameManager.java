@@ -117,26 +117,26 @@ public class GameManager {
     }
     public void Start() {
         Bukkit.broadcastMessage("Starting...");
-
+//
         isRunning = true;
-        World world = Bukkit.getWorld("void_world");
-        File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
-
-        _customItemManager.LoadRequiredItems();
-        InitializeTasks();
-
-        blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
-        redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
-
-        _worldManager.BuildWorld(redWorld, file, _processManager);
-        _worldManager.BuildWorld(blueWorld, file, _processManager);
-
-        _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
-                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
-
-        //InitializeTeams();
-//        UpdateSpawns();
-        _animalSpawner.SpawnAnimals();
+//        World world = Bukkit.getWorld("void_world");
+//        File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
+//
+//        _customItemManager.LoadRequiredItems();
+//        InitializeTasks();
+//
+//        blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
+//        redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
+//
+//        _worldManager.BuildWorld(redWorld, file, _processManager);
+//        _worldManager.BuildWorld(blueWorld, file, _processManager);
+//
+//        _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
+//                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
+//
+//        //InitializeTeams();
+////        UpdateSpawns();
+//        _animalSpawner.SpawnAnimals();
 
         new BukkitRunnable() {
             @Override
@@ -144,10 +144,10 @@ public class GameManager {
                 if(!isRunning) {
                     this.cancel();
                 }
-                _animalSpawner.SpawnAnimals();
+//                _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
-                _generatorManager.RenewGenerators(tickRate);
-                _portalManager.PortalUpdate(portals, tickRate);
+//                _generatorManager.RenewGenerators(tickRate);
+//                _portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }

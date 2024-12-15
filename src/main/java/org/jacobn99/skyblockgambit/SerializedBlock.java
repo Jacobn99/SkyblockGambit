@@ -1,14 +1,20 @@
 package org.jacobn99.skyblockgambit;
 
-import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
 
 public class SerializedBlock {
     private String _data;
+    private BlockData _blockData;
     private double _x;
     private double _y;
     private double _z;
 
-    public String get_data() {
+
+    public BlockData get_data() {
+        return _blockData;
+    }
+    public String get_str_data() {
+        assert _data != null;
         return _data;
     }
 
@@ -43,6 +49,13 @@ public class SerializedBlock {
 
     public SerializedBlock(String data, double x, double y, double z) {
         _data = data;
+        _x = x;
+        _y = y;
+        _z = z;
+    }
+
+    public SerializedBlock(BlockData blockData, double x, double y, double z) {
+        _blockData = blockData;
         _x = x;
         _y = y;
         _z = z;

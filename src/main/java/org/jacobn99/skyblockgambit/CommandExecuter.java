@@ -1,6 +1,7 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,6 +35,7 @@ public class CommandExecuter implements CommandExecutor {
     PortalManager _portalManager;
     AnimalSpawner _animalSpanwer;
     private DataManager _DataManager;
+    private World _world;
     //ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -47,6 +49,7 @@ public class CommandExecuter implements CommandExecutor {
         _worldCopier = _worldManager._worldCopier;
         _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
         _DataManager = new DataManager();
+        _world = Bukkit.getWorld("void_world");
 
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
@@ -72,14 +75,21 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                //Team team = _gameManager.FindPlayerTeam(p);
-                Inventory tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+                Location pLoc = p.getLocation();
+                _worldCopier.CloneLand(pLoc.getX(), pLoc.getZ(), pLoc.getX() + 50, pLoc.getZ() + 50);
+//                Bukkit.broadcastMessage("data: " + data);
 
-                _advancementManager.InitializeTaskInventory(tasksInventory);
-                //team.killsInventory.setContents(_advancementManager.CreateTaskInventory(p).getContents());
-                //team.killsInventory.setItem(0, new ItemStack(Material.DIAMOND));
+//                //Team team = _gameManager.FindPlayerTeam(p);
+//                Inventory tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+//
+//                _advancementManager.InitializeTaskInventory(tasksInventory);
+//                //team.killsInventory.setContents(_advancementManager.CreateTaskInventory(p).getContents());
+//                //team.killsInventory.setItem(0, new ItemStack(Material.DIAMOND));
+//
+//                p.openInventory(tasksInventory);
 
-                p.openInventory(tasksInventory);
+
+
 //                int slot = _gameManager.FindInInventory(p.getInventory(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("PORTAL_OPENER")));
 //                Bukkit.broadcastMessage("Slot: " + slot);
                 //_advancementManager.RandomizeTasks();
