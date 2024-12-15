@@ -70,7 +70,15 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _worldManager.ClearWorlds();
+                for(Team team : _gameManager.teams) {
+                    if (team.GetMembers().contains(p)) {
+//                        team.tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+//
+//                        _advancementManager.InitializeTaskInventory(team.tasksInventory);
+//                        p.openInventory(team.tasksInventory);
+                    }
+                }
+//                _worldManager.ClearWorlds();
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
                 //_chestManager.SetChestInventory(p);

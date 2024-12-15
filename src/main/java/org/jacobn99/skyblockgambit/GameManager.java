@@ -67,6 +67,7 @@ public class GameManager {
     private Team blueTeam;
     private Team redTeam;
     public CraftX craftX;
+    public GetGlowing getGlowing;
     CustomWorld blueWorld;
     CustomWorld redWorld;
     //public List<ProcessGroup> processGroups;
@@ -105,6 +106,7 @@ public class GameManager {
         redTeam = new Team("red", advancementManager, this);
         craftX = new CraftX(advancementManager, _mainPlugin);
         xStacks = new XStacks(advancementManager, this, _mainPlugin);
+        getGlowing = new GetGlowing(this, advancementManager);
         _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
         netherManager = new NetherManager(this, _processManager, _worldManager);
         tickRate = 3;
@@ -114,6 +116,7 @@ public class GameManager {
         isWorldGenerated = false;
         _passiveMobCap = 35;
         _generatorManager = new GeneratorManager();
+
     }
     public void Start() {
         Bukkit.broadcastMessage("Starting...");
@@ -304,29 +307,6 @@ public void UpdateSpawns() {
     public List<StarterChest> GetStarterChestList() {
         return starterChestList;
     }
-
-//    private void RenewGenerators(long tickRate) {
-////        ItemStack fuel = new ItemStack(Material.STONE, 1);
-//        for(ItemGenerator g : _generatorManager.GetGenerators()) {
-//            //if(g.GetLocation() != null && g.IsFuelAvailable()) {
-//                if (g.GetGenerateTimeRemaining() <= 0) {
-//                    g.Generate();
-//                    //g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
-//                    //g.AddGenerateTime(g.GetGenerateDelay() + tickRate);
-//                    //break;
-//                }
-////                if (g.GetFuelTimeRemaining() <= 0) {
-////                    g.GetFuelChest().getBlockInventory().removeItem(g.GetFuel());
-////                    g.AddFuelTime(g.GetFuelDelay() + tickRate);
-////                    //break;
-////                }
-////                //Bukkit.broadcastMessage("Time Remaining: " + g.GetTimeRemaining());
-//                g.AddGenerateTime(-tickRate);
-////                g.AddFuelTime(-tickRate);
-//                //g.AddTime();
-//        }
-//    }
-
 
     public void Reset() {
         //List<Generator> _generators = _generatorManager.generators;

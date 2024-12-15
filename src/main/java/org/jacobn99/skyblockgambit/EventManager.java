@@ -11,10 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityPortalEnterEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.VillagerAcquireTradeEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Merchant;
@@ -45,6 +42,7 @@ public class EventManager implements Listener {
     CustomVillagerManager _villagerManager;
     ProcessManager _processManager;
     private XStacks _xStacks;
+    private GetGlowing _getGlowing;
     private GeneratorConstructor _generatorContructor;
     private NetherManager _netherManager;
 
@@ -66,6 +64,7 @@ public class EventManager implements Listener {
         _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager, _gameManager);
         _xStacks = _gameManager.xStacks;
         _netherManager = _gameManager.netherManager;
+        _getGlowing = _gameManager.getGlowing;
         //_generatorContructor = new GeneratorConstructor(_gener.generators, _itemManager);
         world = Bukkit.getWorld("void_world");
         //_craftX = new CraftX(_gameManager, _advancementManager);
@@ -78,6 +77,14 @@ public class EventManager implements Listener {
             if(_gameManager.nonClickableInventories.contains(event.getInventory())) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPotionEffect(EntityPotionEffectEvent event) {
+        if(_gameManager.isRunning) {
+            Bukkit.broadcastMessage("got here");
+            _getGlowing.GetGlowingCheck(event);
         }
     }
 
