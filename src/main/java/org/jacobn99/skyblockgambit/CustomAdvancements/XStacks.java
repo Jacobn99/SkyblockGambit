@@ -1,17 +1,13 @@
 package org.jacobn99.skyblockgambit.CustomAdvancements;
 
-import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.DataManager;
 import org.jacobn99.skyblockgambit.GameManager;
 import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
@@ -24,7 +20,7 @@ public class XStacks implements AdvancementType{
     GameManager _gameManager;
     CustomAdvancement _advancement;
     private Map<ItemStack, Integer> _itemMap;
-    private ItemStack _item;
+    public ItemStack _item;
     private AdvancementManager _advancementManager;
     private int iteration;
     private File _dataFile;
@@ -45,7 +41,7 @@ public class XStacks implements AdvancementType{
         _possibleItems = new ArrayList<>();
         _itemMap = new HashMap<>();
         //_item = GetItem();
-        InitializeItem();
+        UpdateItem();
 
     }
     private void InitializePossibleItems() {
@@ -59,9 +55,16 @@ public class XStacks implements AdvancementType{
         //Bukkit.broadcastMessage("item: " + item)
         //_item = GetItem();
         //Bukkit.broadcastMessage("item: " + _item.getType().name());
-        _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/x_stacks.json"), "description", "Get " + _itemMap.get(_item) + " " + _item.getType().name());
+        Map<ItemStack, Integer> itemMap = GetItemWithAmount();
+        _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/x_stacks.json"),
+                "description", "Get " + itemMap.get(_item) + " " + _item.getType().name());
     }
-    private void InitializeItem() {
+
+    private Map<ItemStack, Integer> GetItemWithAmount() {
+        UpdateItem();
+        return _itemMap;
+    }
+    private void UpdateItem() {
         InitializePossibleItems();
 
         if (_dataFile.exists()) {
@@ -100,6 +103,7 @@ public class XStacks implements AdvancementType{
             }
             i++;
         }
+
         //_dataManager.WriteToFile(_dataFile, writableContent, _itemStackSerialization);
     }
     private List<ItemStack> GetPossibleItems() {
@@ -107,16 +111,22 @@ public class XStacks implements AdvancementType{
     }
     public void XStacksCheck(InventoryClickEvent event) {
         int count = 0;
+        Bukkit.broadcastMessage("LETS GOO BROO YOYOYOY");
         Player p = (Player) event.getWhoClicked();
         //Bukkit.broadcastMessage(p.getName());
         Inventory inventory = event.getInventory();
+        Inventory playerInventory = p.getInventory();
         Team team = _gameManager.FindPlayerTeam(p);
         //Bukkit.broadcastMessage(team.GetTeamColor());
 
         if(team != null) {
-            if(inventory == team.killsInventory) {
-                for (ItemStack item : inventory.getContents()) {
+//            Bukkit.broadcastMessage("type: " + inventory.getType());
+            if(inventory instanceof CraftingInventory) {
+
+                for (ItemStack item : playerInventory.getContents()) {
                     if (item != null) {
+                        Bukkit.broadcastMessage("Item: " + item.getType()+ ", Target: " + _item.getType());
+
                         if (item.getType().equals(_item.getType())) {
                             count += item.getAmount();
                         }
@@ -124,7 +134,9 @@ public class XStacks implements AdvancementType{
                 }
             }
         }
+        Bukkit.broadcastMessage("count: " + count + ", itemMapCounter: " + _itemMap.get(_item));
         if(count >= _itemMap.get(_item)) {
+//            Bukkit.broadcastMessage("Bonga Bazinga");
             _advancement = _advancementManager.GetAdvancement("x_stacks");
             _advancementManager.GrantTeamAdvancement(p, _advancement, true);
         }
@@ -132,6 +144,7 @@ public class XStacks implements AdvancementType{
 
     public Material GetSymbol() {
         return Material.BUNDLE;
+
     }
 
     public String GetDescription() {

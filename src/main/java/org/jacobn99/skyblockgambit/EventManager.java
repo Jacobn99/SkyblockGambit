@@ -141,6 +141,7 @@ public class EventManager implements Listener {
         //Bukkit.broadcastMessage("isRunning: " + _gameManager.isRunning + " and itemInUse: " + event.getPlayer().getInventory().getItemInMainHand());
         if (_gameManager.isRunning && event.getPlayer().getInventory().getItemInMainHand() != null &&
                 (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+//            Bukkit.broadcastMessage("item: " + event.getPlayer().getInventory().getItemInMainHand());
             _generatorContructor.GeneratorConstructorCheck(event);
             _portalOpener.PortalOpenerCheck(event, _itemManager);
             _villagerTradeBoost.TradeBoostCheck(event, _itemManager);

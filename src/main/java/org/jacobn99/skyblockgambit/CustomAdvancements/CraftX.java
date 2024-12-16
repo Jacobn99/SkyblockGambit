@@ -46,9 +46,7 @@ public class CraftX implements AdvancementType {
 
     }
     public void UpdateDescription() {
-        //Bukkit.broadcastMessage("item: " + item)
         _item = GetItem();
-        //Bukkit.broadcastMessage("item: " + _item.getType().name());
         _advancementManager.ModifyAdvancement(new File(_advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "Craft " + _item.getType().name());
     }
     private ItemStack GetItem() {
@@ -74,6 +72,7 @@ public class CraftX implements AdvancementType {
         writableContent.add(possibleItems.get(index));
 
         _dataManager.WriteToFile(_file, writableContent, _itemStackSerialization);
+        Bukkit.broadcastMessage("item: " + GetItem());
     }
     private List<ItemStack> GetPossibleItems() {
         List<ItemStack> items = new ArrayList<>();

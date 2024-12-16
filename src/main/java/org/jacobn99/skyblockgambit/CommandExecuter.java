@@ -11,6 +11,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
@@ -70,14 +71,21 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                for(Team team : _gameManager.teams) {
-                    if (team.GetMembers().contains(p)) {
+                
+
+
+
+//                p.getInventory().getItemInMainHand().setDurability();
+
+//                for(Team team : _gameManager.teams) {
+//                    if (team.GetMembers().contains(p)) {
 //                        team.tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
 //
 //                        _advancementManager.InitializeTaskInventory(team.tasksInventory);
 //                        p.openInventory(team.tasksInventory);
-                    }
-                }
+//                    }
+//                }
+
 //                _worldManager.ClearWorlds();
                 return true;
             } else if (label.equalsIgnoreCase("t")) {

@@ -137,7 +137,6 @@ public class GameManager {
         _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 
-//        InitializeTeams();
         UpdateSpawns();
         _animalSpawner.SpawnAnimals();
 
@@ -147,10 +146,10 @@ public class GameManager {
                 if(!isRunning) {
                     this.cancel();
                 }
-//                _animalSpawner.SpawnAnimals();
+                _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
-//                _generatorManager.RenewGenerators(tickRate);
-//                _portalManager.PortalUpdate(portals, tickRate);
+                _generatorManager.RenewGenerators(tickRate);
+                _portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
@@ -270,11 +269,12 @@ public class GameManager {
         InitializeTasks();
         advancementManager.ClearTaskParents();
         //Bukkit.broadcastMessage("customAdvancements size: " + advancementManager.customAdvancements.size());
-        advancementManager.RandomizeTasks();
         xStacks.WriteToXStacksFile();
         xStacks.UpdateDescription();
         craftX.WriteToCraftXFile();
         craftX.UpdateDescription();
+        advancementManager.RandomizeTasks();
+
 //        advancementManager.ModifyAdvancement(new File(advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "brooo");
 
 
