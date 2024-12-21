@@ -39,6 +39,7 @@ public class CommandExecuter implements CommandExecutor {
     AnimalSpawner _animalSpanwer;
     private DataManager _DataManager;
     private World _world;
+    private ConfigManager _configManager;
     //ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -53,7 +54,7 @@ public class CommandExecuter implements CommandExecutor {
         _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
         _DataManager = new DataManager();
         _world = Bukkit.getWorld("void_world");
-
+        _configManager = new ConfigManager(_mainPlugin);
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
         //_worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
@@ -72,24 +73,8 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                String command = "title " + p.getName() + " actionbar {\"text\":\"sigma\"}";
-                _gameManager.runConsoleCommand(command);
-//                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                Bukkit.broadcastMessage("map: " + _mainPlugin.getConfig().getValues(false));
 
-
-
-//                p.getInventory().getItemInMainHand().setDurability();
-
-//                for(Team team : _gameManager.teams) {
-//                    if (team.GetMembers().contains(p)) {
-//                        team.tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
-//
-//                        _advancementManager.InitializeTaskInventory(team.tasksInventory);
-//                        p.openInventory(team.tasksInventory);
-//                    }
-//                }
-
-//                _worldManager.ClearWorlds();
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
                 //_chestManager.SetChestInventory(p);
@@ -195,12 +180,27 @@ public class CommandExecuter implements CommandExecutor {
                 else {
                     Bukkit.broadcastMessage("Clearing all worlds");
                     _worldManager.ClearWorlds();
-//                    Bukkit.broadcastMessage("Usage: clear_world (team name)");
                     return false;
                 }
             }
-
+            else if (label.equalsIgnoreCase("tasks")) {
+                for (Team team : _gameManager.teams) {
+                    if (team.GetMembers().contains(p)) {
+                        p.openInventory(team.GetTaskInventory());
+                    }
+                }
+                return true;
+            }
+            else if (label.equalsIgnoreCase("kill_skulls")) {
+                for (Team team : _gameManager.teams) {
+                    if (team.GetMembers().contains(p)) {
+                        p.openInventory(team.killsInventory);
+                    }
+                }
+                return true;
+            }
         }
+
         return false;
     }
 

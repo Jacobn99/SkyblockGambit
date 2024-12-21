@@ -33,11 +33,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class GameManager {
-//    private Location blueSpawn;
-//    private Location redSpawn;
     long tickRate;
     public boolean isRunning;
-    //public ArrayList<Generator> generatorList;
     public ArrayList<Entity> disposableEntities;
     public List<Portal> portals;
     public List<CustomWorld> customWorlds;
@@ -50,8 +47,6 @@ public class GameManager {
     public HashMap<Long, Process> processes;
     public Map<Player, Integer> killCounts;
     JavaPlugin _mainPlugin;
-//    private ArmorStand blueArmorStand;
-//    private ArmorStand redArmorStand;
     public PortalManager portalManager;
     public AdvancementManager advancementManager;
     public ProcessManager _processManager;
@@ -111,7 +106,7 @@ public class GameManager {
         netherManager = new NetherManager(this, _processManager, _worldManager);
         tickRate = 3;
         minWorldHeight = 94;
-        normalVillagerAmount = 10;
+        normalVillagerAmount = 7;
         canProceed = true;
         isWorldGenerated = false;
         _passiveMobCap = 35;
@@ -191,8 +186,6 @@ public class GameManager {
                 advancementManager.customAdvancements.clear();
             }
 
-            //CustomAdvancement twoKills = new CustomAdvancement("twoKills", new ItemStack(Material.DIAMOND), advancementManager.customAdvancements);
-            //CustomAdvancement sabotage = new CustomAdvancement("sabotage", new ItemStack(Material.DIAMOND), advancementManager);
             CustomAdvancement reach_level_X = new CustomAdvancement("reach_level", new ReachLevelX(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
             CustomAdvancement kill_two_players = new CustomAdvancement("kill_two_players", new TwoKillsTask(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
             CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new KillEnderdragon(this, advancementManager), new ItemStack(Material.DIAMOND), advancementManager);
@@ -204,8 +197,7 @@ public class GameManager {
             for (CustomAdvancement a : advancementManager.GetCustomAdvancementList()) {
                 a.LoadFile(advancementManager.GetDefaultConfiguration());
             }
-            //advancementManager.RandomizeTasks();
-            }
+        }
         else {
             Bukkit.broadcastMessage("ERROR: Missing mandatory files in tasks folder (default_configuration.json)");
         }
@@ -224,8 +216,6 @@ public class GameManager {
     }
     public void AssignTeamWorlds() {
         int i = 0;
-//        Team team;
-//        for(CustomWorld customWorld : customWorlds) {
         for(Team team : teams) {
             team.SetTeamWorld(customWorlds.get(i));
             i++;

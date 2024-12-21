@@ -187,9 +187,9 @@ public class CustomItemManager {
         ItemMeta meta1 = item1.getItemMeta();
         ItemMeta meta2 = item2.getItemMeta();
 
-        TestAreEqual(item1, item2);
+//        TestAreEqual(item1, item2);
 
-        return meta1.getLore() == meta2.getLore() && meta1.getDisplayName().equals(meta2.getDisplayName()) &&
+        return item1 != null && item2 != null && meta1.getLore() == meta2.getLore() && meta1.getDisplayName().equals(meta2.getDisplayName()) &&
                 meta1.getItemFlags().equals(meta2.getItemFlags()) && item1.getType() == item2.getType() &&
                 item1.getAmount() == item2.getAmount();
     }
@@ -198,7 +198,7 @@ public class CustomItemManager {
         ItemMeta meta1 = item1.getItemMeta();
         ItemMeta meta2 = item2.getItemMeta();
 
-        Bukkit.broadcastMessage("tests: " + (meta1.getLore() == meta2.getLore()) + "\n" + (meta1.getDisplayName().equals(meta2.getDisplayName())) + "\n" +
+        Bukkit.broadcastMessage("tests: " + (item1 != null && item2 != null) + "\n" + (meta1.getLore() == meta2.getLore()) + "\n" + (meta1.getDisplayName().equals(meta2.getDisplayName())) + "\n" +
                 (meta1.getItemFlags().equals(meta2.getItemFlags())) + "\n" + (item1.getType() == item2.getType()) + "\n" +
                 (item1.getAmount() == item2.getAmount()));
     }

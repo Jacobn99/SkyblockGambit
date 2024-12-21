@@ -1,5 +1,6 @@
 package org.jacobn99.skyblockgambit.CustomVillagers;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
@@ -14,11 +15,12 @@ import java.util.List;
 
 public class CustomVillager {
     List<MerchantRecipe> recipes;
-    ConfigManager _configManager;
-    JavaPlugin _mainPlugin;
-    CustomItemManager _itemManager;
-    Villager _villager;
-    int _ID;
+    private ConfigManager _configManager;
+    private JavaPlugin _mainPlugin;
+    private CustomItemManager _itemManager;
+    private Location _spawnLoc;
+    private Villager _villager;
+    private int _ID;
     boolean isInitialized;
 
     public CustomVillager(JavaPlugin mainPlugin, Villager villager, List<CustomVillager> customs, int ID) {
@@ -26,7 +28,9 @@ public class CustomVillager {
         _mainPlugin = mainPlugin;
         _configManager = new ConfigManager(_mainPlugin);
         _itemManager = new CustomItemManager(_mainPlugin);
+        _spawnLoc = villager.getLocation();
         _villager = villager;
+        _villager.addScoreboardTag("custom");
         isInitialized = false;
         customs.add(this);
     }
@@ -94,6 +98,7 @@ public class CustomVillager {
 
     public void SetVillager(Villager v) {
         _villager = v;
+        _spawnLoc = v.getLocation();
     }
     public int GetID() {
         return _ID;
@@ -101,5 +106,8 @@ public class CustomVillager {
 
     public Villager GetVillager() {
         return _villager;
+    }
+    public Location GetSpawnLocation() {
+        return _spawnLoc;
     }
 }

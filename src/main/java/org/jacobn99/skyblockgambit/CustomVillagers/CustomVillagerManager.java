@@ -4,36 +4,40 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.checkerframework.checker.units.qual.A;
 import org.jacobn99.skyblockgambit.GameManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class CustomVillagerManager {
     List<CustomVillager> _customs;
-    //List<Entity> _disposableEntities;
     JavaPlugin _mainPlugin;
     GameManager _gameManager;
+    Set<String> _presets;
+//    int _presetCount;
     public CustomVillagerManager(JavaPlugin mainplugin, List<CustomVillager> customs, GameManager gameManger) {
         _mainPlugin = mainplugin;
         _customs = customs;
         _gameManager = gameManger;
-        //_disposableEntities = disposableEntities;
+//        String[] presets = {"Villager0", "Villager1", "Villager2"};
+        _presets = _mainPlugin.getConfig().getValues(false).keySet();
+//        _presets.addAll(Arrays.asList(presets));
     }
 
     public Villager SpawnVillager(Location loc, Villager.Profession profession) {
         // Spawn a villager with all trades unlocked
         Villager villager = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
+        villager.setCustomNameVisible(true);
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
-        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
+//        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
         _gameManager.disposableEntities.add(villager);
         return villager;
     }
@@ -92,15 +96,8 @@ public class CustomVillagerManager {
                 allowedProfessions.add(e);
             }
         }
-
-//        for(int i : bannedProfessionIDs) {
-//            allowedProfessions.remove(i);
-//        }
         professionID = allowedProfessions.get(rand.nextInt(allowedProfessions.size()));
-
-        //Villager.Profession profession = Villager.Profession.values()[professionID];
         return professionID;
-        //_villager.setProfession(profession);
     }
 
     public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
@@ -109,21 +106,68 @@ public class CustomVillagerManager {
         Villager villager = custom.GetVillager();
 
         if(preset != null) {
+            Bukkit.broadcastMessage(preset);
             custom.SetTrades(preset);
+            custom.GetVillager().setCustomName(preset);
         }
         villager.setVillagerLevel(5);
         villager.addScoreboardTag("Customized");
-        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
+        villager.setCustomNameVisible(true);
+//        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
         _customs.add(custom);
         _gameManager.disposableEntities.add(custom.GetVillager());
         return custom;
     }
-//    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
-//        CustomVillager custom = new CustomVillager(_mainPlugin,
-//                SpawnVillager(loc, profession));
-//        custom.SetTrades(preset);
-//        custom.getVillager().setVillagerLevel(5);
-//        customVillagers.add(custom);
-//        return custom;
-//    }
+
+    public void VillagerDeathCheck(EntityDeathEvent event) {
+        if(_gameManager.isRunning && event.getEntity() instanceof Villager
+                && event.getEntity().getScoreboardTags().contains("custom")) {
+            CustomVillager customVil = GetFromCustoms((Villager) event.getEntity());
+            if(customVil != null) {
+                Villager villager = (Villager) event.getEntity();
+                CustomVillager newCustom = CreateCustomVillager(null, customVil.GetSpawnLocation(), villager.getProfession());
+                ApplyTraits(customVil.GetVillager(), newCustom.GetVillager());
+//                newCustom.GetVillager().setRecipes(customVil.GetVillager().getRecipes());
+////
+//                for(String tag : event.getEntity().getScoreboardTags()) {
+//                    newCustom.GetVillager().addScoreboardTag(tag);
+//                }
+            }
+        }
+    }
+    public void ApplyTraits(Villager copied, Villager pasted) {
+        pasted.setRecipes(copied.getRecipes());
+        for(String tag : copied.getScoreboardTags()) {
+            pasted.addScoreboardTag(tag);
+        }
+        pasted.setProfession(copied.getProfession());
+        pasted.setCustomName(copied.getCustomName());
+        pasted.setCustomNameVisible(true);
+
+    }
+
+    public CustomVillager GetFromCustoms(Villager v) {
+        for (CustomVillager c : get_customs()) {
+            if (c.GetVillager() == v) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public List<CustomVillager> get_customs() {
+        return _customs;
+    }
+
+    public void set_customs(List<CustomVillager> _customs) {
+        this._customs = _customs;
+    }
+
+    public Set<String> get_presets() {
+        return _presets;
+    }
+
+    public void set_presets(Set<String> _presets) {
+        this._presets = _presets;
+    }
 }

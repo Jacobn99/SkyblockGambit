@@ -36,7 +36,14 @@ public class ProcessManager {
                 this._taskDone = true;
                 markedProcesses.add(process);
                 process.set_isDone(true);
-                process.ExecuteFunction();
+                try {
+                    process.ExecuteFunction();
+                }
+                catch(Exception e) {
+                    Bukkit.broadcastMessage("ERROR IN EVENT HANDLER");
+                    e.printStackTrace();
+                    markedProcesses.add(process);
+                }
             }
         }
 

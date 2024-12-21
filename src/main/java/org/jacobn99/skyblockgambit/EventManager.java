@@ -93,6 +93,7 @@ public class EventManager implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         if(_gameManager.isRunning) {
             _killEnderdragon.KillEnderdragonCheck(event);
+            _villagerManager.VillagerDeathCheck(event);
         }
     }
 

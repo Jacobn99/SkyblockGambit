@@ -120,4 +120,9 @@ public class Team {
     public void SetNetherSpawn(Location _netherSpawn) {
         this._netherSpawn = _netherSpawn;
     }
+    public Inventory GetTaskInventory() {
+        this.tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+        _advancementManager.InitializeTaskInventory(this.tasksInventory);
+        return this.tasksInventory;
+    }
 }
