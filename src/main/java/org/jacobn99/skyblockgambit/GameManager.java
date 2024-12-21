@@ -18,7 +18,6 @@ import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.GeneratorInfo.GeneratorManager;
-import org.jacobn99.skyblockgambit.GeneratorInfo.ItemGenerator;
 import org.jacobn99.skyblockgambit.Portals.Portal;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.Process;
@@ -53,7 +52,7 @@ public class GameManager {
     JavaPlugin _mainPlugin;
 //    private ArmorStand blueArmorStand;
 //    private ArmorStand redArmorStand;
-    private PortalManager _portalManager;
+    public PortalManager portalManager;
     public AdvancementManager advancementManager;
     public ProcessManager _processManager;
     public WorldManager _worldManager;
@@ -78,7 +77,8 @@ public class GameManager {
     private int _passiveMobCap;
     World overworld;
     public List<Inventory> nonClickableInventories;
-
+    public World _world;
+    public ItemStack delayItem;
 
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
@@ -97,9 +97,9 @@ public class GameManager {
         killCounts = new HashMap<>();
         advancementManager = new AdvancementManager(_mainPlugin, teams);
         _processManager = new ProcessManager();
-        _portalManager = new PortalManager(this, _processManager);
+        portalManager = new PortalManager(this, _processManager, _mainPlugin);
         _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, this);
-        _worldManager = new WorldManager(_mainPlugin, this, _portalManager, _processManager, _customVillagerManager);
+        _worldManager = new WorldManager(_mainPlugin, this, portalManager, _processManager, _customVillagerManager);
         _chestManager = new StarterChestManager(_mainPlugin);
         _customItemManager = new CustomItemManager(_mainPlugin);
         blueTeam = new Team("blue", advancementManager, this);
@@ -116,6 +116,9 @@ public class GameManager {
         isWorldGenerated = false;
         _passiveMobCap = 35;
         _generatorManager = new GeneratorManager();
+        _world = Bukkit.getWorld("void_world");
+
+        InstantiateDelayItem();
 
     }
     public void Start() {
@@ -149,7 +152,7 @@ public class GameManager {
                 _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
                 _generatorManager.RenewGenerators(tickRate);
-                _portalManager.PortalUpdate(portals, tickRate);
+                portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
@@ -211,7 +214,6 @@ public class GameManager {
     public void InitializeTeams() {
         AssignTeamWorlds();
 
-
         for(Team team : teams) {
             for(Player p : team.GetMembers()) {
                 p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
@@ -222,10 +224,10 @@ public class GameManager {
     }
     public void AssignTeamWorlds() {
         int i = 0;
-        Team team;
-        for(CustomWorld customWorld : customWorlds) {
-            team = teams.get(i);
-            team.SetTeamWorld(customWorld);
+//        Team team;
+//        for(CustomWorld customWorld : customWorlds) {
+        for(Team team : teams) {
+            team.SetTeamWorld(customWorlds.get(i));
             i++;
         }
     }
@@ -415,6 +417,32 @@ public void UpdateSpawns() {
 
             }
         }
+    }
+
+    public void runConsoleCommand(String command) {
+        _world.setGameRule(GameRule.LOG_ADMIN_COMMANDS, false);
+        _world.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, false);
+        _mainPlugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+
+    }
+    private void CallDelayEvent() {
+        ItemStack item =  new ItemStack(Material.BARRIER);
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        lore.add("eventDelay");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        Entity entity = _world.dropItem(new Location(_world, 0, 0,0), item);
+        entity.remove();
+    }
+
+    private void InstantiateDelayItem() {
+        delayItem =  new ItemStack(Material.BARRIER);
+        ItemMeta meta = delayItem.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        lore.add("eventDelay");
+        meta.setLore(lore);
+        delayItem.setItemMeta(meta);
     }
 
     public int GetPassiveMobCap() {

@@ -1,8 +1,6 @@
 package org.jacobn99.skyblockgambit;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -21,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.*;
 import org.jacobn99.skyblockgambit.CustomItems.*;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
+import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 
@@ -45,6 +44,7 @@ public class EventManager implements Listener {
     private GetGlowing _getGlowing;
     private GeneratorConstructor _generatorContructor;
     private NetherManager _netherManager;
+    private PortalManager _portalManager;
 
     World world;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
@@ -65,6 +65,7 @@ public class EventManager implements Listener {
         _xStacks = _gameManager.xStacks;
         _netherManager = _gameManager.netherManager;
         _getGlowing = _gameManager.getGlowing;
+        _portalManager = _gameManager.portalManager;
         //_generatorContructor = new GeneratorConstructor(_gener.generators, _itemManager);
         world = Bukkit.getWorld("void_world");
         //_craftX = new CraftX(_gameManager, _advancementManager);
@@ -83,7 +84,7 @@ public class EventManager implements Listener {
     @EventHandler
     public void onPotionEffect(EntityPotionEffectEvent event) {
         if(_gameManager.isRunning) {
-            Bukkit.broadcastMessage("got here");
+//            Bukkit.broadcastMessage("got here");
             _getGlowing.GetGlowingCheck(event);
         }
     }
@@ -124,6 +125,10 @@ public class EventManager implements Listener {
     public void onDeath(PlayerDeathEvent event) {
         Player p = (Player) event.getEntity();
         Player killer = p.getKiller();
+
+        if(_portalManager.invaders.containsKey(p)) {
+            _portalManager.invaders.remove(p);
+        }
 
         if(_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
             if(_twoKillsTask.IsKillFromOtherTeam(killer, p)) {
@@ -213,6 +218,13 @@ public class EventManager implements Listener {
                 event.setCancelled(true);
             }
 
+        }
+    }
+
+    @EventHandler
+    public void onItemSpawn(ItemSpawnEvent event) {
+        if (event.getEntity().getItemStack().equals(_gameManager.delayItem)) {
+//            ResetCommandFeedback();
         }
     }
 }

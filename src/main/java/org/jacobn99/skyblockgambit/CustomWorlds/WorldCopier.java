@@ -72,18 +72,12 @@ public class WorldCopier {
     }
     public void ClearWorld(Location referenceCorner, int worldSize) {
         Bukkit.broadcastMessage("Starting Deletion!");
-        Queueable queueable;
         int loopIterations = 1;
-        long executionTime = 100;
         World world = Bukkit.getWorld("void_world");
 
-        int startY = 0;
-        int startX = 0;
-        int startZ = 0;
-
-        int chunkX = 25;
-        int chunkY = 25;
-        int chunkZ = 25;
+        int chunkX = 50;
+        int chunkY = 60;
+        int chunkZ = 50;
 
         Location corner = referenceCorner.clone();
         corner.add(0, 0, -(worldSize/2));
@@ -96,27 +90,22 @@ public class WorldCopier {
                     final int Y = y;
                     final int Z = z;
 
-                    _processManager.CreateProcess(_storedProcesses, 2 * (loopIterations) + world.getFullTime(), () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
+                    _processManager.CreateProcess(_storedProcesses, 2 * (loopIterations) + world.getFullTime(),
+                            () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
                     loopIterations++;
                 }
             }
         }
 
-        //Bukkit.broadcastMessage("size: " + _storedProcesses.size());
         _processes.putAll(_storedProcesses);
         _storedProcesses.clear();
     }
     public void ClearChunk(Location referenceCorner, int startX, int startY, int startZ, int chunkX, int chunkY, int chunkZ) {
         World world = Bukkit.getWorld("void_world");
 
-        //Bukkit.broadcastMessage("X: " + startX + ", Z: " + startZ);
-
         for(int y = startY; y < chunkY +startY; y+= 1) {
             for (int z = startZ; z < chunkZ + startZ; z += 1) {
                 for (int x = startX; x < chunkX + startX; x+= 1) {
-//                    queueable = () -> Bukkit.broadcastMessage("Bruh");
-//                    Process process = new Process(executionTime * loopIterations + world.getFullTime(), queueable);
-//                    _processes.put(executionTime * loopIterations + world.getFullTime(), process);
                     int X = x;
                     int Y = y;
                     int Z = z;
@@ -125,45 +114,9 @@ public class WorldCopier {
                         currentLoc.getBlock().setType(Material.AIR);
                     }
                     currentLoc = null;
-
-
-                    //Bukkit.broadcastMessage("X1: " + x + ", Y1: " + Y + ", Z1: " + Z);
-                    //_processManager.CreateProcess(_storedProcesses, timeBetweenExecution * (loopIterations) + world.getFullTime(), () -> ClearChunk(referenceCorner, X, Y, Z));
-
-                    //_processManager.CreateProcess(_processes, 20, () -> Bukkit.broadcastMessage("Bruh"));
                 }
             }
-            //loopIterations++;
         }
-//        World world = Bukkit.getWorld("void_world");
-//       // Location currentLoc = referenceCorner.clone();
-//        //Bukkit.broadcastMessage("x: " + Math.round((startX + referenceCorner.getX())) + ", y: " +  Math.round((startY + referenceCorner.getY())) + ", z: " +  Math.round((startZ + referenceCorner.getZ())));
-//
-//        //Bukkit.broadcastMessage("X2: " + startX + ", Y2: " + startY + ", Z2: " + startZ);
-////        double Xloc;
-////        double Yloc;
-////        double Zloc;
-//        double Xloc = referenceCorner.getX() + startX;
-//        double Yloc = referenceCorner.getY();
-//        double Zloc = referenceCorner.getZ() + startZ;
-//
-//        Bukkit.broadcastMessage("Xloc: " + Xloc + ", Yloc: " + Yloc + ", Zloc: " + Zloc);
-//        //for(int y = startY; y < startY + 10; y++) {
-////            for (int z = startZ; z < startZ + 10; z++) {
-////                for (int x = startX; x <  startX + 100; x++) {
-////                    Xloc = referenceCorner.getX() + x;
-////                    Yloc = referenceCorner.getY();
-////                    Zloc = referenceCorner.getZ() + z;
-////                    Location currentLoc = new Location(world, Xloc, Yloc, Zloc);
-////                    //currentLoc.add(1, 1, 0);
-////                    currentLoc.getBlock().setType(Material.BLUE_CONCRETE);
-////                    currentLoc = null;
-////               }
-////                //currentLoc.add(-5, 0, 0);
-////            }
-////            currentLoc.add(0,0,-worldSize);
-//        //}
-//        //System.gc();
     }
     public void PasteChunkPiece(List<SerializedBlock> list, int startIteration, Location newLoc) {
         try {
@@ -180,10 +133,6 @@ public class WorldCopier {
 
                     BlockData newData = Bukkit.createBlockData(b.get_str_data());
                     blockLoc.getBlock().setBlockData(newData);
-
-//                    if(i % 1000 == 1) {
-//                        Bukkit.broadcastMessage("data: " + newData + ", Location: " + blockLoc);
-//                    }
 
                     blockLoc = null;
                     newData = null;

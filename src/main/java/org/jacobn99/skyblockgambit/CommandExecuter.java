@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +47,7 @@ public class CommandExecuter implements CommandExecutor {
         //_portalManager = new PortalManager();
         _chestManager = new StarterChestManager(_mainPlugin);
         _advancementManager = _gameManager.advancementManager;
-        _portalManager = new PortalManager(_gameManager, _gameManager._processManager);
+        _portalManager = new PortalManager(_gameManager, _gameManager._processManager, _mainPlugin);
         _worldManager = _gameManager._worldManager;
         _worldCopier = _worldManager._worldCopier;
         _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
@@ -71,7 +72,9 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                
+                String command = "title " + p.getName() + " actionbar {\"text\":\"sigma\"}";
+                _gameManager.runConsoleCommand(command);
+//                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
 
 
 
@@ -190,7 +193,9 @@ public class CommandExecuter implements CommandExecutor {
                     return true;
                 }
                 else {
-                    Bukkit.broadcastMessage("Usage: clear_world (team name)");
+                    Bukkit.broadcastMessage("Clearing all worlds");
+                    _worldManager.ClearWorlds();
+//                    Bukkit.broadcastMessage("Usage: clear_world (team name)");
                     return false;
                 }
             }

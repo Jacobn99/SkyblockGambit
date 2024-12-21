@@ -14,10 +14,6 @@ public class PortalOpener {
     public void PortalOpenerCheck(PlayerInteractEvent event, CustomItemManager itemManager) {
         Player p = event.getPlayer();
         if (event.getItem() != null) {
-            Bukkit.broadcastMessage("current item: " + event.getItem() +
-                    "\n target: " + itemManager.GetCustomItem(itemManager.ItemNameToIndex("PORTAL_OPENER")) +
-                    "\n equal?: " + _gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("PORTAL_OPENER"))));
-
             if (_gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
                 Bukkit.broadcastMessage("What the sigma?");
                 Team team = _gameManager.FindPlayerTeam(p);

@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.AreaDetection;
 import org.jacobn99.skyblockgambit.GameManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
@@ -16,15 +16,17 @@ public class PortalManager {
     Random rand = new Random();
     private GameManager _gameManager;
     private ProcessManager _processManager;
-    private Map<Player, Long> _invaders;
+    public Map<Player, Long> invaders;
     private AreaDetection _areaDetection;
+    private JavaPlugin _mainPlugin;
     World world;
 
-    public PortalManager(GameManager gameManager, ProcessManager processManager) {
+    public PortalManager(GameManager gameManager, ProcessManager processManager, JavaPlugin mainPlugin) {
+        _mainPlugin = mainPlugin;
         _gameManager = gameManager;
         _processManager = processManager;
         world = Bukkit.getWorld("void_world");
-        _invaders = new HashMap<>();
+        invaders = new HashMap<>();
         _areaDetection = new AreaDetection();
     }
     public void TeleportIsland(Player p, Location islandSpawn) {
@@ -44,8 +46,8 @@ public class PortalManager {
                     if (IsInPortal(portal, p)) {
                         TeleportIsland(p, portal.GetOpposingIslandLocation());
                         portal.Deactivate();
-                        Bukkit.broadcastMessage("guy");
-                        _invaders.put(p, (long) 2400);
+//                        Bukkit.broadcastMessage("guy");
+                        invaders.put(p, (long) 2400);
                         //_processManager.CreateProcess(_gameManager.processes, world.getFullTime() + 2400, ()-> p.teleport(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetWorldSpawn(_gameManager)));
                     }
                 }
@@ -56,18 +58,24 @@ public class PortalManager {
     public void UpdateInvaderTimer(long tickRate) {
         long timeRemaining;
         List<Player> finishedPlayers = new ArrayList<>();
-        for(Player p : _invaders.keySet()) {
-            timeRemaining = _invaders.get(p);
+        for(Player p : invaders.keySet()) {
+            timeRemaining = invaders.get(p);
             timeRemaining -= tickRate;
-            _invaders.replace(p, timeRemaining);
-            Bukkit.broadcastMessage("Time until teleported back: " + (timeRemaining/20));
+            invaders.replace(p, timeRemaining);
+
+            if(timeRemaining % 5 == 0) {
+                String text = "Time until teleported back: " + (timeRemaining / 20);
+                String command = "title " + p.getName() + " actionbar {\"text\":\"" + text +"\"}";
+                _mainPlugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+            }
+
             if(timeRemaining < 0) {
                 finishedPlayers.add(p);
                 p.teleport(_gameManager.FindPlayerTeam(p).GetTeamWorld().GetWorldSpawn(_gameManager));
             }
         }
         for(Player p : finishedPlayers) {
-            _invaders.remove(p);
+            invaders.remove(p);
         }
         finishedPlayers = null;
 

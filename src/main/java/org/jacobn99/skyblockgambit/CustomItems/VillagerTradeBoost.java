@@ -20,7 +20,9 @@ public class VillagerTradeBoost {
     public void TradeBoostCheck(PlayerInteractEvent event, CustomItemManager itemManager) {
         Player p = event.getPlayer();
         if(event.getItem() != null) {
-            if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("TRADE_BOOST")))) {
+            if(_gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("TRADE_BOOST")))) {
+
+//            if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("TRADE_BOOST")))) {
                 Bukkit.broadcastMessage("What the sigma?");
                 p.addPotionEffect(new PotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE, effectDuration, amplifier));
             }

@@ -16,7 +16,8 @@ public class RageSpell {
     }
     public void RageSpellCheck(PlayerInteractEvent event, CustomItemManager itemManager) {
         Player p = event.getPlayer();
-        if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("RAGE_SPELL")))) {
+        if(_gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("RAGE_SPELL")))) {
+//        if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("RAGE_SPELL")))) {
             Bukkit.broadcastMessage("What the sigma?");
             p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, effectDuration, 2));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effectDuration, 2));

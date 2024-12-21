@@ -91,20 +91,21 @@ public class WorldManager {
         return null;
     }
     public void AddPostGenerationObjects(StarterChestManager _chestManager, CustomVillagerManager villagerManager, List<CustomVillager> customs) {
-//        try {
-        Bukkit.broadcastMessage("World has been generated");
-        _gameManager.isWorldGenerated = true;
+        try {
+            Bukkit.broadcastMessage("World has been generated");
+            _gameManager.isWorldGenerated = true;
 
-        SpawnStarterChests(_chestManager);
-        SpawnPortals();
-        SpawnTeamVillagers(customs, villagerManager);
-        _gameManager.InitializeTeams();
-        _gameManager.UpdateSpawns();
-        _gameManager._animalSpawner.SpawnAnimals();
-//         }
-//        catch(Exception e) {
-//            e.printStackTrace();
-//        }
+            SpawnStarterChests(_chestManager);
+            SpawnPortals();
+            SpawnTeamVillagers(customs, villagerManager);
+            _gameManager.InitializeTeams();
+            _gameManager.UpdateSpawns();
+            _gameManager._animalSpawner.SpawnAnimals();
+         }
+        catch(Exception e) {
+            Bukkit.broadcastMessage("ERROR");
+            e.printStackTrace();
+        }
     }
     public void SpawnTeamVillagers(List<CustomVillager> customs, CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();

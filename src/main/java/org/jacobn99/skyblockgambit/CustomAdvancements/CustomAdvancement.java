@@ -87,14 +87,6 @@ public class CustomAdvancement {
         return _type;
     }
 
-//    public Material GetSymbol() {
-//        return _symbol;
-//    }
-//
-//    public void SetSymbol(Material _symbol) {
-//        this._symbol = _symbol;
-//    }
-
     public boolean CheckPrequisiteAdvancement(Player p) {
         if(_parentAdvancement != null) {
             if(_parentAdvancement.GetPlayerList().contains(p)) {
