@@ -71,21 +71,20 @@ public class GameManager {
     public int normalVillagerAmount;
     private int _passiveMobCap;
     World overworld;
-    public List<Inventory> nonClickableInventories;
+    public Set<Inventory> nonClickableInventories;
     public World _world;
     public ItemStack delayItem;
 
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
         disposableEntities = new ArrayList<>();
-        //generatorList = new ArrayList();
         portals = new ArrayList<>();
         starterChestList = new ArrayList<>();
-        customVillagers = new ArrayList();
+        customVillagers = new ArrayList<>();
         customWorlds = new ArrayList<>();
         objects = new ArrayList<>();
         teams = new ArrayList<>();
-        nonClickableInventories = new ArrayList<>();
+        nonClickableInventories = new HashSet<>();
 
         participatingPlayers = new HashSet<>();
         processes = new HashMap<>();
@@ -106,7 +105,7 @@ public class GameManager {
         netherManager = new NetherManager(this, _processManager, _worldManager);
         tickRate = 3;
         minWorldHeight = 94;
-        normalVillagerAmount = 7;
+        normalVillagerAmount = 9;
         canProceed = true;
         isWorldGenerated = false;
         _passiveMobCap = 35;
@@ -132,11 +131,12 @@ public class GameManager {
         _worldManager.BuildWorld(redWorld, file, _processManager);
         _worldManager.BuildWorld(blueWorld, file, _processManager);
 
+        Bukkit.broadcastMessage("latest execution time: " + _processManager.GetLatestExecutionTime(processes));
         _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 
         UpdateSpawns();
-        _animalSpawner.SpawnAnimals();
+//        _animalSpawner.SpawnAnimals(false);
 
         new BukkitRunnable() {
             @Override
@@ -144,7 +144,7 @@ public class GameManager {
                 if(!isRunning) {
                     this.cancel();
                 }
-                _animalSpawner.SpawnAnimals();
+//                _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
                 _generatorManager.RenewGenerators(tickRate);
                 portalManager.PortalUpdate(portals, tickRate);

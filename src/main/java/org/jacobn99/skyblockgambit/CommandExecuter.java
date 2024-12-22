@@ -73,7 +73,7 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                Bukkit.broadcastMessage("map: " + _mainPlugin.getConfig().getValues(false));
+                _animalSpanwer.SpawnAnimals(false);
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {

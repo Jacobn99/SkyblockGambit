@@ -66,9 +66,7 @@ public class EventManager implements Listener {
         _netherManager = _gameManager.netherManager;
         _getGlowing = _gameManager.getGlowing;
         _portalManager = _gameManager.portalManager;
-        //_generatorContructor = new GeneratorConstructor(_gener.generators, _itemManager);
         world = Bukkit.getWorld("void_world");
-        //_craftX = new CraftX(_gameManager, _advancementManager);
     }
     @EventHandler
     public void onInventoryInteract(InventoryClickEvent event) {
@@ -84,7 +82,6 @@ public class EventManager implements Listener {
     @EventHandler
     public void onPotionEffect(EntityPotionEffectEvent event) {
         if(_gameManager.isRunning) {
-//            Bukkit.broadcastMessage("got here");
             _getGlowing.GetGlowingCheck(event);
         }
     }

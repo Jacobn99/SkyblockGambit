@@ -61,6 +61,7 @@ public class ProcessManager {
             Bukkit.broadcastMessage("Warning: executionTime < world time");
         }
         processes.put(executionTime, process);
+        Bukkit.broadcastMessage("putting " + executionTime);
     }
     public long GetLatestExecutionTime(HashMap<Long, Process> processes) {
         long latestExecutionTime = 0;

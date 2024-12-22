@@ -46,12 +46,12 @@ public class WorldCopier {
         _world = Bukkit.getWorld("void_world");
     }
 
-    public void DuplicateLand(Location newLoc, File file) {
+    public void DuplicateLand(Location newLoc, int worldSize, File file) {
         long executionTime;
         int loopIterations;
         List<SerializedBlock> list;
         World world;
-
+        newLoc.subtract((double) worldSize /2, 0 ,0);
         world = Bukkit.getWorld("void_world");
         list = GetChunkPieceData(file.getAbsolutePath());
         Queueable _queueable;
@@ -80,8 +80,7 @@ public class WorldCopier {
         int chunkZ = 50;
 
         Location corner = referenceCorner.clone();
-        corner.add(0, 0, -(worldSize/2));
-        corner.add(0, -30, 0);
+        corner.add(-(worldSize/2), -30, -(worldSize/2));
 
         for(int y = 0; y < 60; y+= chunkY) {
             for (int z = 0; z < worldSize; z += chunkZ) {

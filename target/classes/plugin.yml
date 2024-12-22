@@ -19,3 +19,5 @@ commands:
   clear_custom_items:
   grant_advancement:
   clear_world:
+  tasks:
+  kill_skulls:

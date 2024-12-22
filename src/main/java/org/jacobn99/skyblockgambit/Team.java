@@ -121,8 +121,10 @@ public class Team {
         this._netherSpawn = _netherSpawn;
     }
     public Inventory GetTaskInventory() {
+        _gameManager.nonClickableInventories.remove(this.tasksInventory);
         this.tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
         _advancementManager.InitializeTaskInventory(this.tasksInventory);
+        _gameManager.nonClickableInventories.add(this.tasksInventory);
         return this.tasksInventory;
     }
 }

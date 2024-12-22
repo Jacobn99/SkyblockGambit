@@ -49,7 +49,7 @@ public class WorldManager {
         _chunkWorldSize = 3;
         // USE THIS IF GOING BACK TO NATURAL GEN
 //        _worldLength = _chunkWorldSize * _pieceLength;
-        _worldLength = 180;
+        _worldLength = 176;
 
 
         _gameManager = gameManager;
@@ -69,18 +69,26 @@ public class WorldManager {
         int x;
         int z;
         //int sideLength;
-        Location referenceCorner;
+//        Location referenceCorner;
         //referenceCorner = world.GetReferenceCorner();
-        referenceCorner = middleLocation.clone();
-        referenceCorner.add(0, 0, (-_worldLength)/2);
-        //sideLength = _worldLength;
+//        referenceCorner = middleLocation.clone();
+//        referenceCorner.add(0, 0, (-_worldLength)/2);
+
+//        referenceCorner.add(0, 0, (-spawnRadius)/2);
+
 
         //Bukkit.broadcastMessage("reference corner: " + referenceCorner);
-        for(int i = 0; i < 50; i++) {
-            x = rand.nextInt(spawnRadius);
-            z = rand.nextInt(spawnRadius);
+//        Bukkit.broadcastMessage("middle: " + middleLocation.toVector().toString());
+        for(int i = 0; i < 70; i++) {
+//            x = rand.nextInt(spawnRadius);
+//            z = rand.nextInt(spawnRadius);
+            x = rand.nextInt(spawnRadius*2);
+            z = rand.nextInt(spawnRadius*2);
 
-            Location loc = new Location(world, referenceCorner.getX() + x, referenceCorner.getY(), referenceCorner.getZ() + z);
+//            Bukkit.broadcastMessage("max: " + (middleLocation.getZ() + spawnRadius*2 - (double) spawnRadius) + ", radius: " + spawnRadius + ", middleZ: " + middleLocation.getZ());
+//            Bukkit.broadcastMessage("min: " + (middleLocation.getZ() + 0 - (double) spawnRadius) + ", radius: " + spawnRadius + ", middleZ: " + middleLocation.getZ());
+
+            Location loc = new Location(world, middleLocation.getX() + x - (double) spawnRadius, middleLocation.getY(), middleLocation.getZ() + z - (double) spawnRadius);
             loc = _gameManager.FindSurface(loc, maxY, minY);
 
             if(loc != null) {
@@ -100,7 +108,7 @@ public class WorldManager {
             SpawnTeamVillagers(villagerManager);
             _gameManager.InitializeTeams();
             _gameManager.UpdateSpawns();
-            _gameManager._animalSpawner.SpawnAnimals();
+//            _gameManager._animalSpawner.SpawnAnimals(false);
          }
         catch(Exception e) {
             Bukkit.broadcastMessage("ERROR");
@@ -230,11 +238,10 @@ public class WorldManager {
         long executionTime = processManager.GetLatestExecutionTime(_gameManager.processes) + 10;
         //Bukkit.broadcastMessage("latestExecutionTime: " + executionTime);
 
-        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), worldFile);
+        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength, worldFile);
 
         Process process = new Process(executionTime, queueable);
         _gameManager.processes.put(executionTime, process);
-        _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), worldFile);
     }
     public int get_worldLength() {
         return _worldLength;
