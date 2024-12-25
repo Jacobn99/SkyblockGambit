@@ -131,11 +131,14 @@ public class GameManager {
         _worldManager.BuildWorld(redWorld, file, _processManager);
         _worldManager.BuildWorld(blueWorld, file, _processManager);
 
-        Bukkit.broadcastMessage("latest execution time: " + _processManager.GetLatestExecutionTime(processes));
-        _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
-                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
+//        Bukkit.broadcastMessage("latest execution time: " + _processManager.GetLatestExecutionTime(processes));
+        Bukkit.broadcastMessage("pre-gen time: " + Bukkit.getWorld("void_world").getFullTime());
 
-        UpdateSpawns();
+        _processManager.CreateProcessLast(processes, 50,
+                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
+//        _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
+//                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
+
 //        _animalSpawner.SpawnAnimals(false);
 
         new BukkitRunnable() {
@@ -146,8 +149,8 @@ public class GameManager {
                 }
 //                _animalSpawner.SpawnAnimals();
                 _processManager.HandleProcesses(processes);
-                _generatorManager.RenewGenerators(tickRate);
-                portalManager.PortalUpdate(portals, tickRate);
+//                _generatorManager.RenewGenerators(tickRate);
+//                portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }

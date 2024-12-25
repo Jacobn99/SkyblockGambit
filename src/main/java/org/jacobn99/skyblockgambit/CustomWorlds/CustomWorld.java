@@ -22,7 +22,7 @@ public class CustomWorld {
         _customWorlds = customWorlds;
         _customWorlds.add(this);
         _worldPortal = null;
-        Bukkit.broadcastMessage("middle loc back back: " + _middleLoc.toVector().toString());
+//        Bukkit.broadcastMessage("middle loc back back: " + _middleLoc.toVector().toString());
 
     }
 
@@ -31,7 +31,7 @@ public class CustomWorld {
     }
     public Location GetWorldSpawn(GameManager _gameManager) {
         if(_worldSpawn == null) {
-            Bukkit.broadcastMessage("middle back: " + this._middleLoc.toVector().toString());
+//            Bukkit.broadcastMessage("middle back: " + this._middleLoc.toVector().toString());
 //            _worldSpawn = _manager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), this._referenceCorner, 300, _gameManager.minWorldHeight, _manager.get_worldLength());
             _worldSpawn = _manager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), this._middleLoc, 300, _gameManager.minWorldHeight, _manager.get_worldLength()/2);
 

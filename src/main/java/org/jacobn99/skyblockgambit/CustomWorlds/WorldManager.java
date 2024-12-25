@@ -68,20 +68,7 @@ public class WorldManager {
     public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY, int minY, int spawnRadius) {
         int x;
         int z;
-        //int sideLength;
-//        Location referenceCorner;
-        //referenceCorner = world.GetReferenceCorner();
-//        referenceCorner = middleLocation.clone();
-//        referenceCorner.add(0, 0, (-_worldLength)/2);
-
-//        referenceCorner.add(0, 0, (-spawnRadius)/2);
-
-
-        //Bukkit.broadcastMessage("reference corner: " + referenceCorner);
-//        Bukkit.broadcastMessage("middle: " + middleLocation.toVector().toString());
         for(int i = 0; i < 70; i++) {
-//            x = rand.nextInt(spawnRadius);
-//            z = rand.nextInt(spawnRadius);
             x = rand.nextInt(spawnRadius*2);
             z = rand.nextInt(spawnRadius*2);
 
@@ -99,26 +86,26 @@ public class WorldManager {
         return null;
     }
     public void AddPostGenerationObjects(StarterChestManager _chestManager, CustomVillagerManager villagerManager, List<CustomVillager> customs) {
-        try {
-            Bukkit.broadcastMessage("World has been generated");
-            _gameManager.isWorldGenerated = true;
+//        try {
 
-            SpawnStarterChests(_chestManager);
-            SpawnPortals();
-            SpawnTeamVillagers(villagerManager);
-            _gameManager.InitializeTeams();
-            _gameManager.UpdateSpawns();
+        Bukkit.broadcastMessage("World has been generated");
+        Bukkit.broadcastMessage("post gen time: " + Bukkit.getWorld("void_world").getFullTime());
+        _gameManager.isWorldGenerated = true;
+
+        SpawnStarterChests(_chestManager);
+        SpawnPortals();
+        SpawnTeamVillagers(villagerManager);
+        _gameManager.InitializeTeams();
+        _gameManager.UpdateSpawns();
 //            _gameManager._animalSpawner.SpawnAnimals(false);
-         }
-        catch(Exception e) {
-            Bukkit.broadcastMessage("ERROR");
-            e.printStackTrace();
-        }
+//         }
+//        catch(Exception e) {
+//            Bukkit.broadcastMessage("ERROR");
+//            e.printStackTrace();
+//        }
     }
     public void SpawnTeamVillagers(CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
-        World world = Bukkit.getWorld("void_world");
-        int spawnRadius = 150;
         int extraVillagers = _villagerManager.get_presets().size() + 1;
         List<Integer> bannedProfessions = new ArrayList<>();
         bannedProfessions.add(5); //Farmer
@@ -192,8 +179,6 @@ public class WorldManager {
             Location startChestLoc = new Location(Bukkit.getWorld("void_world"), worldSpawn.getX() + 1, worldSpawn.getY(), worldSpawn.getZ() + 1);
             StarterChest starterChest = new StarterChest(startChestLoc, chestManager.GetInventory(), _gameManager.GetStarterChestList());
             starterChest.CreateChest();
-            startChestLoc = null;
-            worldSpawn = null;
         }
     }
     public void SpawnPortals() {
@@ -242,6 +227,9 @@ public class WorldManager {
 
         Process process = new Process(executionTime, queueable);
         _gameManager.processes.put(executionTime, process);
+
+
+//        _processManager.CreateProcessLast(_gameManager.processes, 15, () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength, worldFile));
     }
     public int get_worldLength() {
         return _worldLength;

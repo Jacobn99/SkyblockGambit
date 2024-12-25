@@ -30,10 +30,6 @@ public class StarterChest {
         chest.getBlockInventory().setContents(_inventory);
 
     }
-//    public void SetInventory(ItemStack[] inventory) {
-//        Chest chest = (Chest) _chestLoc.getBlock().getState();
-//        chest.getBlockInventory().setContents(inventory);
-//    }
 
     public Location GetLocation() {
         return _chestLoc;

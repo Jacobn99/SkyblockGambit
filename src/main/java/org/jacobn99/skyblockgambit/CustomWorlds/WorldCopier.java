@@ -61,12 +61,24 @@ public class WorldCopier {
         for (int i = 0; i < list.size(); i += blocksGeneratedPerExecution) {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
-            executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
+//            executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
+            executionTime = timeBetweenExecution * (loopIterations) + _processManager.GetLatestExecutionTime(_processes);
+
             Process process = new Process(executionTime, _queueable);
             _storedProcesses.put(executionTime, process);
+//            Bukkit.broadcastMessage("putting " + executionTime);
+
             loopIterations++;
         }
         _processes.putAll(_storedProcesses);
+
+        long t = 0;
+        for(long time : _storedProcesses.keySet()) {
+            if(time > t) {
+                t = time;
+            }
+        }
+        Bukkit.broadcastMessage("latest execution real: " + t);
         //Bukkit.broadcastMessage("Process: " + _processes.size());
         _storedProcesses.clear();
     }
@@ -118,7 +130,7 @@ public class WorldCopier {
         }
     }
     public void PasteChunkPiece(List<SerializedBlock> list, int startIteration, Location newLoc) {
-        try {
+//        try {
             World world = Bukkit.getWorld("void_world");
             double xDistance = newLoc.getX() - list.get(0).get_x();
             double yDistance = newLoc.getY() - list.get(0).get_y();
@@ -139,11 +151,11 @@ public class WorldCopier {
                     return;
                 }
             }
-        } catch (Exception e) {
-            Bukkit.broadcastMessage("ERROR");
-            e.printStackTrace();
-            return;
-        }
+//        } catch (Exception e) {
+//            Bukkit.broadcastMessage("ERROR");
+//            e.printStackTrace();
+//            return;
+//        }
     }
     public List<SerializedBlock> GetChunkPieceData(String filePath) {
         Gson gson = new Gson();
@@ -154,6 +166,7 @@ public class WorldCopier {
             List<SerializedBlock> blocksList = gson.fromJson(reader, listOfMyClassObject);
             return blocksList;
         } catch (IOException e) {
+            Bukkit.broadcastMessage("ERROR AT PIECE DATA");
             throw new RuntimeException(e);
         }
     }

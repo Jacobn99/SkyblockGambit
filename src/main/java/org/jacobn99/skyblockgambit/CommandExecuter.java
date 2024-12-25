@@ -24,6 +24,8 @@ import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
 import javax.swing.filechooser.FileSystemView;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandExecuter implements CommandExecutor {
@@ -73,7 +75,15 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                _animalSpanwer.SpawnAnimals(false);
+                Integer[] array = {1,3,5,9,10,12,16,19};
+
+                List<Integer> arrayList = new ArrayList<>(Arrays.asList(array));
+                Bukkit.broadcastMessage("list: " + arrayList);
+                for(int i = 0; i < 20; i++) {
+                    _gameManager._processManager.AddToProcessesSorted(i, arrayList);
+                }
+//                _gameManager._processManager.AddToProcessesSorted(11, arrayList);
+//                _animalSpanwer.SpawnAnimals(false);
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
