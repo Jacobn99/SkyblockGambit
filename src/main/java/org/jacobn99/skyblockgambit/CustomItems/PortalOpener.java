@@ -16,6 +16,8 @@ public class PortalOpener {
         if (event.getItem() != null) {
             if (_gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("PORTAL_OPENER")))) {
                 Bukkit.broadcastMessage("What the sigma?");
+                event.setCancelled(true);
+
                 Team team = _gameManager.FindPlayerTeam(p);
 
                 if (team != null) {

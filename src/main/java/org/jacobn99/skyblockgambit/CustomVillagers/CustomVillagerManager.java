@@ -38,6 +38,7 @@ public class CustomVillagerManager {
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
 //        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
+        villager.addScoreboardTag("disposable");
         _gameManager.disposableEntities.add(villager);
         return villager;
     }
@@ -110,7 +111,6 @@ public class CustomVillagerManager {
             custom.SetTrades(preset);
             custom.GetVillager().setCustomName(preset);
         }
-        villager.setVillagerLevel(5);
         villager.addScoreboardTag("Customized");
         villager.setCustomNameVisible(true);
 //        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));

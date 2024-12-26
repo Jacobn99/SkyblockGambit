@@ -17,11 +17,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
+import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
 import org.jacobn99.skyblockgambit.CustomWorlds.NaturalCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
+import org.jacobn99.skyblockgambit.Processes.Process;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
+
 
 import javax.swing.filechooser.FileSystemView;
 import java.util.ArrayList;
@@ -71,24 +74,17 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } if (label.equalsIgnoreCase("end")) {
                 sender.sendMessage(ChatColor.RED + "end");
-                _gameManager.EndGame();
+                _worldManager.ClearWorlds();
+                _gameManager._processManager.CreateProcess(_gameManager._processManager.GetLatestExecutionTime() + 20, () -> _gameManager.EndGame());
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                Integer[] array = {1,3,5,9,10,12,16,19};
-
-                List<Integer> arrayList = new ArrayList<>(Arrays.asList(array));
-                Bukkit.broadcastMessage("list: " + arrayList);
-                for(int i = 0; i < 20; i++) {
-                    _gameManager._processManager.AddToProcessesSorted(i, arrayList);
-                }
-//                _gameManager._processManager.AddToProcessesSorted(11, arrayList);
-//                _animalSpanwer.SpawnAnimals(false);
+                Villager villager = (Villager) p.getLocation().getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER);
+                villager.setProfession(Villager.Profession.FARMER);
+                villager.setVillagerExperience(5000);
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {
-                //_chestManager.SetChestInventory(p);
-                //Bukkit.broadcastMessage("changed chest inventory");
                 T_Command(p, args);
             } else if (label.equalsIgnoreCase("spawn_villager")) {
                 Spawn_Villager_Command(p, args);
@@ -181,7 +177,7 @@ public class CommandExecuter implements CommandExecutor {
                     String worldName = args[0];
                     for(Team team : _gameManager.teams) {
                         if(team.GetTeamColor().equalsIgnoreCase(worldName)) {
-                            //Bukkit.broadcastMessage(team.GetTeamColor() + ": " + team.GetTeamWorld().GetMiddleLoc());
+                            Bukkit.broadcastMessage(team.GetTeamColor() + ": " + team.GetTeamWorld().GetMiddleLoc());
                             _worldCopier.ClearWorld(team.GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
                         }
                     }

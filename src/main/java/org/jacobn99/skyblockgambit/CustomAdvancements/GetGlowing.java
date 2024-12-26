@@ -24,7 +24,7 @@ public class GetGlowing implements AdvancementType{
     public void GetGlowingCheck(EntityPotionEffectEvent event) {
         if(event.getEntity() instanceof Player) {
             Player p = (Player) event.getEntity();
-            _gameManager._processManager.CreateProcess(_gameManager.processes,
+            _gameManager._processManager.CreateProcess(
                     _world.getFullTime() + 5, () -> CheckForEffect(p));
         }
     }

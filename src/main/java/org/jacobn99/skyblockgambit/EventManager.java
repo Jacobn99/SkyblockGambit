@@ -115,7 +115,7 @@ public class EventManager implements Listener {
         Team team = _gameManager.FindPlayerTeam(p);
         Queueable queueable = () -> _gameManager.GrantCompass(p,team);
         if(_gameManager.isRunning && team != null) {
-            _processManager.CreateProcess(_gameManager.processes, world.getFullTime() + 20, queueable);
+            _processManager.CreateProcess(world.getFullTime() + 20, queueable);
         }
     }
 

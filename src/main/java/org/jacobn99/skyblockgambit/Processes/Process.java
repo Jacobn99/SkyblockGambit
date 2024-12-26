@@ -1,5 +1,8 @@
 package org.jacobn99.skyblockgambit.Processes;
 
+import org.bukkit.Bukkit;
+
+import java.lang.reflect.Executable;
 import java.util.HashMap;
 
 public class Process {
@@ -26,7 +29,13 @@ public class Process {
     }
     public void ExecuteFunction()
     {
-        _queueable.Execute();
+        try {
+            _queueable.Execute();
+        }
+        catch(Exception e) {
+            Bukkit.broadcastMessage("PROCESS ERROR");
+            e.printStackTrace();
+        }
     }
     public boolean get_isDone() {
         return _isDone;

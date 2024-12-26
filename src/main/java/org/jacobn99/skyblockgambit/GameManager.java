@@ -44,7 +44,8 @@ public class GameManager {
     private List<Object> objects;
     public List<Team> teams;
     public Set<Player> participatingPlayers;
-    public HashMap<Long, Process> processes;
+//    public HashMap<Long, Process> processes;
+    public List<Process> processes;
     public Map<Player, Integer> killCounts;
     JavaPlugin _mainPlugin;
     public PortalManager portalManager;
@@ -87,10 +88,10 @@ public class GameManager {
         nonClickableInventories = new HashSet<>();
 
         participatingPlayers = new HashSet<>();
-        processes = new HashMap<>();
+        processes = new ArrayList<>();
         killCounts = new HashMap<>();
         advancementManager = new AdvancementManager(_mainPlugin, teams);
-        _processManager = new ProcessManager();
+        _processManager = new ProcessManager(this);
         portalManager = new PortalManager(this, _processManager, _mainPlugin);
         _customVillagerManager = new CustomVillagerManager(_mainPlugin, customVillagers, this);
         _worldManager = new WorldManager(_mainPlugin, this, portalManager, _processManager, _customVillagerManager);
@@ -108,7 +109,7 @@ public class GameManager {
         normalVillagerAmount = 9;
         canProceed = true;
         isWorldGenerated = false;
-        _passiveMobCap = 35;
+        _passiveMobCap = 40;
         _generatorManager = new GeneratorManager();
         _world = Bukkit.getWorld("void_world");
 
@@ -131,15 +132,8 @@ public class GameManager {
         _worldManager.BuildWorld(redWorld, file, _processManager);
         _worldManager.BuildWorld(blueWorld, file, _processManager);
 
-//        Bukkit.broadcastMessage("latest execution time: " + _processManager.GetLatestExecutionTime(processes));
-        Bukkit.broadcastMessage("pre-gen time: " + Bukkit.getWorld("void_world").getFullTime());
-
-        _processManager.CreateProcessLast(processes, 50,
+        _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
-//        _processManager.CreateProcess(processes, _processManager.GetLatestExecutionTime(processes) + 50,
-//                () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
-
-//        _animalSpawner.SpawnAnimals(false);
 
         new BukkitRunnable() {
             @Override
@@ -147,10 +141,10 @@ public class GameManager {
                 if(!isRunning) {
                     this.cancel();
                 }
-//                _animalSpawner.SpawnAnimals();
-                _processManager.HandleProcesses(processes);
-//                _generatorManager.RenewGenerators(tickRate);
-//                portalManager.PortalUpdate(portals, tickRate);
+                _animalSpawner.SpawnAnimals(true);
+                _processManager.HandleProcesses();
+                _generatorManager.RenewGenerators(tickRate);
+                portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
@@ -258,8 +252,11 @@ public class GameManager {
     }
     public void EndGame() {
         isRunning = false;
-        for(Entity e : disposableEntities) {
-            e.remove();
+
+        for(Entity e : _world.getLivingEntities()) {
+            if(e.getScoreboardTags().contains("disposable")) {
+                e.remove();
+            }
         }
         InitializeTasks();
         advancementManager.ClearTaskParents();

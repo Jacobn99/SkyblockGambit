@@ -60,9 +60,9 @@ public class WorldManager {
         _villagerManager = customVillagerManager;
     }
     public void ClearWorlds() {
-        HashMap<Long, Process> _processes = _gameManager.processes;
         for(CustomWorld customWorld : _customWorlds) {
-            _processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
+            _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength));
+//            _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
         }
     }
     public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY, int minY, int spawnRadius) {
@@ -154,13 +154,6 @@ public class WorldManager {
             else {
                 int i = 0;
                 for(CustomVillager customVillager : templateVillagers) {
-//                    Villager villager = (Villager) customVillager.GetVillager().copy(customWorld.GetWorldSpawn(_gameManager));
-//                    villager.setRecipes(customs.get(iterations).GetVillager().getRecipes());
-//
-//                    CustomVillager customVil = new CustomVillager(_mainPlugin, villager, _gameManager.getCustomVillagers(), customVillager.GetID());
-//                    villager.addScoreboardTag("villager" + iterations);
-//                    Bukkit.broadcastMessage("location2: " + customVil.GetVillager().getLocation().toVector());
-
                     Villager villager = _villagerManager.SpawnVillager(spawnLoc, customVillager.GetVillager().getProfession());
                     villager.setRecipes(templateVillagers.get(i).GetVillager().getRecipes());
 
@@ -195,7 +188,6 @@ public class WorldManager {
                 portalLoc = customWorld.GetWorldSpawn(_gameManager).clone().add(0, 5, 0);
             }
 
-            //Bukkit.broadcastMessage("portal loc: " + portalLoc);
             if(i < _customWorlds.size() - 1) {
                 currentOpposingWorld = _customWorlds.get(i + 1);
             }
@@ -207,12 +199,15 @@ public class WorldManager {
                 return;
             }
             _gameManager.GenerateInvaderPortalFrame(portalLoc);
-            Portal p = new Portal(_gameManager.portals, _portalManager, currentOpposingWorld.GetWorldSpawn(_gameManager), portalLoc);
+            Portal p = new Portal(_gameManager.portals, _portalManager,
+                    currentOpposingWorld.GetWorldSpawn(_gameManager), portalLoc);
             customWorld.SetWorldPortal(p);
 
-            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc, EntityType.ARMOR_STAND);
+            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc,
+                    EntityType.ARMOR_STAND);
             armorStand.setGlowing(true);
             armorStand.setGravity(false);
+            armorStand.addScoreboardTag("disposable");
 
             portalLoc = null;
             worldSpawn = null;
@@ -220,16 +215,9 @@ public class WorldManager {
         }
     }
     public void BuildWorld(CustomWorld newWorld, File worldFile, ProcessManager processManager) {
-        long executionTime = processManager.GetLatestExecutionTime(_gameManager.processes) + 10;
-        //Bukkit.broadcastMessage("latestExecutionTime: " + executionTime);
-
+        long executionTime = processManager.GetLatestExecutionTime() + 10;
         Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength, worldFile);
-
-        Process process = new Process(executionTime, queueable);
-        _gameManager.processes.put(executionTime, process);
-
-
-//        _processManager.CreateProcessLast(_gameManager.processes, 15, () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength, worldFile));
+        _processManager.CreateProcess(executionTime, queueable);
     }
     public int get_worldLength() {
         return _worldLength;

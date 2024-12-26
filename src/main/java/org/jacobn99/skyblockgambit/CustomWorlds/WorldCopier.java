@@ -20,8 +20,8 @@ import java.util.*;
 public class WorldCopier {
     JavaPlugin _mainPlugin;
     File _outputFile;
-    HashMap<Long, Process> _processes;
-    HashMap<Long, Process> _storedProcesses;
+    List<Process> _processes;
+    List<Process> _storedProcesses;
     ProcessManager _processManager;
     long timeBetweenExecution;
     int blocksGeneratedPerExecution;
@@ -29,11 +29,11 @@ public class WorldCopier {
     int minYLevel;
     World _world;
 
-    public WorldCopier(JavaPlugin mainPlugin, HashMap<Long, Process> processes, ProcessManager processManager) {
+    public WorldCopier(JavaPlugin mainPlugin, List<Process> processes, ProcessManager processManager) {
         _mainPlugin = mainPlugin;
         _outputFile = new File(_mainPlugin.getDataFolder() + "/output.json");
         _processes = processes;
-        _storedProcesses = new HashMap<>();
+        _storedProcesses = new ArrayList<>();
         _processManager = processManager;
 
         timeBetweenExecution = 1; //in ticks
@@ -61,26 +61,30 @@ public class WorldCopier {
         for (int i = 0; i < list.size(); i += blocksGeneratedPerExecution) {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
-//            executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
-            executionTime = timeBetweenExecution * (loopIterations) + _processManager.GetLatestExecutionTime(_processes);
+            executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
+//            executionTime = timeBetweenExecution * (loopIterations) + _processManager.GetLatestExecutionTime();
 
             Process process = new Process(executionTime, _queueable);
-            _storedProcesses.put(executionTime, process);
+            _processManager.CreateProcess(process);
+//            _storedProcesses.add(process);
 //            Bukkit.broadcastMessage("putting " + executionTime);
 
             loopIterations++;
         }
-        _processes.putAll(_storedProcesses);
+//        for(Process process : _storedProcesses) {
+//            _processManager.CreateProcess(process);
+//        }
+//        _processes.putAll(_storedProcesses);
 
-        long t = 0;
-        for(long time : _storedProcesses.keySet()) {
-            if(time > t) {
-                t = time;
-            }
-        }
-        Bukkit.broadcastMessage("latest execution real: " + t);
+//        long t = 0;
+//        for(long time : _storedProcesses.keySet()) {
+//            if(time > t) {
+//                t = time;
+//            }
+//        }
+//        Bukkit.broadcastMessage("latest execution real: " + t);
         //Bukkit.broadcastMessage("Process: " + _processes.size());
-        _storedProcesses.clear();
+//        _storedProcesses.clear();
     }
     public void ClearWorld(Location referenceCorner, int worldSize) {
         Bukkit.broadcastMessage("Starting Deletion!");
@@ -101,15 +105,17 @@ public class WorldCopier {
                     final int Y = y;
                     final int Z = z;
 
-                    _processManager.CreateProcess(_storedProcesses, 2 * (loopIterations) + world.getFullTime(),
+//                    Process process = new Process(2 * (loopIterations) + world.getFullTime(),
+//                            () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
+                    _processManager.CreateProcess(2 * (loopIterations) + world.getFullTime(),
                             () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
                     loopIterations++;
                 }
             }
         }
 
-        _processes.putAll(_storedProcesses);
-        _storedProcesses.clear();
+//        _processes.putAll(_storedProcesses);
+//        _storedProcesses.clear();
     }
     public void ClearChunk(Location referenceCorner, int startX, int startY, int startZ, int chunkX, int chunkY, int chunkZ) {
         World world = Bukkit.getWorld("void_world");

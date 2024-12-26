@@ -32,8 +32,7 @@ public class NaturalCopier {
                     Location pasteLoc = new Location(_copier._world,
                             (int)(newX + xDistance), _copier.maxYLevel - yDistance, (int)(newZ - zDistance));
 
-                    _copier._processManager.CreateProcess(_copier._processes,
-                            _copier.timeBetweenExecution * (loopIterations) + _copier._world.getFullTime(),
+                    _copier._processManager.CreateProcess(_copier.timeBetweenExecution * (loopIterations) + _copier._world.getFullTime(),
                             () -> ClonePiece(manager, copyLoc, pasteLoc));
                     loopIterations+=1;
 

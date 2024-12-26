@@ -77,8 +77,11 @@ public class NetherManager {
     }
 
     private Location GetFortressLoc() {
+        Random rand = new Random();
+        int x = rand.nextInt(3000);
+        int z = rand.nextInt(3000);
         if(_fortressLoc == null) {
-            _fortressLoc = nether.locateNearestStructure(new Location(nether, 0, 0 ,0), StructureType.NETHER_FORTRESS, 5000, false);
+            _fortressLoc = nether.locateNearestStructure(new Location(nether, x, 0 ,z), StructureType.NETHER_FORTRESS, 5000, false);
             _fortressLoc.setY(0);
         }
         return _fortressLoc;
@@ -87,8 +90,8 @@ public class NetherManager {
         try {
             //Bukkit.broadcastMessage("bro");
             Player p = (Player) event.getPlayer();
-            _processManager.CreateProcess(_gameManager.processes,
-                    Bukkit.getWorld("void_world").getFullTime() + 2, () -> DimensionCheck(p));
+            _processManager.CreateProcess(Bukkit.getWorld("void_world").getFullTime() + 2,
+                    () -> DimensionCheck(p));
         }
         catch(Exception e) {
             e.printStackTrace();

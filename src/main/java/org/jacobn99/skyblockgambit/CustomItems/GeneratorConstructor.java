@@ -77,9 +77,9 @@ public class GeneratorConstructor {
         ItemStack item = event.getItem();
         if(event.getItem() != null) {
             if(_gameManager._customItemManager.AreEqual(event.getItem(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
-
 //            if (item.equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
                 p.openInventory(generatorSelector);
+                event.setCancelled(true);
             }
         }
     }

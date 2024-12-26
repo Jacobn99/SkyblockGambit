@@ -40,8 +40,8 @@ public class AnimalSpawner {
                 Make value (rand) a random value bound between 0 and the difference of animalCount and the passive mob cap
                 Spawn rand animals at random locations
          */
-//        if (world.getFullTime() % 3600 == 0 || !isTimed) {
-//            Bukkit.broadcastMessage("what the sigma???");
+        if (world.getFullTime() % 3600 == 0 || !isTimed) {
+            Bukkit.broadcastMessage("what the sigma???");
 //
             int animalCount = 0;
             int spawnTarget = 0;
@@ -57,14 +57,17 @@ public class AnimalSpawner {
                     spawnTarget = rand.nextInt(difference);
 
                     for (int i = 0; i < spawnTarget; i++) {
-                        Location animalLoc = _worldManager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), customWorld.GetMiddleLoc(), 300, _gameManager.minWorldHeight, _worldManager.get_worldLength()/2);
+                        Location animalLoc = _worldManager.GenerateSpawnLocation(Bukkit.getWorld("void_world"),
+                                customWorld.GetMiddleLoc(), 300, _gameManager.minWorldHeight,
+                                _worldManager.get_worldLength()/2);
                         Entity entity = animalLoc.getWorld().spawnEntity(animalLoc, RandomAnimalType());
-                        entity.setGlowing(true);
+                        entity.addScoreboardTag("disposable");
+//                        entity.setGlowing(true);
                     }
                     Bukkit.broadcastMessage("Added: " + spawnTarget + " animals");
                 }
             }
-//        }
+        }
     }
     private EntityType RandomAnimalType() {
         Random rand = new Random();
