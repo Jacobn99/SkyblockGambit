@@ -45,6 +45,7 @@ public class CommandExecuter implements CommandExecutor {
     private DataManager _DataManager;
     private World _world;
     private ConfigManager _configManager;
+    private PythonManager _pythonManager;
     //ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -60,6 +61,7 @@ public class CommandExecuter implements CommandExecutor {
         _DataManager = new DataManager();
         _world = Bukkit.getWorld("void_world");
         _configManager = new ConfigManager(_mainPlugin);
+        _pythonManager = new PythonManager(_mainPlugin);
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
         //_worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
@@ -79,9 +81,11 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                Villager villager = (Villager) p.getLocation().getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER);
-                villager.setProfession(Villager.Profession.FARMER);
-                villager.setVillagerExperience(5000);
+                try {
+                    _pythonManager.GenerateNewIsland();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {

@@ -121,7 +121,6 @@ public class GameManager {
 //
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
-        File file = new File( _mainPlugin.getDataFolder().getAbsolutePath() + "/output.json");
 
         _customItemManager.LoadRequiredItems();
         InitializeTasks();
@@ -129,8 +128,8 @@ public class GameManager {
         blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
         redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
 
-        _worldManager.BuildWorld(redWorld, file, _processManager);
-        _worldManager.BuildWorld(blueWorld, file, _processManager);
+        _worldManager.BuildWorld(redWorld, _processManager);
+        _worldManager.BuildWorld(blueWorld, _processManager);
 
         _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));

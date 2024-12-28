@@ -214,9 +214,9 @@ public class WorldManager {
             i++;
         }
     }
-    public void BuildWorld(CustomWorld newWorld, File worldFile, ProcessManager processManager) {
+    public void BuildWorld(CustomWorld newWorld, ProcessManager processManager) {
         long executionTime = processManager.GetLatestExecutionTime() + 10;
-        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength, worldFile);
+        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength);
         _processManager.CreateProcess(executionTime, queueable);
     }
     public int get_worldLength() {

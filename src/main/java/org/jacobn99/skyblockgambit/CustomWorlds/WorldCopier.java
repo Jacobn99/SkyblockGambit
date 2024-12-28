@@ -31,7 +31,8 @@ public class WorldCopier {
 
     public WorldCopier(JavaPlugin mainPlugin, List<Process> processes, ProcessManager processManager) {
         _mainPlugin = mainPlugin;
-        _outputFile = new File(_mainPlugin.getDataFolder() + "/output.json");
+//        _outputFile = new File(_mainPlugin.getDataFolder() + "/output.json");
+        _outputFile = new File(_mainPlugin.getDataFolder() + "/Procedural-Terrain-Generator/output.json");
         _processes = processes;
         _storedProcesses = new ArrayList<>();
         _processManager = processManager;
@@ -46,14 +47,18 @@ public class WorldCopier {
         _world = Bukkit.getWorld("void_world");
     }
 
-    public void DuplicateLand(Location newLoc, int worldSize, File file) {
+    public void GenerateWorldFile() {
+
+    }
+
+    public void DuplicateLand(Location newLoc, int worldSize) {
         long executionTime;
         int loopIterations;
         List<SerializedBlock> list;
         World world;
         newLoc.subtract((double) worldSize /2, 0 ,0);
         world = Bukkit.getWorld("void_world");
-        list = GetChunkPieceData(file.getAbsolutePath());
+        list = GetChunkPieceData();
         Queueable _queueable;
         loopIterations = 0;
 
@@ -62,29 +67,11 @@ public class WorldCopier {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
             executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
-//            executionTime = timeBetweenExecution * (loopIterations) + _processManager.GetLatestExecutionTime();
 
             Process process = new Process(executionTime, _queueable);
             _processManager.CreateProcess(process);
-//            _storedProcesses.add(process);
-//            Bukkit.broadcastMessage("putting " + executionTime);
-
             loopIterations++;
         }
-//        for(Process process : _storedProcesses) {
-//            _processManager.CreateProcess(process);
-//        }
-//        _processes.putAll(_storedProcesses);
-
-//        long t = 0;
-//        for(long time : _storedProcesses.keySet()) {
-//            if(time > t) {
-//                t = time;
-//            }
-//        }
-//        Bukkit.broadcastMessage("latest execution real: " + t);
-        //Bukkit.broadcastMessage("Process: " + _processes.size());
-//        _storedProcesses.clear();
     }
     public void ClearWorld(Location referenceCorner, int worldSize) {
         Bukkit.broadcastMessage("Starting Deletion!");
@@ -105,17 +92,12 @@ public class WorldCopier {
                     final int Y = y;
                     final int Z = z;
 
-//                    Process process = new Process(2 * (loopIterations) + world.getFullTime(),
-//                            () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
                     _processManager.CreateProcess(2 * (loopIterations) + world.getFullTime(),
                             () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
                     loopIterations++;
                 }
             }
         }
-
-//        _processes.putAll(_storedProcesses);
-//        _storedProcesses.clear();
     }
     public void ClearChunk(Location referenceCorner, int startX, int startY, int startZ, int chunkX, int chunkY, int chunkZ) {
         World world = Bukkit.getWorld("void_world");
@@ -136,39 +118,30 @@ public class WorldCopier {
         }
     }
     public void PasteChunkPiece(List<SerializedBlock> list, int startIteration, Location newLoc) {
-//        try {
-            World world = Bukkit.getWorld("void_world");
-            double xDistance = newLoc.getX() - list.get(0).get_x();
-            double yDistance = newLoc.getY() - list.get(0).get_y();
-            double zDistance = newLoc.getZ() - list.get(0).get_z();
+        World world = Bukkit.getWorld("void_world");
+        double xDistance = newLoc.getX() - list.get(0).get_x();
+        double yDistance = newLoc.getY() - list.get(0).get_y();
+        double zDistance = newLoc.getZ() - list.get(0).get_z();
 
-            for (int i = startIteration; i < blocksGeneratedPerExecution + startIteration; i++) {
-                if (i < list.size() - 1) {
-                    SerializedBlock b = list.get(i);
-                    Location blockLoc = new Location(world, b.get_x() + xDistance,
-                            b.get_y() + yDistance, b.get_z() + zDistance);
+        for (int i = startIteration; i < blocksGeneratedPerExecution + startIteration; i++) {
+            if (i < list.size() - 1) {
+                SerializedBlock b = list.get(i);
+                Location blockLoc = new Location(world, b.get_x() + xDistance,
+                        b.get_y() + yDistance, b.get_z() + zDistance);
 
-                    BlockData newData = Bukkit.createBlockData(b.get_str_data());
-                    blockLoc.getBlock().setBlockData(newData);
-
-                    blockLoc = null;
-                    newData = null;
-                } else {
-                    return;
-                }
+                BlockData newData = Bukkit.createBlockData(b.get_str_data());
+                blockLoc.getBlock().setBlockData(newData);
+            } else {
+                return;
             }
-//        } catch (Exception e) {
-//            Bukkit.broadcastMessage("ERROR");
-//            e.printStackTrace();
-//            return;
-//        }
+        }
     }
-    public List<SerializedBlock> GetChunkPieceData(String filePath) {
+    public List<SerializedBlock> GetChunkPieceData() {
         Gson gson = new Gson();
         try {
             Type listOfMyClassObject = new TypeToken<ArrayList<SerializedBlock>>() {
             }.getType();
-            Reader reader = Files.newBufferedReader(Paths.get(filePath));
+            Reader reader = Files.newBufferedReader(_outputFile.toPath());
             List<SerializedBlock> blocksList = gson.fromJson(reader, listOfMyClassObject);
             return blocksList;
         } catch (IOException e) {
