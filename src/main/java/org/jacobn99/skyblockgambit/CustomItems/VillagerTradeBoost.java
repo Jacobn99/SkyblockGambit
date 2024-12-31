@@ -23,7 +23,7 @@ public class VillagerTradeBoost {
             if(_gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("TRADE_BOOST")))) {
                 event.setCancelled(true);
 //            if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("TRADE_BOOST")))) {
-                Bukkit.broadcastMessage("What the sigma?");
+//                Bukkit.broadcastMessage("What the sigma?");
                 p.addPotionEffect(new PotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE, effectDuration, amplifier));
                 p.getInventory().remove(event.getItem());
             }

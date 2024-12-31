@@ -106,7 +106,7 @@ public class CommandExecuter implements CommandExecutor {
                     }
                 }
                 else {
-                    Bukkit.broadcastMessage("Format: get_custom_item index/name argument");
+                    p.sendMessage("Format: get_custom_item index/name argument");
                 }
                 return false;
             }
@@ -117,18 +117,18 @@ public class CommandExecuter implements CommandExecutor {
                     name = args[1];
 
                     _itemManager.SetCustomItem(p, arg0, name);
-                    Bukkit.broadcastMessage("Added: " + _itemManager.GetCustomItem(arg0) + ", name = " + name.toUpperCase());
+                    p.sendMessage("Added: " + _itemManager.GetCustomItem(arg0) + ", name = " + name.toUpperCase());
                     return true;
                 }
                 else {
-                    Bukkit.broadcastMessage("Usage: set_custom_item index name(optional)");
+                    p.sendMessage(  "Usage: set_custom_item index name(optional)");
                     return false;
                 }
             }
             else if (label.equalsIgnoreCase("list_custom_items")) {
                 int i = 0;
                 for(CustomItems item : _itemManager.GetCustomItemsList()) {
-                    Bukkit.broadcastMessage("index " + i + ": " + item.getItemName());
+                    p.sendMessage("index " + i + ": " + item.getItemName());
                     i++;
                 }
             }
@@ -137,17 +137,17 @@ public class CommandExecuter implements CommandExecutor {
                     String name = args[0];
                     _itemManager.AddCustomItem(p, name);
                     int index = _itemManager.GetCustomItemsList().size() - 1;
-                    Bukkit.broadcastMessage("Added: " + _itemManager.GetCustomItem(index) + ", name = " + name.toUpperCase() + ", index = " + (index));
+                    p.sendMessage("Added: " + _itemManager.GetCustomItem(index) + ", name = " + name.toUpperCase() + ", index = " + (index));
                     return true;
                 }
                 else {
-                    Bukkit.broadcastMessage("Usage: add_custom_item name(optional)");
+                    p.sendMessage("Usage: add_custom_item name(optional)");
                     return false;
                 }
             }
             else if(label.equalsIgnoreCase("clear_custom_items")) {
                 _itemManager.ClearFile();
-                Bukkit.broadcastMessage("Items cleared");
+                p.sendMessage("Items cleared");
             }
             else if (label.equalsIgnoreCase("set_starter_chest")) {
                 _chestManager.SetChestInventory(p);
@@ -156,17 +156,17 @@ public class CommandExecuter implements CommandExecutor {
             else if (label.equalsIgnoreCase("grant_advancement")) {
                 if (args.length == 1) {
                     if(_gameManager.advancementManager.GetAdvancement(args[0]) != null) {
-                        Bukkit.broadcastMessage("Granting advancement");
+                        p.sendMessage("Granting advancement");
                         _gameManager.advancementManager.GrantTeamAdvancement(p,
                                 _gameManager.advancementManager.GetAdvancement(args[0]), false);
                     }
                     else {
-                        Bukkit.broadcastMessage("Not a valid advancement");
+                        p.sendMessage("Not a valid advancement");
                     }
                     return true;
                 }
                 else {
-                    Bukkit.broadcastMessage("Usage: grant_advancement (advancement name)");
+                    p.sendMessage("Usage: grant_advancement (advancement name)");
                     return false;
                 }
             }
@@ -175,7 +175,7 @@ public class CommandExecuter implements CommandExecutor {
                     String worldName = args[0];
                     for(Team team : _gameManager.teams) {
                         if(team.GetTeamColor().equalsIgnoreCase(worldName)) {
-                            Bukkit.broadcastMessage(team.GetTeamColor() + ": " + team.GetTeamWorld().GetMiddleLoc());
+//                            Bukkit.broadcastMessage(team.GetTeamColor() + ": " + team.GetTeamWorld().GetMiddleLoc());
                             _worldCopier.ClearWorld(team.GetTeamWorld().GetMiddleLoc(), _worldManager.get_worldLength());
                         }
                     }
@@ -272,7 +272,8 @@ public class CommandExecuter implements CommandExecutor {
             for(Team team : _teams) {
                 if(team.GetTeamColor().equalsIgnoreCase(arg)) {
                     team.AddMember(p);
-                    Bukkit.broadcastMessage(team.GetTeamColor() + " Team: " + team.GetMembers());
+                    p.sendMessage("Added to " + team.GetTeamColor());
+//                    Bukkit.broadcastMessage(team.GetTeamColor() + " Team: " + team.GetMembers());
                     return true;
                 }
             }

@@ -89,7 +89,7 @@ public class WorldManager {
 //        try {
 
         Bukkit.broadcastMessage("World has been generated");
-        Bukkit.broadcastMessage("post gen time: " + Bukkit.getWorld("void_world").getFullTime());
+//        Bukkit.broadcastMessage("post gen time: " + Bukkit.getWorld("void_world").getFullTime());
         _gameManager.isWorldGenerated = true;
 
         SpawnStarterChests(_chestManager);
@@ -115,11 +115,11 @@ public class WorldManager {
 //            Bukkit.broadcastMessage("customs size: " + customs.size());
             Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
             Team team = _gameManager.FindWorldTeam(customWorld);
-            int j = 0;
-            for(Villager.Profession v: Villager.Profession.values()) {
-                Bukkit.broadcastMessage(j + ": " + v.name());
-                j++;
-            }
+//            int j = 0;
+//            for(Villager.Profession v: Villager.Profession.values()) {
+//                Bukkit.broadcastMessage(j + ": " + v.name());
+//                j++;
+//            }
 
 
             if(iterations == 0) {

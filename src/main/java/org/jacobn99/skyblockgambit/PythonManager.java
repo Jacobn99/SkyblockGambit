@@ -22,7 +22,7 @@ public class PythonManager {
         Process process = processBuilder.start();
         List<String> results = convert(process.getInputStream());
 
-//        int exitCode = process.waitFor();
+        int exitCode = process.waitFor();
     }
     private List<String> convert(InputStream inputStream) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {

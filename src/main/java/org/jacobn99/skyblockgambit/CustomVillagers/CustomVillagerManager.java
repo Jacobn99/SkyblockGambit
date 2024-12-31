@@ -113,7 +113,7 @@ public class CustomVillagerManager {
         Villager villager = custom.GetVillager();
 
         if(preset != null) {
-            Bukkit.broadcastMessage(preset);
+//            Bukkit.broadcastMessage(preset);
             custom.SetTrades(preset);
             custom.GetVillager().setCustomName(preset);
         }

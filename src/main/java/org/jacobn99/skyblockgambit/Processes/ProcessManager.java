@@ -95,7 +95,7 @@ public class ProcessManager {
             latestExecutionTime = processes.get(processes.size() - 1).get_executionTime();
         }
 
-        Bukkit.broadcastMessage("latest execution time: " + latestExecutionTime);
+//        Bukkit.broadcastMessage("latest execution time: " + latestExecutionTime);
         return latestExecutionTime;
     }
 }

@@ -113,7 +113,7 @@ public class AdvancementManager {
             for (Team team : _teams) {
                 if (team.GetMembers().contains(p) && a != null) {
                     for (Player player : team.GetMembers()) {
-                        Bukkit.broadcastMessage("Trying to grant a team an advancement");
+//                        Bukkit.broadcastMessage("Trying to grant a team an advancement");
 
                         if(a.GrantAdvancement(player, isConditional)) {
                             team.AddFinishedTask(a);
@@ -122,7 +122,7 @@ public class AdvancementManager {
                     }
                 }
             }
-            Bukkit.broadcastMessage("You must join a team first!");
+            p.sendMessage("You must join a team first!");
         }
     }
 
@@ -290,7 +290,6 @@ public class AdvancementManager {
 
     private boolean ContainsChar(String s, char targetCharacter) {
         for (char c : s.toCharArray()) {
-            //Bukkit.broadcastMessage(String.valueOf(c));
             if (c == targetCharacter) {
                 return true;
             }
@@ -301,9 +300,7 @@ public class AdvancementManager {
     public CustomAdvancement GetAdvancement(String fileName) {
         List<CustomAdvancement> advancementsList = GetCustomAdvancementList();
         for (CustomAdvancement a : advancementsList) {
-            //Bukkit.broadcastMessage(fileName + ", " + a.GetFileName());
             if (a.GetFileName().equalsIgnoreCase(fileName)) {
-                //Bukkit.broadcastMessage("worked");
                 return a;
             }
         }
@@ -322,9 +319,9 @@ public class AdvancementManager {
             meta.setDisplayName(a.GetFileName().toLowerCase().replace('_', ' '));
             meta.setLore(lore);
             item.setItemMeta(meta);
-            Bukkit.broadcastMessage("Item: " + item);
-            Bukkit.broadcastMessage("Lore: " + lore.get(0));
-            Bukkit.broadcastMessage("Display name: " + a.GetFileName().toLowerCase().replace('_', ' '));
+//            Bukkit.broadcastMessage("Item: " + item);
+//            Bukkit.broadcastMessage("Lore: " + lore.get(0));
+//            Bukkit.broadcastMessage("Display name: " + a.GetFileName().toLowerCase().replace('_', ' '));
             inventory.setItem(i, item);
 
             item = null;

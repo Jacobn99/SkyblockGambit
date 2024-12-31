@@ -72,7 +72,6 @@ public class CraftX implements AdvancementType {
         writableContent.add(possibleItems.get(index));
 
         _dataManager.WriteToFile(_file, writableContent, _itemStackSerialization);
-        Bukkit.broadcastMessage("item: " + GetItem());
     }
     private List<ItemStack> GetPossibleItems() {
         List<ItemStack> items = new ArrayList<>();
@@ -99,7 +98,7 @@ public class CraftX implements AdvancementType {
         Bukkit.broadcastMessage(_advancement.GetFileName() + ", " + _item.getType().name() + ", " + result.getType().name());
         if (_advancement != null && _item != null) {
             if (result.getType() == _item.getType()) {
-                Bukkit.broadcastMessage("bazinga");
+//                Bukkit.broadcastMessage("bazinga");
                 _advancementManager.GrantTeamAdvancement(p, _advancement, true);
                 //_advancement.GrantAdvancement(p, false);
             }

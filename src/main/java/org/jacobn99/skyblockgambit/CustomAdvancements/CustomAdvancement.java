@@ -68,7 +68,7 @@ public class CustomAdvancement {
         String total = "";
         for(String s : strings) {
             String first = Character.toString(s.charAt(0));
-            Bukkit.broadcastMessage(s + ", " + first);
+//            Bukkit.broadcastMessage(s + ", " + first);
             s = s.replaceFirst(first, first.toUpperCase());
             s = s.replace(".json", "");
             total += s + " ";

@@ -14,10 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.MerchantInventory;
-import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.*;
 import org.jacobn99.skyblockgambit.CustomItems.*;
@@ -81,10 +78,7 @@ public class EventManager implements Listener {
             if (_gameManager.nonClickableInventories.contains(event.getInventory())) {
                 event.setCancelled(true);
             }
-            Bukkit.broadcastMessage("Action: " + event.getAction().name());
-
             if (_gameManager.nonAdditiveInventories.contains(event.getInventory()) && event.isShiftClick()) {
-                Bukkit.broadcastMessage("Shift Click");
                 event.setCancelled(true);
             }
             if (event.getAction().equals(InventoryAction.PLACE_ALL) ||
@@ -162,15 +156,15 @@ public class EventManager implements Listener {
         org.bukkit.entity.Entity attacker = event.getDamager();
         org.bukkit.entity.Entity victim = event.getEntity();
 
-//        ZombieKillVillagerTest(event);
-
         if(victim instanceof Villager && victim.getScoreboardTags().contains("Customized") &&
-        attacker instanceof Zombie && ((Villager) victim).getHealth() <= event.getDamage()) {
+            attacker instanceof Zombie && ((Villager) victim).getHealth() <= event.getDamage() &&
+            _gameManager.isRunning) {
             CustomVillager v = _villagerManager.GetFromCustoms((Villager)victim);
 //            Bukkit.broadcastMessage("custom: " + v);
 
             if(v != null) {
-                Villager newVillager = _villagerManager.SpawnVillager(v.GetSpawnLocation(), v.GetVillager().getProfession());
+                Villager newVillager = _villagerManager.SpawnVillager(v.GetSpawnLocation(),
+                        v.GetVillager().getProfession());
                 _villagerManager.ApplyTraits((Villager)victim, newVillager);
                 victim.remove();
                 v.SetVillager(newVillager);
@@ -232,6 +226,7 @@ public class EventManager implements Listener {
                 for(MerchantRecipe recipe : merchant.getRecipes()) {
                     //Bukkit.broadcastMessage("Recipe: " + recipe.getIngredients() + "-> " + recipe.getResult());
                     recipe.setMaxUses(10000);
+                    recipe.setPriceMultiplier(0);
                 }
 //                List<MerchantRecipe> newRecipes = new ArrayList<>();
 //
@@ -271,12 +266,5 @@ public class EventManager implements Listener {
 
         }
     }
-
-//    @EventHandler
-//    public void onItemSpawn(ItemSpawnEvent event) {
-//        if (event.getEntity().getItemStack().equals(_gameManager.delayItem)) {
-////            ResetCommandFeedback();
-//        }
-//    }
 
 }

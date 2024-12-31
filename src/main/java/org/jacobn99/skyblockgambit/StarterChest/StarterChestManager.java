@@ -54,9 +54,9 @@ public class StarterChestManager {
     private void ReadChestFile() {
         List<String> serializedInventory = GetSerializedInventory();
 
-        for(ItemStack item : DeserializeInventory(serializedInventory)) {
-            Bukkit.broadcastMessage(String.valueOf(item));
-        }
+//        for(ItemStack item : DeserializeInventory(serializedInventory)) {
+//            Bukkit.broadcastMessage(String.valueOf(item));
+//        }
     }
 
     private ItemStack[] DeserializeInventory(List<String> serializedInventory) {

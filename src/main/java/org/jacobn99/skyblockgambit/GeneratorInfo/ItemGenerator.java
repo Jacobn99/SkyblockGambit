@@ -41,6 +41,7 @@ public class ItemGenerator {
         armorStand.setCustomNameVisible(true);
         armorStand.setInvulnerable(true);
         armorStand.setInvisible(true);
+        armorStand.addScoreboardTag("disposable");
         _clockDisplay = armorStand;
         isActive = true;
     }

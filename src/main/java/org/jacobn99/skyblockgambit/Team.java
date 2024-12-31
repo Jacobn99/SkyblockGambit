@@ -68,7 +68,10 @@ public class Team {
 
     public void AddFinishedTask(CustomAdvancement advancement) {
         this._finishedTasks.add(advancement);
-        Bukkit.broadcastMessage(_finishedTasks.size() + " tasks completed" + " vs " + _gameManager.advancementManager.GetMaxTasks() + " max tasks");
+        for(Player p : _members) {
+            p.sendMessage(_finishedTasks.size() + " tasks completed" + " vs " +
+                    _gameManager.advancementManager.GetMaxTasks() + " max tasks");
+        }
         if(AreTasksDone() && _gameManager.isRunning) {
             Location portalSpawn = this.GetTeamWorld().GetWorldSpawn(_gameManager).clone();
             portalSpawn.add(0, 10, 0);

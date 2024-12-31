@@ -104,7 +104,7 @@ public class NetherManager {
             if(team!= null) {
                 if (p.getLocation().getWorld() == nether) {
                     Location loc = GenerateRandomNetherSpawn();
-                    Bukkit.broadcastMessage("fortressLoc: " + loc);
+//                    Bukkit.broadcastMessage("fortressLoc: " + loc);
                     TeleportToNetherSpawn(p, team);
                 }
                 else if (p.getLocation().getWorld() == Bukkit.getWorld("void_world")) {

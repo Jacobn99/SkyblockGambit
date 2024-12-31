@@ -18,7 +18,7 @@ public class RageSpell {
         Player p = event.getPlayer();
         if(_gameManager._customItemManager.AreEqual(event.getItem(), itemManager.GetCustomItem(itemManager.ItemNameToIndex("RAGE_SPELL")))) {
 //        if (event.getItem().equals(itemManager.GetCustomItem(itemManager.ItemNameToIndex("RAGE_SPELL")))) {
-            Bukkit.broadcastMessage("What the sigma?");
+//            Bukkit.broadcastMessage("What the sigma?");
             event.setCancelled(true);
             p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, effectDuration, 2));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effectDuration, 2));
