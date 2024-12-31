@@ -23,6 +23,7 @@ public class PortalOpener {
                 if (team != null) {
                     if (team.GetTeamWorld().GetWorldPortal() != null) {
                         team.GetTeamWorld().GetWorldPortal().Activate();
+                        p.getInventory().remove(event.getItem());
                     }
                 }
             }

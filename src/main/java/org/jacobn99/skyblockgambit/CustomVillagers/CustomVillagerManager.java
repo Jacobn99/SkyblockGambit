@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.checkerframework.checker.units.qual.A;
 import org.jacobn99.skyblockgambit.GameManager;
+import org.jacobn99.skyblockgambit.Team;
 
 import java.util.*;
 
@@ -26,9 +27,7 @@ public class CustomVillagerManager {
         _mainPlugin = mainplugin;
         _customs = customs;
         _gameManager = gameManger;
-//        String[] presets = {"Villager0", "Villager1", "Villager2"};
         _presets = _mainPlugin.getConfig().getValues(false).keySet();
-//        _presets.addAll(Arrays.asList(presets));
     }
 
     public Villager SpawnVillager(Location loc, Villager.Profession profession) {
@@ -37,10 +36,24 @@ public class CustomVillagerManager {
         villager.setCustomNameVisible(true);
         villager.setProfession(profession); // Set the villager's profession (optional)
         villager.setVillagerExperience(5000); // Set the villager's experience to the maximum
-//        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
         villager.addScoreboardTag("disposable");
         _gameManager.disposableEntities.add(villager);
+        villager.addScoreboardTag("Customized");
+
         return villager;
+    }
+
+    public void ResetVillagerSpawns(Team team) {
+        for(CustomVillager v : _customs) {
+            if(v.GetTeam() == team) {
+                Villager oldVillager = v.GetVillager();
+                Villager newVillager = SpawnVillager(v.GetSpawnLocation(), v.GetVillager().getProfession());
+
+                ApplyTraits(oldVillager, newVillager);
+                v.SetVillager(newVillager);
+                oldVillager.remove();
+            }
+        }
     }
     public void MakeTradesCheaper(Villager v) {
         List<MerchantRecipe> newRecipes = new ArrayList<>();
@@ -51,15 +64,11 @@ public class CustomVillagerManager {
                 int amount = ingredient.getAmount();
                 int newAmount = 1;
                 ItemStack newIngredient;
-                //Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
-
                 if(amount > 1) {
                     newAmount = Math.round((amount/2));
                 }
                 newIngredient = new ItemStack(ingredient.getType(), newAmount);
                 newIngredients.add(newIngredient);
-                //Bukkit.broadcastMessage("New ingredient: " + ingredient.getType().name() + ", Amount: " + newAmount);
-
             }
             recipe.setIngredients(newIngredients);
             newRecipes.add(recipe);
@@ -72,15 +81,12 @@ public class CustomVillagerManager {
             int amount = ingredient.getAmount();
             int newAmount = 1;
             ItemStack newIngredient;
-            //Bukkit.broadcastMessage("Old ingredient: " + ingredient.getType().name() + ", Amount: " + amount);
 
             if(amount > 1) {
                 newAmount = Math.round((amount/2));
             }
             newIngredient = new ItemStack(ingredient.getType(), newAmount);
             newIngredients.add(newIngredient);
-            //Bukkit.broadcastMessage("New ingredient: " + ingredient.getType().name() + ", Amount: " + newAmount);
-
         }
         recipe.setIngredients(newIngredients);
         return recipe;
@@ -101,9 +107,9 @@ public class CustomVillagerManager {
         return professionID;
     }
 
-    public CustomVillager CreateCustomVillager(String preset, Location loc, Villager.Profession profession) {
+    public CustomVillager CreateCustomVillager(String preset, Location loc, Team team, Villager.Profession profession) {
         CustomVillager custom = new CustomVillager(_mainPlugin,
-                SpawnVillager(loc, profession), _customs, -1);
+                SpawnVillager(loc, profession), _customs, team, -1);
         Villager villager = custom.GetVillager();
 
         if(preset != null) {
@@ -111,9 +117,8 @@ public class CustomVillagerManager {
             custom.SetTrades(preset);
             custom.GetVillager().setCustomName(preset);
         }
-        villager.addScoreboardTag("Customized");
+//        villager.addScoreboardTag("Customized");
         villager.setCustomNameVisible(true);
-//        villager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100000, 100, true));
         _customs.add(custom);
         _gameManager.disposableEntities.add(custom.GetVillager());
         return custom;
@@ -121,17 +126,13 @@ public class CustomVillagerManager {
 
     public void VillagerDeathCheck(EntityDeathEvent event) {
         if(_gameManager.isRunning && event.getEntity() instanceof Villager
-                && event.getEntity().getScoreboardTags().contains("custom")) {
+                && event.getEntity().getScoreboardTags().contains("Customized")) {
             CustomVillager customVil = GetFromCustoms((Villager) event.getEntity());
             if(customVil != null) {
                 Villager villager = (Villager) event.getEntity();
-                CustomVillager newCustom = CreateCustomVillager(null, customVil.GetSpawnLocation(), villager.getProfession());
-                ApplyTraits(customVil.GetVillager(), newCustom.GetVillager());
-//                newCustom.GetVillager().setRecipes(customVil.GetVillager().getRecipes());
-////
-//                for(String tag : event.getEntity().getScoreboardTags()) {
-//                    newCustom.GetVillager().addScoreboardTag(tag);
-//                }
+                Villager newVillager = SpawnVillager(customVil.GetSpawnLocation(), villager.getProfession());
+                ApplyTraits(villager, newVillager);
+                customVil.SetVillager(newVillager);
             }
         }
     }

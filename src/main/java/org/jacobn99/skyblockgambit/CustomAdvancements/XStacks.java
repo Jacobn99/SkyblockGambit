@@ -50,6 +50,14 @@ public class XStacks implements AdvancementType{
         _possibleItems.add(new ItemStack(Material.WHEAT));
         _possibleItems.add(new ItemStack(Material.BAKED_POTATO));
         _possibleItems.add(new ItemStack(Material.BREAD));
+        _possibleItems.add(new ItemStack(Material.GLASS));
+        _possibleItems.add(new ItemStack(Material.CACTUS));
+        _possibleItems.add(new ItemStack(Material.BARRIER));
+        _possibleItems.add(new ItemStack(Material.STONE_BRICKS));
+        _possibleItems.add(new ItemStack(Material.CARROT));
+        _possibleItems.add(new ItemStack(Material.COMPOSTER));
+
+
     }
     public void UpdateDescription() {
         Map<ItemStack, Integer> itemMap = GetItemWithAmount();

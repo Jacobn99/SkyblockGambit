@@ -190,17 +190,37 @@ public class CustomItemManager {
 
 //        TestAreEqual(item1, item2);
 
-        return  meta1.getLore() == meta2.getLore() && meta1.getDisplayName().equals(meta2.getDisplayName()) &&
+        return  LoreEqual(meta1,meta2) && meta1.getDisplayName().equals(meta2.getDisplayName()) &&
                 meta1.getItemFlags().equals(meta2.getItemFlags()) && item1.getType() == item2.getType() &&
                 item1.getAmount() == item2.getAmount();
     }
+    public boolean LoreEqual(ItemMeta meta1, ItemMeta meta2) {
+        if(meta1.getLore() == null && meta2.getLore() == null) return true;
+        else if(meta1.getLore() != null && meta2.getLore() != null) {
+            return meta1.getLore().containsAll(meta2.getLore());
+        }
+        else return false;
 
-    public void TestAreEqual(ItemStack item1, ItemStack item2) {
+    }
+
+    private void TestLoreEqual(ItemMeta meta1, ItemMeta meta2) {
+        Bukkit.broadcastMessage("-----Lore Test-----");
+        Bukkit.broadcastMessage((meta1.getLore() == null) + ", " + (meta2.getLore() == null));
+        if(meta1.getLore() != null && meta2.getLore() != null) {
+            Bukkit.broadcastMessage("meta1 contains all meta2?: " + (meta1.getLore().containsAll(meta2.getLore())));
+        }
+        Bukkit.broadcastMessage("------------------");
+    }
+
+
+    private void TestAreEqual(ItemStack item1, ItemStack item2) {
         ItemMeta meta1 = item1.getItemMeta();
         ItemMeta meta2 = item2.getItemMeta();
 
-        Bukkit.broadcastMessage("tests: " + (item1 != null && item2 != null) + "\n" + (meta1.getLore() == meta2.getLore()) + "\n" + (meta1.getDisplayName().equals(meta2.getDisplayName())) + "\n" +
+        TestLoreEqual(meta1,meta2);
+        Bukkit.broadcastMessage("tests: " + (item1 != null && item2 != null) + "\n" + LoreEqual(meta1,meta2) + "\n" + (meta1.getDisplayName().equals(meta2.getDisplayName())) + "\n" +
                 (meta1.getItemFlags().equals(meta2.getItemFlags())) + "\n" + (item1.getType() == item2.getType()) + "\n" +
                 (item1.getAmount() == item2.getAmount()));
+        Bukkit.broadcastMessage("sigma");
     }
 }

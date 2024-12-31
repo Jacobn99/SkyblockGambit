@@ -42,6 +42,8 @@ public class Team {
         _generatorCount = 0;
         killsInventory = Bukkit.createInventory(null, 27, "PVP Rewards");
         tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
+
+        _gameManager.nonAdditiveInventories.add(killsInventory);
         _advancementManager.InitializeTaskInventory(tasksInventory);
         _gameManager.nonClickableInventories.add(tasksInventory);
 

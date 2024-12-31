@@ -47,10 +47,6 @@ public class WorldCopier {
         _world = Bukkit.getWorld("void_world");
     }
 
-    public void GenerateWorldFile() {
-
-    }
-
     public void DuplicateLand(Location newLoc, int worldSize) {
         long executionTime;
         int loopIterations;
@@ -86,8 +82,8 @@ public class WorldCopier {
         corner.add(-(worldSize/2), -30, -(worldSize/2));
 
         for(int y = 0; y < 60; y+= chunkY) {
-            for (int z = 0; z < worldSize; z += chunkZ) {
-                for (int x = 0; x < worldSize; x+= chunkX) {
+            for (int z = -chunkZ; z < worldSize + chunkZ; z += chunkZ) {
+                for (int x = -chunkX; x < worldSize + chunkX; x+= chunkX) {
                     final int X = x;
                     final int Y = y;
                     final int Z = z;

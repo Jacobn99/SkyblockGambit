@@ -94,29 +94,32 @@ public class WorldManager {
 
         SpawnStarterChests(_chestManager);
         SpawnPortals();
-        SpawnTeamVillagers(villagerManager);
         _gameManager.InitializeTeams();
+        SpawnTeamVillagers(villagerManager);
         _gameManager.UpdateSpawns();
-//            _gameManager._animalSpawner.SpawnAnimals(false);
-//         }
-//        catch(Exception e) {
-//            Bukkit.broadcastMessage("ERROR");
-//            e.printStackTrace();
-//        }
     }
     public void SpawnTeamVillagers(CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
         int extraVillagers = _villagerManager.get_presets().size() + 1;
         List<Integer> bannedProfessions = new ArrayList<>();
-        bannedProfessions.add(5); //Farmer
-        bannedProfessions.add(11); //Nitwit
-        bannedProfessions.add(0); //None
-        bannedProfessions.add(3); //Cartographer
+        bannedProfessions.add(14); //Farmer
+        bannedProfessions.add(13); //Nitwit
+        bannedProfessions.add(8); //None
+        bannedProfessions.add(2); //Cartographer
+        bannedProfessions.add(6); //Fletcher
+        bannedProfessions.add(9); //Fisherman
+
 
         int iterations = 0;
         for(CustomWorld customWorld : _customWorlds) {
 //            Bukkit.broadcastMessage("customs size: " + customs.size());
             Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
+            Team team = _gameManager.FindWorldTeam(customWorld);
+            int j = 0;
+            for(Villager.Profession v: Villager.Profession.values()) {
+                Bukkit.broadcastMessage(j + ": " + v.name());
+                j++;
+            }
 
 
             if(iterations == 0) {
@@ -124,24 +127,27 @@ public class WorldManager {
                     //Location spawnLoc = GenerateSpawnLocation(refreneceLoc, spawnRadius);
                     if(bannedProfessions.size() == 15) {
                         bannedProfessions.clear();
-                        bannedProfessions.add(5); //Farmer
-                        bannedProfessions.add(11); //Nitwit
-                        bannedProfessions.add(0); //None
-                        bannedProfessions.add(3); //Cartographer
+                        bannedProfessions.add(14); //Farmer
+                        bannedProfessions.add(13); //Nitwit
+                        bannedProfessions.add(8); //None
+                        bannedProfessions.add(2); //Cartographer
+                        bannedProfessions.add(6); //Fletcher
+                        bannedProfessions.add(9); //Fisherman
                     }
+
                     int professionID = villagerManager.GetRandomProfessionID(bannedProfessions);
                     Villager.Profession profession = Villager.Profession.values()[professionID];
                     bannedProfessions.add(professionID);
                     Villager vil = villagerManager.SpawnVillager(spawnLoc, profession);
                     _villagerManager.MakeTradesCheaper(vil);
-                    CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), i);
+                    CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), team, i);
                     templateVillagers.add(customVillager);
                 }
 
-                CustomVillager farmer = _villagerManager.CreateCustomVillager(null, spawnLoc, Villager.Profession.FARMER);
+                CustomVillager farmer = _villagerManager.CreateCustomVillager(null, spawnLoc, team, Villager.Profession.FARMER);
                 templateVillagers.add(farmer);
                 for(String preset : _villagerManager.get_presets()) {
-                    CustomVillager c = _villagerManager.CreateCustomVillager(preset, spawnLoc, Villager.Profession.NITWIT);
+                    CustomVillager c = _villagerManager.CreateCustomVillager(preset, spawnLoc, team, Villager.Profession.NITWIT);
                     templateVillagers.add(c);
                 }
 //
@@ -152,14 +158,12 @@ public class WorldManager {
 //                templateVillagers.addAll(_villagerManager.get_customs());
             }
             else {
-                int i = 0;
                 for(CustomVillager customVillager : templateVillagers) {
                     Villager villager = _villagerManager.SpawnVillager(spawnLoc, customVillager.GetVillager().getProfession());
-                    villager.setRecipes(templateVillagers.get(i).GetVillager().getRecipes());
-
-                    CustomVillager customVil = new CustomVillager(_mainPlugin, villager, _gameManager.getCustomVillagers(), customVillager.GetID());
+                    CustomVillager customVil = new CustomVillager(_mainPlugin, villager, _gameManager.getCustomVillagers(),
+                            team, customVillager.GetID());
                     villager.addScoreboardTag("villager" + iterations);
-                    i++;
+                    _villagerManager.ApplyTraits(customVillager.GetVillager(), villager);
                 }
             }
             iterations++;

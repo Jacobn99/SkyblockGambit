@@ -166,35 +166,24 @@ public class AdvancementManager {
                     Bukkit.broadcastMessage("parent: " + parentAdvancement.GetFileName());
                 }
                 if(index == 0) {
-                    //parameterChanges.put("parent", "minecraft:root");
-                    //parameterChanges.put("title", a.GetFileName());
                     parameterChanges.put("parent", "minecraft:root");
-//                    ModifyAdvancement(a.GetFile(), parameterChanges);
-                        //firstAdvancement = currentAdvancement;
                 }
                 else {
                     parameterChanges.put("parent", "minecraft:" + parentAdvancement.GetFileName());
                 }
-                parameterChanges.put("title", a.GetFileName());
+                parameterChanges.put("title", a.GetAdvancementName());
                 a.SetParentAdvancement(parentAdvancement);
                 ModifyAdvancement(a.GetFile(), parameterChanges);
-
 
                 parentAdvancement = a;
                 futureEnabledAdvancementNames.add(a.GetFileName());
 
-
                 parameterChanges.clear();
                 index++;
             }
-            //CustomAdvancement kill_enderdragon = new CustomAdvancement("kill_enderdragon", new ItemStack(Material.DIAMOND), this);
             CustomAdvancement _kill_enderdragon = GetAdvancement("kill_enderdragon");
             ModifyAdvancement(_kill_enderdragon.GetFile(), "parent", "minecraft:" + parentAdvancement.GetFileName());
-            ModifyAdvancement(_kill_enderdragon.GetFile(), "title", _kill_enderdragon.GetFileName());
-
-            //kill_enderdragon = null;
-
-            //ModifyAdvancement(enderdragon.GetFile(), "parent", "task_advancements:tasks/" + parentAdvancement.GetFileName());
+            ModifyAdvancement(_kill_enderdragon.GetFile(), "title", _kill_enderdragon.GetAdvancementName());
         }
         else {
             Bukkit.broadcastMessage("Type /start to get new tasks");
@@ -215,10 +204,6 @@ public class AdvancementManager {
             ChangeAdvancementFile(file, parameterChanges);
         }
     }
-    /*private void ModifyAlternativeGUI(Object key, Object newValue) {
-
-    }*/
-
     private void ChangeAdvancementFile(File file, HashMap<Object, Object> parameterChanges) {
         Writer writer;
         Reader reader;
@@ -232,7 +217,6 @@ public class AdvancementManager {
                     for (Map.Entry<Object, Object> entry : map.entrySet()) {
                         if (parameterChanges.containsKey(entry.getKey())) {
                             entry.setValue(parameterChanges.get(entry.getKey()));
-                            //Bukkit.broadcastMessage(file.getName() + ": " + entry.getKey() + " has been changed to " + parameterChanges.get(entry.getKey()));
                         } else if (ContainsChar(String.valueOf(entry.getValue()), '{')) {
                             Map<Object, Object> innerMap = new Gson().fromJson(new Gson().toJson(entry.getValue()), Map.class);
 
@@ -240,7 +224,6 @@ public class AdvancementManager {
                                 if (parameterChanges.containsKey(innerEntry.getKey())) {
                                     innerEntry.setValue(parameterChanges.get(innerEntry.getKey()));
                                     map.replace(entry.getKey(), innerMap);
-                                    //Bukkit.broadcastMessage(file.getName() + ": " + innerEntry.getKey() + " has been changed to " + parameterChanges.get(innerEntry.getKey()));
                                 }
                             }
                         }
@@ -351,12 +334,6 @@ public class AdvancementManager {
         }
         //return inventory;
     }
-//    private void UpdateAlternativeGUIs(int order) {
-//        for(Team team : _teams) {
-//            team.tasksInventory.getItem()
-//        }
-//    }
-
     public String GetAdvancementPath() {
         return advancementsPath;
     }
@@ -364,5 +341,4 @@ public class AdvancementManager {
     public int GetMaxTasks() {
         return _maxTasks;
     }
-
 }

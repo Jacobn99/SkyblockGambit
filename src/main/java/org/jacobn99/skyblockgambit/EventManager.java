@@ -4,6 +4,8 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Zombie;
+import org.bukkit.entity.ZombieVillager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -12,18 +14,22 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.*;
 import org.jacobn99.skyblockgambit.CustomItems.*;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class EventManager implements Listener {
@@ -45,7 +51,6 @@ public class EventManager implements Listener {
     private GeneratorConstructor _generatorContructor;
     private NetherManager _netherManager;
     private PortalManager _portalManager;
-
     World world;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -73,8 +78,21 @@ public class EventManager implements Listener {
         if(_gameManager.isRunning) {
             _generatorContructor.SelectGeneratorCheck(event);
             _xStacks.XStacksCheck(event);
-            if(_gameManager.nonClickableInventories.contains(event.getInventory())) {
+            if (_gameManager.nonClickableInventories.contains(event.getInventory())) {
                 event.setCancelled(true);
+            }
+            Bukkit.broadcastMessage("Action: " + event.getAction().name());
+
+            if (_gameManager.nonAdditiveInventories.contains(event.getInventory()) && event.isShiftClick()) {
+                Bukkit.broadcastMessage("Shift Click");
+                event.setCancelled(true);
+            }
+            if (event.getAction().equals(InventoryAction.PLACE_ALL) ||
+                    event.getAction().equals(InventoryAction.PLACE_ONE) ||
+                    event.getAction().equals(InventoryAction.PLACE_SOME)) {
+                if (_gameManager.nonAdditiveInventories.contains(event.getClickedInventory())) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -139,6 +157,41 @@ public class EventManager implements Listener {
 
     }
 
+    @EventHandler
+    public void onEntityHit(EntityDamageByEntityEvent event) {
+        org.bukkit.entity.Entity attacker = event.getDamager();
+        org.bukkit.entity.Entity victim = event.getEntity();
+
+//        ZombieKillVillagerTest(event);
+
+        if(victim instanceof Villager && victim.getScoreboardTags().contains("Customized") &&
+        attacker instanceof Zombie && ((Villager) victim).getHealth() <= event.getDamage()) {
+            CustomVillager v = _villagerManager.GetFromCustoms((Villager)victim);
+//            Bukkit.broadcastMessage("custom: " + v);
+
+            if(v != null) {
+                Villager newVillager = _villagerManager.SpawnVillager(v.GetSpawnLocation(), v.GetVillager().getProfession());
+                _villagerManager.ApplyTraits((Villager)victim, newVillager);
+                victim.remove();
+                v.SetVillager(newVillager);
+                event.setCancelled(true);
+
+//                Bukkit.broadcastMessage("new villager created");
+            }
+        }
+    }
+
+    public void ZombieKillVillagerTest(EntityDamageByEntityEvent event) {
+        org.bukkit.entity.Entity attacker = event.getDamager();
+        org.bukkit.entity.Entity victim = event.getEntity();
+
+        if(victim instanceof Villager) {
+            Bukkit.broadcastMessage((victim instanceof Villager) + ", " +
+                    (victim.getScoreboardTags().contains("Customized") +
+                    ", " + (attacker instanceof Zombie)) + ", " + (((Villager) victim).getHealth() <= event.getDamage()));
+        }
+        else Bukkit.broadcastMessage("Not villager");
+    }
     @EventHandler
     public void onClick(PlayerInteractEvent event) {
         //Bukkit.broadcastMessage("isRunning: " + _gameManager.isRunning + " and itemInUse: " + event.getPlayer().getInventory().getItemInMainHand());
@@ -219,10 +272,11 @@ public class EventManager implements Listener {
         }
     }
 
-    @EventHandler
-    public void onItemSpawn(ItemSpawnEvent event) {
-        if (event.getEntity().getItemStack().equals(_gameManager.delayItem)) {
-//            ResetCommandFeedback();
-        }
-    }
+//    @EventHandler
+//    public void onItemSpawn(ItemSpawnEvent event) {
+//        if (event.getEntity().getItemStack().equals(_gameManager.delayItem)) {
+////            ResetCommandFeedback();
+//        }
+//    }
+
 }

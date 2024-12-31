@@ -7,7 +7,7 @@ import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 public final class SkyblockGambit extends JavaPlugin {
     private String[] commandNames = {"start", "debug", "t", "set_spawn", "spawn_villager", "set_custom_item",
             "add_custom_item", "get_custom_item", "set_starter_chest", "end", "list_custom_items", "grant_advancement",
-            "clear_custom_items", "clear_world", "tasks", "kill_skulls"};
+            "clear_custom_items", "clear_world", "tasks", "kill_skulls", "generate_new_map", "reset_villagers"};
     GameManager _gameManager;
     EventManager _eventManager;
     CommandExecuter _commandExecuter;

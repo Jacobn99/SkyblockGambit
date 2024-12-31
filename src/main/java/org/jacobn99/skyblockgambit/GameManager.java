@@ -73,6 +73,7 @@ public class GameManager {
     private int _passiveMobCap;
     World overworld;
     public Set<Inventory> nonClickableInventories;
+    public Set<Inventory> nonAdditiveInventories;
     public World _world;
     public ItemStack delayItem;
 
@@ -86,6 +87,7 @@ public class GameManager {
         objects = new ArrayList<>();
         teams = new ArrayList<>();
         nonClickableInventories = new HashSet<>();
+        nonAdditiveInventories = new HashSet<>();
 
         participatingPlayers = new HashSet<>();
         processes = new ArrayList<>();
@@ -121,6 +123,10 @@ public class GameManager {
 //
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
+        for(Player p : participatingPlayers) {
+            String command = "advancement revoke " + p.getName() + " everything";
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
 
         _customItemManager.LoadRequiredItems();
         InitializeTasks();
@@ -146,6 +152,15 @@ public class GameManager {
                 portalManager.PortalUpdate(portals, tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
+    }
+    public Team FindWorldTeam(CustomWorld _customWorld) {
+        for(Team team : teams) {
+            if(team.GetTeamWorld() == _customWorld) {
+                Bukkit.broadcastMessage("world is not null");
+                return team;
+            }
+        }
+        return null;
     }
     public int FindInInventory(Inventory inventory, ItemStack item) {
         int slot = 0;
@@ -265,9 +280,6 @@ public class GameManager {
         craftX.WriteToCraftXFile();
         craftX.UpdateDescription();
         advancementManager.RandomizeTasks();
-
-//        advancementManager.ModifyAdvancement(new File(advancementManager.GetAdvancementPath() + "/craft_item.json"), "description", "brooo");
-
 
         Reset();
     }

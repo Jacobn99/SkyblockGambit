@@ -16,24 +16,17 @@ public class PythonManager {
         path = _mainPlugin.getDataFolder() + "\\Procedural-Terrain-Generator\\main.py";
 
     }
-   /* public void GenerateNewIsland() {
-        String command = "python Desktop\\LocalHost\\plugins\\SkyblockGambit\\Procedural-Terrain-Generator\\main.py";
-    }
-*/
     public void GenerateNewIsland() throws Exception {
         ProcessBuilder processBuilder = new ProcessBuilder("python", path);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         List<String> results = convert(process.getInputStream());
 
-        int exitCode = process.waitFor();
+//        int exitCode = process.waitFor();
     }
     private List<String> convert(InputStream inputStream) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return reader.lines().collect(Collectors.toList());
         }
-    }
-    private void RunFile() {
-
     }
 }

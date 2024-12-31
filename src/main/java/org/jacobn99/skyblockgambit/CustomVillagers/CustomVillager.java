@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.ConfigManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
+import org.jacobn99.skyblockgambit.Team;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,9 @@ public class CustomVillager {
     private Villager _villager;
     private int _ID;
     boolean isInitialized;
+    Team _team;
 
-    public CustomVillager(JavaPlugin mainPlugin, Villager villager, List<CustomVillager> customs, int ID) {
+    public CustomVillager(JavaPlugin mainPlugin, Villager villager, List<CustomVillager> customs, Team team, int ID) {
         recipes = new ArrayList<>();
         _mainPlugin = mainPlugin;
         _configManager = new ConfigManager(_mainPlugin);
@@ -32,6 +34,7 @@ public class CustomVillager {
         _villager = villager;
         _villager.addScoreboardTag("custom");
         isInitialized = false;
+        _team = team;
         customs.add(this);
     }
     public void SetTrades(String villagerPath) {
@@ -109,5 +112,13 @@ public class CustomVillager {
     }
     public Location GetSpawnLocation() {
         return _spawnLoc;
+    }
+
+    public Team GetTeam() {
+        return _team;
+    }
+
+    public void SetTeam(Team _team) {
+        this._team = _team;
     }
 }

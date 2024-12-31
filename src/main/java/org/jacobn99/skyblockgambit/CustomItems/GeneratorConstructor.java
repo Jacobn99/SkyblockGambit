@@ -74,10 +74,8 @@ public class GeneratorConstructor {
     }
     public void GeneratorConstructorCheck(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        ItemStack item = event.getItem();
         if(event.getItem() != null) {
             if(_gameManager._customItemManager.AreEqual(event.getItem(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
-//            if (item.equals(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
                 p.openInventory(generatorSelector);
                 event.setCancelled(true);
             }
@@ -97,6 +95,12 @@ public class GeneratorConstructor {
                         p.sendMessage("Creating a " + event.getCurrentItem().getType().name().toLowerCase() + " generator!");
                         generator.CreateGenerator(event.getWhoClicked().getLocation());
                         team.AddToGeneratorCount();
+                        for(ItemStack item : event.getWhoClicked().getInventory()) {
+                            if(_itemManager.AreEqual(item, _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
+                                event.getWhoClicked().getInventory().remove(item);
+                                break;
+                            }
+                        }
                         event.getWhoClicked().closeInventory();
                     }
                     else {

@@ -130,12 +130,6 @@ public class DataManager {
         }
     }
     public void WriteToFile(File file, List<Object> objects, SerializeMethod serializeMethod) {
-//        Random rand = new Random();
-//        //List<String> possibleItems = GetPossibleItems();
-//        //Bukkit.broadcastMessage("possibleItems: " + possibleItems);
-//
-//        int index = rand.nextInt(possibleItems.size());
-
         List<String> serializedObjects = new ArrayList<>();
         for(Object o : objects) {
             serializedObjects.add(serializeMethod.Serialize(o));
@@ -143,9 +137,6 @@ public class DataManager {
         try {
             Writer writer = Files.newBufferedWriter(file.toPath());
             _gson.toJson(serializedObjects, writer);
-            //_gson.toJson(_itemManager.SerializeItem(_item), writer);
-            //Bukkit.broadcastMessage("Serialized Item: " + _itemManager.SerializeItem(_item));
-            //writer.flush();
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -79,18 +79,10 @@ public class AnimalSpawner {
 
 
     public int GetAnimalPopulation(CustomWorld customWorld) {
-    //public int GetAnimalPopulation(Player p) {
-
         int animalCount = 0;
-        Location middleLoc = customWorld.GetMiddleLoc().clone();
         Location cornerLoc = customWorld.GetMiddleLoc().clone().subtract(0, 0, _worldManager.get_worldLength()/2);
-        //Location testLoc = p.getLocation();
-        Bukkit.broadcastMessage("Corner loc: " + cornerLoc);
-//
-        Bukkit.broadcastMessage("Center Loc: " + middleLoc);
 
         Collection<Entity> entities = Bukkit.getWorld("void_world").getNearbyEntities(cornerLoc, _worldManager.get_worldLength(), 70, _worldManager.get_worldLength());
-        //Collection<Entity> entities = Bukkit.getWorld("void_world").getNearbyEntities(testLoc, 10, 50, 10);
 
         if(entities != null) {
             for (Entity e : entities) {
@@ -100,12 +92,6 @@ public class AnimalSpawner {
             }
         }
         return animalCount;
-
-        //animalCount = 0;
-        //put all nearby entities from middle of custom world into a list (entities)
-        //loop through each entities list
-        //  if  entity type of entity is contained in _animalTypes
-        //      animalCount++
     }
 
 }

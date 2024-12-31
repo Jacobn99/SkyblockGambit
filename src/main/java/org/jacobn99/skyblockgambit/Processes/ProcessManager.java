@@ -98,5 +98,4 @@ public class ProcessManager {
         Bukkit.broadcastMessage("latest execution time: " + latestExecutionTime);
         return latestExecutionTime;
     }
-
 }

@@ -78,8 +78,10 @@ public class CraftX implements AdvancementType {
         List<ItemStack> items = new ArrayList<>();
         items.add(new ItemStack(Material.CAKE));
         items.add(new ItemStack(Material.ANVIL));
-        items.add(new ItemStack(Material.HAY_BLOCK));
+        items.add(new ItemStack(Material.TNT));
         items.add(new ItemStack(Material.BLACKSTONE_SLAB));
+        items.add(new ItemStack(Material.ENDER_CHEST));
+        items.add(new ItemStack(Material.ENCHANTING_TABLE));
         return items;
     }
 

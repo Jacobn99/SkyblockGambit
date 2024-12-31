@@ -1,41 +1,28 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.*;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.generator.structure.Structure;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jacobn99.skyblockgambit.CustomAdvancements.AdvancementManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
-import org.jacobn99.skyblockgambit.CustomItems.PortalOpener;
-import org.jacobn99.skyblockgambit.CustomWorlds.NaturalCopier;
+import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
-import org.jacobn99.skyblockgambit.Processes.Process;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
-
-import javax.swing.filechooser.FileSystemView;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
     private GameManager _gameManager;
     private CustomItemManager _itemManager;
-    //private PortalManager _portalManager;
     private StarterChestManager _chestManager;
     private AdvancementManager _advancementManager;
     WorldCopier _worldCopier;
@@ -46,6 +33,7 @@ public class CommandExecuter implements CommandExecutor {
     private World _world;
     private ConfigManager _configManager;
     private PythonManager _pythonManager;
+    private CustomVillagerManager _villagerManager;
     //ProcessManager _processManager;
     public CommandExecuter(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -62,6 +50,7 @@ public class CommandExecuter implements CommandExecutor {
         _world = Bukkit.getWorld("void_world");
         _configManager = new ConfigManager(_mainPlugin);
         _pythonManager = new PythonManager(_mainPlugin);
+        _villagerManager = _gameManager._customVillagerManager;
         //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         //_processManager = new ProcessManager();
         //_worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
@@ -77,14 +66,17 @@ public class CommandExecuter implements CommandExecutor {
             } if (label.equalsIgnoreCase("end")) {
                 sender.sendMessage(ChatColor.RED + "end");
                 _worldManager.ClearWorlds();
-                _gameManager._processManager.CreateProcess(_gameManager._processManager.GetLatestExecutionTime() + 20, () -> _gameManager.EndGame());
+                _gameManager._processManager.CreateProcess(
+                        _gameManager._processManager.GetLatestExecutionTime() + 20,
+                        () -> _gameManager.EndGame());
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                try {
-                    _pythonManager.GenerateNewIsland();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                for (Team team : _gameManager.teams) {
+                    if (team.GetMembers().contains(p)) {
+                        team.killsInventory.addItem(_itemManager.GetCustomItem(
+                                _itemManager.ItemNameToIndex("KILL_SKULL")));
+                    }
                 }
 
                 return true;
@@ -99,12 +91,14 @@ public class CommandExecuter implements CommandExecutor {
                     if (args[0].equalsIgnoreCase("index")) {
                         int index = Integer.valueOf(args[1]);
                         if (_itemManager.GetCustomItem(index) != null) {
-                            Bukkit.getWorld("void_world").dropItem(p.getLocation(), _itemManager.GetCustomItem(index));
+                            Bukkit.getWorld("void_world").dropItem(p.getLocation(),
+                                    _itemManager.GetCustomItem(index));
                             return true;
                         }
                     } else if (args[0].equalsIgnoreCase("name")) {
                         String arg = args[1];
-                        Bukkit.getWorld("void_world").dropItem(p.getLocation(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex(arg)));
+                        Bukkit.getWorld("void_world").dropItem(p.getLocation(),
+                                _itemManager.GetCustomItem(_itemManager.ItemNameToIndex(arg)));
                         return true;
                     }
                     else {
@@ -208,6 +202,26 @@ public class CommandExecuter implements CommandExecutor {
                     }
                 }
                 return true;
+            }
+            else if (label.equalsIgnoreCase("generate_new_map")) {
+                Bukkit.broadcastMessage("Generating... (ETA: 20 seconds)");
+
+                try {
+                    _pythonManager.GenerateNewIsland();
+                    Bukkit.broadcastMessage("Finished!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (label.equalsIgnoreCase("reset_villagers")) {
+                Team team = _gameManager.FindPlayerTeam(p);
+                if(team != null) {
+                    p.sendMessage("Villagers reset!");
+                    _villagerManager.ResetVillagerSpawns(team);
+                }
+                else {
+                    p.sendMessage("ERROR: Not on a team");
+                }
             }
         }
 

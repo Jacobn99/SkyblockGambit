@@ -21,3 +21,5 @@ commands:
   clear_world:
   tasks:
   kill_skulls:
+  generate_new_map:
+  reset_villagers:
