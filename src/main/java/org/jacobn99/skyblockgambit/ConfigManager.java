@@ -21,9 +21,7 @@ public class ConfigManager {
 //    File _itemFile;
 //    List<CustomItems> customItemsList;
     public ConfigManager(JavaPlugin mainPlugin) {
-//        customItemsList = new ArrayList();
         _mainPlugin = mainPlugin;
-//        _itemFile = new File(_mainPlugin.getDataFolder(), "custom_items.json");
     }
 
     public List<String> GetArguments(String section, String subsection, String element) {

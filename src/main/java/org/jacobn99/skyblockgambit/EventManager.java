@@ -48,6 +48,7 @@ public class EventManager implements Listener {
     private GeneratorConstructor _generatorContructor;
     private NetherManager _netherManager;
     private PortalManager _portalManager;
+
     World world;
     public EventManager(JavaPlugin mainPlugin, GameManager gameManager) {
         _mainPlugin = mainPlugin;
@@ -123,31 +124,35 @@ public class EventManager implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        Player p = event.getPlayer();
-        Team team = _gameManager.FindPlayerTeam(p);
-        Queueable queueable = () -> _gameManager.GrantCompass(p,team);
-        if(_gameManager.isRunning && team != null) {
-            _processManager.CreateProcess(world.getFullTime() + 20, queueable);
+        if(_gameManager.isRunning) {
+            Player p = event.getPlayer();
+            Team team = _gameManager.FindPlayerTeam(p);
+            Queueable queueable = () -> _gameManager.GrantCompass(p, team);
+            if (_gameManager.isRunning && team != null) {
+                _processManager.CreateProcess(world.getFullTime() + 20, queueable);
+            }
         }
     }
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
-        Player p = (Player) event.getEntity();
-        Player killer = p.getKiller();
+        if(_gameManager.isRunning) {
+            Player p = (Player) event.getEntity();
+            Player killer = p.getKiller();
 
-        if(_portalManager.invaders.containsKey(p)) {
-            _portalManager.invaders.remove(p);
-        }
-
-        if(_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
-            if(_twoKillsTask.IsKillFromOtherTeam(killer, p)) {
-                _gameManager.FindPlayerTeam(p).killsInventory.addItem(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("KILL_SKULL")));
-                _twoKillsTask.AddToKillCount(killer);
+            if (_portalManager.invaders.containsKey(p)) {
+                _portalManager.invaders.remove(p);
             }
-            _twoKillsTask.TwoKillsCheck(killer);
+
+            if (_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
+                if (_twoKillsTask.IsKillFromOtherTeam(killer, p)) {
+                    _gameManager.FindPlayerTeam(p).killsInventory.addItem(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("KILL_SKULL")));
+                    _twoKillsTask.AddToKillCount(killer);
+                }
+                _twoKillsTask.TwoKillsCheck(killer);
+            }
+            _gameManager.UpdateSpawns();
         }
-        _gameManager.UpdateSpawns();
 
     }
 
@@ -228,17 +233,6 @@ public class EventManager implements Listener {
                     recipe.setMaxUses(10000);
                     recipe.setPriceMultiplier(0);
                 }
-//                List<MerchantRecipe> newRecipes = new ArrayList<>();
-//
-//                ItemStack cobblestone = new ItemStack(Material.COBBLESTONE, 30);
-//
-//                MerchantRecipe firstRecipe = new MerchantRecipe(cobblestone, 10000);
-//
-//                firstRecipe.addIngredient(new ItemStack(Material.EMERALD));
-//
-//                newRecipes.add(firstRecipe);
-//                merchant.setRecipes(newRecipes);
-
             }
             else {
                 return;

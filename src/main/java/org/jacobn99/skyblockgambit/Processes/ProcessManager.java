@@ -64,6 +64,7 @@ public class ProcessManager {
             if(currentProcess.get_executionTime() <= world.getFullTime()) {
                 currentProcess.ExecuteFunction();
                 _gameManager.processes.remove(0);
+                currentProcess = null;
             }
         }
     }

@@ -95,7 +95,7 @@ public class CraftX implements AdvancementType {
             _item = GetItem();
             iteration++;
         }
-        Bukkit.broadcastMessage(_advancement.GetFileName() + ", " + _item.getType().name() + ", " + result.getType().name());
+//        Bukkit.broadcastMessage(_advancement.GetFileName() + ", " + _item.getType().name() + ", " + result.getType().name());
         if (_advancement != null && _item != null) {
             if (result.getType() == _item.getType()) {
 //                Bukkit.broadcastMessage("bazinga");

@@ -14,6 +14,8 @@ import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
+import org.jacobn99.skyblockgambit.GearHierarchies.GearHierarchy;
+import org.jacobn99.skyblockgambit.GearHierarchies.GearHierarchyManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
@@ -51,9 +53,6 @@ public class CommandExecuter implements CommandExecutor {
         _configManager = new ConfigManager(_mainPlugin);
         _pythonManager = new PythonManager(_mainPlugin);
         _villagerManager = _gameManager._customVillagerManager;
-        //_worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
-        //_processManager = new ProcessManager();
-        //_worldManager = new WorldManager(_mainPlugin, _gameManager, _portalManager, _processManager);
     }
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (IsCommandValid(sender)) {
@@ -67,17 +66,14 @@ public class CommandExecuter implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "end");
                 _worldManager.ClearWorlds();
                 _gameManager._processManager.CreateProcess(
-                        _gameManager._processManager.GetLatestExecutionTime() + 20,
-                        () -> _gameManager.EndGame());
+                        _gameManager._processManager.GetLatestExecutionTime() + 40,
+                        () -> _gameManager._processManager.CreateProcess(_gameManager.
+                                _processManager.GetLatestExecutionTime() + 30, () -> _gameManager.EndGame()));
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                for (Team team : _gameManager.teams) {
-                    if (team.GetMembers().contains(p)) {
-                        team.killsInventory.addItem(_itemManager.GetCustomItem(
-                                _itemManager.ItemNameToIndex("KILL_SKULL")));
-                    }
-                }
+                GearHierarchyManager gearHierarchyManager = new GearHierarchyManager(_mainPlugin, _DataManager, _itemManager);
+                gearHierarchyManager.GetHierarchies();
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {

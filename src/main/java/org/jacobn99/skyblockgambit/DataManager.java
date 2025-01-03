@@ -142,14 +142,4 @@ public class DataManager {
             throw new RuntimeException(e);
         }
     }
-//    private List<String> GetPossibleItems() {
-//        List<String> serializedItems = new ArrayList<>();
-//        List<ItemStack> items = new ArrayList<>();
-//        items.add(new ItemStack(Material.STONE));
-//        items.add(new ItemStack(Material.BIRCH_PLANKS));
-//        for(ItemStack item : items) {
-//            serializedItems.add(_itemManager.SerializeItem(item));
-//        }
-//        return serializedItems;
-//    }
 }

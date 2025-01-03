@@ -25,9 +25,7 @@ import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChest;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -75,7 +73,11 @@ public class GameManager {
     public Set<Inventory> nonClickableInventories;
     public Set<Inventory> nonAdditiveInventories;
     public World _world;
-    public ItemStack delayItem;
+//    public ItemStack delayItem;
+//    private DataManager _dataManager;
+//    private File _spawnFile;
+//    private Reader _reader;
+
 
     public GameManager(JavaPlugin mainPlugin) {
         _mainPlugin = mainPlugin;
@@ -114,13 +116,10 @@ public class GameManager {
         _passiveMobCap = 40;
         _generatorManager = new GeneratorManager();
         _world = Bukkit.getWorld("void_world");
-
-        InstantiateDelayItem();
-
     }
     public void Start() {
         Bukkit.broadcastMessage("Starting...");
-//
+        _world.setTime(0);
         isRunning = true;
         World world = Bukkit.getWorld("void_world");
         for(Player p : participatingPlayers) {
@@ -312,30 +311,35 @@ public void UpdateSpawns() {
     }
 
     public void Reset() {
-        //List<Generator> _generators = _generatorManager.generators;
+        Location worldSpawn = _world.getSpawnLocation();
+
         for(Portal p : portals) {
             p.RemovePortal();
         }
         for(StarterChest chest : starterChestList) {
             chest.DestroyChest();
         }
+        for(Player player : participatingPlayers) {
+            player.setRespawnLocation(worldSpawn, true);
+        }
 
+        objects.addAll(teams);
         objects.addAll(portals);
         objects.addAll(_generatorManager.generators);
         objects.addAll(customVillagers);
         objects.addAll(disposableEntities);
         objects.addAll(starterChestList);
-        //objects.addAll(teams);
         objects.addAll(customWorlds);
 
+        teams.clear();
         customWorlds.clear();
         portals.clear();
-        //teams.clear();
         disposableEntities.clear();
         customVillagers.clear();
         _generatorManager.generators.clear();
         starterChestList.clear();
         processes.clear();
+        participatingPlayers.clear();
 
         for(Object o : objects) {
             o = null;
@@ -426,27 +430,25 @@ public void UpdateSpawns() {
         _mainPlugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
 
     }
-    private void CallDelayEvent() {
-        ItemStack item =  new ItemStack(Material.BARRIER);
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = new ArrayList<>();
-        lore.add("eventDelay");
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        Entity entity = _world.dropItem(new Location(_world, 0, 0,0), item);
-        entity.remove();
-    }
-
-    private void InstantiateDelayItem() {
-        delayItem =  new ItemStack(Material.BARRIER);
-        ItemMeta meta = delayItem.getItemMeta();
-        List<String> lore = new ArrayList<>();
-        lore.add("eventDelay");
-        meta.setLore(lore);
-        delayItem.setItemMeta(meta);
-    }
-
     public int GetPassiveMobCap() {
         return _passiveMobCap;
     }
+//    public void GetDefaultSpawn() {
+//        try {
+//            List<String> lines = Files.readAllLines(_spawnFile.toPath());
+//            for(String line : lines) {
+//                Bukkit.broadcastMessage(line);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//    public void SetDefaultSpawn(Location location) {
+//        try {
+//            FileWriter writer = new FileWriter(_spawnFile.getAbsolutePath());
+//            writer.write(location.toString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
