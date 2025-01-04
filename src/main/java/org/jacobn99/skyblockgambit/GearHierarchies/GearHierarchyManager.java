@@ -8,10 +8,11 @@ import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.DataManager;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 public class GearHierarchyManager {
     JavaPlugin _mainPlugin;
@@ -28,40 +29,77 @@ public class GearHierarchyManager {
 //        _dataManager.LoadFile(_data);
 //        _objectMapper = new ObjectMapper(new YAMLFactory());
     }
-
+//
+////    public void GetHierarchies() {
+////        YAMLFactory yamlFactory = new YAMLFactory();
+////        ObjectMapper objectMapper = new ObjectMapper(yamlFactory);
+////
+////        try {
+////            // Read the YAML file and map it to the PersonList object
+////            HierarchyList hierarchyList = objectMapper.readValue(_data, HierarchyList.class);
+////
+////            // Output the data
+////            List<GearHierarchy> gearHierarchies = hierarchyList.get_list();
+////            for (GearHierarchy gearHierarchy : gearHierarchies) {
+////                Bukkit.broadcastMessage("Name: " + gearHierarchy.get_name());
+////                for(String gear : gearHierarchy.get_hierarchy()) {
+////                    Bukkit.broadcastMessage("- " + gear);
+////                }
+////            }
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
+////    }
 //    public void GetHierarchies() {
-//        YAMLFactory yamlFactory = new YAMLFactory();
-//        ObjectMapper objectMapper = new ObjectMapper(yamlFactory);
-//
+//        File file = new File("src/main/resources/gear_hierarchies.yml");
+//        if(file.exists()) {
+//            file.delete();
+//        }
 //        try {
-//            // Read the YAML file and map it to the PersonList object
-//            HierarchyList hierarchyList = objectMapper.readValue(_data, HierarchyList.class);
+//            file.createNewFile();
+//            Bukkit.broadcastMessage("exists?: " + file.exists());
 //
-//            // Output the data
-//            List<GearHierarchy> gearHierarchies = hierarchyList.get_list();
-//            for (GearHierarchy gearHierarchy : gearHierarchies) {
-//                Bukkit.broadcastMessage("Name: " + gearHierarchy.get_name());
-//                for(String gear : gearHierarchy.get_hierarchy()) {
-//                    Bukkit.broadcastMessage("- " + gear);
+//            BufferedReader reader = new BufferedReader(new FileReader(_data.getAbsolutePath()));
+//            BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
+//
+//                String line;
+//                while ((line = reader.readLine()) != null) {
+//                    writer.write(line);
+//                    writer.newLine();
 //                }
-//            }
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+//
+////        File file = new File("sigma.txt");
+////        try {
+////            file.createNewFile();
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
+//
+////        Yaml yaml = new Yaml();
+////        Bukkit.broadcastMessage("exists?: " + _data.exists());
+////        InputStream inputStream = this.getClass()
+////                .getClassLoader()
+////                .getResourceAsStream(_data.getPath());
+////
+////        if (inputStream == null) {
+////            Bukkit.getLogger().warning("Could not find resource: " + _data.getPath());
+////            return;
+////        }
+////        Map<String, Object> obj = yaml.load(inputStream);
+////        System.out.println(obj);
+////        Bukkit.broadcastMessage("obj: " + obj);
+//    //
+//    //    try {
+//    //        // Read the YAML file and map it to the PersonList object
+//    //        GearHierarchy gearHierarchy = objectMapper.readValue(_data, GearHierarchy.class);
+//    //        for(String gear : gearHierarchy.get_hierarchy()) {
+//    //            Bukkit.broadcastMessage("- " + gear);
+//    //        }
+//    //    } catch (IOException e) {
+//    //        e.printStackTrace();
+//    //    }
 //    }
-    public void GetHierarchies() {
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-
-        Bukkit.broadcastMessage("exists?: " + _data.exists());
-    //
-    //    try {
-    //        // Read the YAML file and map it to the PersonList object
-    //        GearHierarchy gearHierarchy = objectMapper.readValue(_data, GearHierarchy.class);
-    //        for(String gear : gearHierarchy.get_hierarchy()) {
-    //            Bukkit.broadcastMessage("- " + gear);
-    //        }
-    //    } catch (IOException e) {
-    //        e.printStackTrace();
-    //    }
-    }
 }

@@ -73,7 +73,7 @@ public class CommandExecuter implements CommandExecutor {
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
                 GearHierarchyManager gearHierarchyManager = new GearHierarchyManager(_mainPlugin, _DataManager, _itemManager);
-                gearHierarchyManager.GetHierarchies();
+//                gearHierarchyManager.GetHierarchies();
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {

@@ -38,7 +38,7 @@ public class AdvancementManager {
     //private CustomItemManager _customItemManager;
     private int _maxTasks;
     private boolean _advancementCompatible;
-    File alternateTaskData;
+//    File alternateTaskData;
     //public Inventory advancementInventory;
 
     public AdvancementManager(JavaPlugin mainPlugin, List<Team> teams) {
@@ -52,7 +52,7 @@ public class AdvancementManager {
         _maxTasks = 4;
         _teams = teams;
         _advancementCompatible = true;
-        alternateTaskData = new File(_mainPlugin.getDataFolder() + "/alternate_task_data");
+//        alternateTaskData = new File(_mainPlugin.getDataFolder() + "/alternate_task_data");
         //advancementInventory = Bukkit.createInventory(null, 9, "Tasks");
         String worldFilePath = Bukkit.getWorld("void_world").getWorldFolder().getAbsolutePath();
         advancementsPath = worldFilePath.replace('\\', '/')
@@ -161,10 +161,10 @@ public class AdvancementManager {
             }
             int index = 0;
             for(CustomAdvancement a : usedAdvancements) {
-                Bukkit.broadcastMessage("Current: " + a.GetFileName());
-                if(parentAdvancement != null ) {
-                    Bukkit.broadcastMessage("parent: " + parentAdvancement.GetFileName());
-                }
+//                Bukkit.broadcastMessage("Current: " + a.GetFileName());
+//                if(parentAdvancement != null ) {
+//                    Bukkit.broadcastMessage("parent: " + parentAdvancement.GetFileName());
+//                }
                 if(index == 0) {
                     parameterChanges.put("parent", "minecraft:root");
                 }
@@ -188,6 +188,7 @@ public class AdvancementManager {
         else {
             Bukkit.broadcastMessage("Type /start to get new tasks");
         }
+//        Bukkit.broadcastMessage("the list: " + futureEnabledAdvancementNames);
     }
 
     public void ModifyAdvancement(File file, HashMap<Object, Object> parameterChanges) {
@@ -311,6 +312,7 @@ public class AdvancementManager {
         int i = 0;
         List<String> lore = new ArrayList<>();
 
+        Bukkit.broadcastMessage("size of current advancements: " + GetCurrentEnabledTasks().size());
         for(CustomAdvancement a : GetCurrentEnabledTasks()) {
             ItemStack item = new ItemStack(a.GetType().GetSymbol());
             ItemMeta meta = item.getItemMeta();

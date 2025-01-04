@@ -146,7 +146,7 @@ public class EventManager implements Listener {
 
             if (_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
                 if (_twoKillsTask.IsKillFromOtherTeam(killer, p)) {
-                    _gameManager.FindPlayerTeam(p).killsInventory.addItem(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("KILL_SKULL")));
+                    _gameManager.FindPlayerTeam(killer).killsInventory.addItem(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("KILL_SKULL")));
                     _twoKillsTask.AddToKillCount(killer);
                 }
                 _twoKillsTask.TwoKillsCheck(killer);

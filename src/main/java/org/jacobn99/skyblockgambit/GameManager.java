@@ -69,7 +69,6 @@ public class GameManager {
     public int minWorldHeight;
     public int normalVillagerAmount;
     private int _passiveMobCap;
-    World overworld;
     public Set<Inventory> nonClickableInventories;
     public Set<Inventory> nonAdditiveInventories;
     public World _world;
@@ -126,6 +125,8 @@ public class GameManager {
             String command = "advancement revoke " + p.getName() + " everything";
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
         }
+        String command = "kill @e[tag=disposable]";
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
 
         _customItemManager.LoadRequiredItems();
         InitializeTasks();
@@ -265,6 +266,8 @@ public class GameManager {
     }
     public void EndGame() {
         isRunning = false;
+//        File enabledAdvancementsFile = new File("tasks_list");
+//        enabledAdvancementsFile.delete();
 
         for(Entity e : _world.getLivingEntities()) {
             if(e.getScoreboardTags().contains("disposable")) {
@@ -284,13 +287,18 @@ public class GameManager {
     }
     public void LogEnabledTasks() {
         File file = new File(_mainPlugin.getDataFolder().getAbsolutePath() + "/tasks_list.json");
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         try {
             Writer writer = Files.newBufferedWriter(file.toPath());
             Gson gson = new Gson();
             gson.toJson(advancementManager.futureEnabledAdvancementNames, writer);
-
-            //writer.write("fortnite");
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -330,6 +338,7 @@ public void UpdateSpawns() {
         objects.addAll(disposableEntities);
         objects.addAll(starterChestList);
         objects.addAll(customWorlds);
+        objects.addAll(advancementManager._currentEnabledAdvancements);
 
         teams.clear();
         customWorlds.clear();
@@ -340,10 +349,14 @@ public void UpdateSpawns() {
         starterChestList.clear();
         processes.clear();
         participatingPlayers.clear();
+//        advancementManager.futureEnabledAdvancementNames.clear();
 
         for(Object o : objects) {
             o = null;
         }
+        blueTeam = new Team("blue", advancementManager, this);
+        redTeam = new Team("red", advancementManager, this);
+
         System.gc();
     }
     public List<CustomVillager> getCustomVillagers() {

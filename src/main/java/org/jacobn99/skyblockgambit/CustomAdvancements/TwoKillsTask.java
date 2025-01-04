@@ -41,13 +41,8 @@ private AdvancementManager _advancementManager;
         return false;
     }
     public void AddToKillCount(Player killer) {
-//        Player p = (Player) e.getEntity();
-//        Player killer = p.getKiller();
-
-        //if (_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
         _killCounts.replace(killer, _killCounts.get(killer) + 1);
 //        Bukkit.broadcastMessage(killer.getName() + " has " + _killCounts.get(killer) + " kills!");
-        //}
     }
 
     @Override

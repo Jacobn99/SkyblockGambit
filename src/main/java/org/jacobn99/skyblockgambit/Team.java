@@ -44,7 +44,7 @@ public class Team {
         tasksInventory = Bukkit.createInventory(null, 9, "Tasks");
 
         _gameManager.nonAdditiveInventories.add(killsInventory);
-        _advancementManager.InitializeTaskInventory(tasksInventory);
+//        _advancementManager.InitializeTaskInventory(tasksInventory);
         _gameManager.nonClickableInventories.add(tasksInventory);
 
     }
@@ -70,8 +70,9 @@ public class Team {
         this._finishedTasks.add(advancement);
         for(Player p : _members) {
             p.sendMessage(_finishedTasks.size() + " tasks completed" + " vs " +
-                    _gameManager.advancementManager.GetMaxTasks() + " max tasks");
+                    (_gameManager.advancementManager.GetMaxTasks() - 1) + " required tasks");
         }
+        Bukkit.broadcastMessage("tasks done?: " + AreTasksDone() + ", " + _gameManager.isRunning);
         if(AreTasksDone() && _gameManager.isRunning) {
             Location portalSpawn = this.GetTeamWorld().GetWorldSpawn(_gameManager).clone();
             portalSpawn.add(0, 10, 0);

@@ -98,8 +98,10 @@ public class GeneratorConstructor {
                         for(ItemStack item : event.getWhoClicked().getInventory()) {
                             if(_itemManager.AreEqual(item, _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
                                 event.getWhoClicked().getInventory().remove(item);
+                                event.getWhoClicked().getInventory().removeItem(generator.GetCost());
                                 break;
                             }
+
                         }
                         event.getWhoClicked().closeInventory();
                     }
