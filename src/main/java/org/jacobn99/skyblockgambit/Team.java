@@ -69,6 +69,8 @@ public class Team {
     public void AddFinishedTask(CustomAdvancement advancement) {
         this._finishedTasks.add(advancement);
         for(Player p : _members) {
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                    "title @a title {\"text\":\"Task Completed!\",\"color\":\"gold\"}");
             p.sendMessage(_finishedTasks.size() + " tasks completed" + " vs " +
                     (_gameManager.advancementManager.GetMaxTasks() - 1) + " required tasks");
         }

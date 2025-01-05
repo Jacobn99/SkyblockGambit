@@ -23,7 +23,7 @@ public class GeneratorManager {
                 generator.SetCost(new ItemStack(Material.DIAMOND, 5));
                 break;
             case IRON_INGOT:
-                generator = new ItemGenerator(new ItemStack(Material.IRON_INGOT), 300, generators);
+                generator = new ItemGenerator(new ItemStack(Material.IRON_INGOT), 500, generators);
                 generator.SetCost(new ItemStack(Material.IRON_INGOT, 5));
                 break;
             case REDSTONE:
@@ -55,13 +55,6 @@ public class GeneratorManager {
             }
         }
     }
-//    private void InitializeGeneratorTemplates() {
-//    }
-
-//    public List<ItemGenerator> GetGeneratorTemplates() {
-//        return _generatorTemplates;
-//    }
-
     public List<ItemGenerator> GetGenerators() {
         return generators;
     }

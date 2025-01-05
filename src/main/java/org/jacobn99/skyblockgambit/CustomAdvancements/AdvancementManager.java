@@ -219,7 +219,8 @@ public class AdvancementManager {
                         if (parameterChanges.containsKey(entry.getKey())) {
                             entry.setValue(parameterChanges.get(entry.getKey()));
                         } else if (ContainsChar(String.valueOf(entry.getValue()), '{')) {
-                            Map<Object, Object> innerMap = new Gson().fromJson(new Gson().toJson(entry.getValue()), Map.class);
+                            Map<Object, Object> innerMap = new Gson().fromJson(
+                                    new Gson().toJson(entry.getValue()), Map.class);
 
                             for (Map.Entry<Object, Object> innerEntry : innerMap.entrySet()) {
                                 if (parameterChanges.containsKey(innerEntry.getKey())) {
@@ -281,7 +282,8 @@ public class AdvancementManager {
     public String GetDefaultConfiguration() {
         if (defaultConfiguration == null) {
             try {
-                defaultConfiguration = Files.lines(Paths.get(advancementsPath + "default_configuration.json")).collect(Collectors.joining("\n"));
+                defaultConfiguration = Files.lines(Paths.get(advancementsPath +
+                        "default_configuration.json")).collect(Collectors.joining("\n"));
             } catch (Exception e) {
                 e.printStackTrace();
             }

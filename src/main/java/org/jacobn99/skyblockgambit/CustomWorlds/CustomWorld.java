@@ -33,7 +33,7 @@ public class CustomWorld {
         if(_worldSpawn == null) {
 //            Bukkit.broadcastMessage("middle back: " + this._middleLoc.toVector().toString());
 //            _worldSpawn = _manager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), this._referenceCorner, 300, _gameManager.minWorldHeight, _manager.get_worldLength());
-            _worldSpawn = _manager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), this._middleLoc, 300, _gameManager.minWorldHeight, _manager.get_worldLength()/2);
+            _worldSpawn = _manager.GenerateSpawnLocation(Bukkit.getWorld("void_world"), this._middleLoc, _gameManager.minWorldHeight + 150, _gameManager.minWorldHeight, _manager.get_worldLength()/2);
 
             //Bukkit.broadcastMessage("ERROR: _worldSpawn == null");
         }

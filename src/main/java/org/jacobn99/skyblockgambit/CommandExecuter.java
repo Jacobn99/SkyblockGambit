@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -14,7 +15,6 @@ import org.jacobn99.skyblockgambit.CustomItems.CustomItems;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
-import org.jacobn99.skyblockgambit.GearHierarchies.GearHierarchy;
 import org.jacobn99.skyblockgambit.GearHierarchies.GearHierarchyManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
@@ -30,7 +30,7 @@ public class CommandExecuter implements CommandExecutor {
     WorldCopier _worldCopier;
     WorldManager _worldManager;
     PortalManager _portalManager;
-    AnimalSpawner _animalSpanwer;
+    EntitySpawner _animalSpanwer;
     private DataManager _DataManager;
     private World _world;
     private ConfigManager _configManager;
@@ -47,7 +47,7 @@ public class CommandExecuter implements CommandExecutor {
         _portalManager = new PortalManager(_gameManager, _gameManager._processManager, _mainPlugin);
         _worldManager = _gameManager._worldManager;
         _worldCopier = _worldManager._worldCopier;
-        _animalSpanwer = new AnimalSpawner(_gameManager, _worldManager, _gameManager._processManager);
+        _animalSpanwer = new EntitySpawner(_gameManager, _worldManager, _gameManager._processManager);
         _DataManager = new DataManager();
         _world = Bukkit.getWorld("void_world");
         _configManager = new ConfigManager(_mainPlugin);
@@ -64,6 +64,14 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } if (label.equalsIgnoreCase("end")) {
                 sender.sendMessage(ChatColor.RED + "end");
+                for(Entity e : _world.getLivingEntities()) {
+                    if(e.getScoreboardTags().contains("disposable")) {
+                        e.remove();
+                    }
+                }
+                for(Player player : _gameManager.participatingPlayers) {
+                    player.teleport(_world.getSpawnLocation());
+                }
                 _worldManager.ClearWorlds();
                 _gameManager._processManager.CreateProcess(
                         _gameManager._processManager.GetLatestExecutionTime() + 40,
@@ -264,17 +272,30 @@ public class CommandExecuter implements CommandExecutor {
         if (args.length == 1) {
             String arg = args[0];
             List<Team> _teams = _gameManager.teams;
+            Team t = _gameManager.FindPlayerTeam(p);
 
-            for(Team team : _teams) {
-                if(team.GetTeamColor().equalsIgnoreCase(arg)) {
-                    team.AddMember(p);
-                    p.sendMessage("Added to " + team.GetTeamColor());
-//                    Bukkit.broadcastMessage(team.GetTeamColor() + " Team: " + team.GetMembers());
-                    return true;
+            if (arg.equalsIgnoreCase("leave")) {
+                if (t == null) {
+                    p.sendMessage("You are not on a team");
+                } else {
+                    t.RemoveMember(p);
+                    p.sendMessage("You left the " + t.GetTeamColor() + " team");
                 }
+                return true;
+            } else if (_gameManager.participatingPlayers.contains(p)) {
+                p.sendMessage("Error: Already on the " + t.GetTeamColor() + " team. Type \"/t leave.\"");
+            } else {
+                for (Team team : _teams) {
+                    if (team.GetTeamColor().equalsIgnoreCase(arg)) {
+                        team.AddMember(p);
+                        p.sendMessage("Added to " + team.GetTeamColor());
+//                    Bukkit.broadcastMessage(team.GetTeamColor() + " Team: " + team.GetMembers());
+                        return true;
+                    }
+                }
+                p.sendMessage(ChatColor.RED + "Usage: /t Blue/Red");
+                return false;
             }
-            p.sendMessage(ChatColor.RED + "Usage: /t Blue/Red");
-            return false;
         }
         p.sendMessage(ChatColor.RED + "Usage: /t Blue/Red");
         return true;

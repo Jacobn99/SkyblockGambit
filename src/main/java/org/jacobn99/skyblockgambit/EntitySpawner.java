@@ -13,13 +13,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-public class AnimalSpawner {
+public class EntitySpawner {
     GameManager _gameManager;
     WorldManager _worldManager;
     List<EntityType> _animalTypes;
     ProcessManager _processManager;
     World world;
-    AnimalSpawner(GameManager gameManager, WorldManager worldManager, ProcessManager processManager) {
+    EntitySpawner(GameManager gameManager, WorldManager worldManager, ProcessManager processManager) {
         _gameManager = gameManager;
         _worldManager = worldManager;
         _processManager = processManager;
@@ -32,7 +32,7 @@ public class AnimalSpawner {
 
     }
 
-    public void SpawnAnimals(boolean isTimed) {
+    public void SpawnEntities(boolean isTimed, List<EntityType> types) {
         /*loop through all worlds
             Get world corner location
 
@@ -46,7 +46,7 @@ public class AnimalSpawner {
             Random rand = new Random();
 
             for (CustomWorld customWorld : _gameManager.customWorlds) {
-                animalCount = GetAnimalPopulation(customWorld);
+                animalCount = GetEntityPopulation(customWorld, types);
                 if (animalCount < _gameManager.GetPassiveMobCap()) {
                     int difference = _gameManager.GetPassiveMobCap() - animalCount;
                     spawnTarget = rand.nextInt(difference);
@@ -55,7 +55,7 @@ public class AnimalSpawner {
                         Location animalLoc = _worldManager.GenerateSpawnLocation(Bukkit.getWorld("void_world"),
                                 customWorld.GetMiddleLoc(), 300, _gameManager.minWorldHeight,
                                 _worldManager.get_worldLength()/2);
-                        Entity entity = animalLoc.getWorld().spawnEntity(animalLoc, RandomAnimalType());
+                        Entity entity = animalLoc.getWorld().spawnEntity(animalLoc, RandomEntityType(types));
                         entity.addScoreboardTag("disposable");
                     }
                     Bukkit.broadcastMessage("Added: " + spawnTarget + " animals");
@@ -63,21 +63,21 @@ public class AnimalSpawner {
             }
         }
     }
-    private EntityType RandomAnimalType() {
+    private EntityType RandomEntityType(List<EntityType> types) {
         Random rand = new Random();
 
-        return _animalTypes.get(rand.nextInt(_animalTypes.size()));
+        return types.get(rand.nextInt(types.size()));
 
     }
 
-    public int GetAnimalPopulation(CustomWorld customWorld) {
+    public int GetEntityPopulation(CustomWorld customWorld, List<EntityType> types) {
         int animalCount = 0;
         Location cornerLoc = customWorld.GetMiddleLoc().clone().subtract(0, 0, _worldManager.get_worldLength()/2);
         Collection<Entity> entities = Bukkit.getWorld("void_world").getNearbyEntities(cornerLoc, _worldManager.get_worldLength(), 70, _worldManager.get_worldLength());
 
         if(entities != null) {
             for (Entity e : entities) {
-                if(_animalTypes.contains(e.getType())) {
+                if(types.contains(e.getType())) {
                     animalCount++;
                 }
             }

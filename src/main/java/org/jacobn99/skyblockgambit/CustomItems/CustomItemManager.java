@@ -14,7 +14,9 @@ import org.jacobn99.skyblockgambit.Serialization.ItemStackSerialization;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CustomItemManager {
     JavaPlugin _mainPlugin;
@@ -37,30 +39,30 @@ public class CustomItemManager {
         requiredItemsList.add("RAGE_SPELL");
         requiredItemsList.add("KILL_SKULL");
         requiredItemsList.add("GENERATOR_CONSTRUCTOR");
+        requiredItemsList.add("THE_SMASHER");
+        requiredItemsList.add("NUKE_SHEEP");
 
 
 
     }
 
     public void LoadRequiredItems() {
+        Set<String> itemNames = new HashSet<>();
         List<CustomItems> itemsList = GetCustomItemsList();
+        for(CustomItems customItem : itemsList) {
+            itemNames.add(customItem.getItemName());
+        }
+
         if(!itemsList.isEmpty()) {
             for (String itemName : requiredItemsList) {
-                int i = 0;
-                for (CustomItems item : itemsList) {
-                    if (item.getItemName().equalsIgnoreCase(itemName)) {
-                        break;
-                    }
-                    else if (i == itemsList.size() - 1) {
-                        ItemStack placeholder = new ItemStack(Material.DEAD_BUSH);
-                        ItemMeta meta = placeholder.getItemMeta();
-                        meta.setDisplayName(itemName + "(placeholder)");
-                        placeholder.setItemMeta(meta);
+                if(!itemNames.contains(itemName)) {
+                    ItemStack placeholder = new ItemStack(Material.DEAD_BUSH);
+                    ItemMeta meta = placeholder.getItemMeta();
+                    meta.setDisplayName(itemName + "(placeholder)");
+                    placeholder.setItemMeta(meta);
 
-                        AddCustomItem(placeholder, itemName);
-                        Bukkit.broadcastMessage("Adding placeholder " + itemName);
-                    }
-                    i++;
+                    AddCustomItem(placeholder, itemName);
+                    Bukkit.broadcastMessage("Adding placeholder " + itemName);
                 }
             }
         }
@@ -183,16 +185,16 @@ public class CustomItemManager {
         }
     }
 
-    public boolean AreEqual(ItemStack item1, ItemStack item2) {
+    public boolean AreEqual(ItemStack item1, ItemStack item2, boolean considerAmount) {
         if(item1 == null || item2 == null) { return false; }
         ItemMeta meta1 = item1.getItemMeta();
         ItemMeta meta2 = item2.getItemMeta();
 
-//        TestAreEqual(item1, item2);
+//        TestAreEqual(item1, item2, considerAmount);
 
-        return  LoreEqual(meta1,meta2) && meta1.getDisplayName().equals(meta2.getDisplayName()) &&
-                meta1.getItemFlags().equals(meta2.getItemFlags()) && item1.getType() == item2.getType() &&
-                item1.getAmount() == item2.getAmount();
+        return LoreEqual(meta1,meta2) && meta1.getDisplayName().equals(meta2.getDisplayName()) &&
+                    meta1.getItemFlags().equals(meta2.getItemFlags()) && item1.getType() == item2.getType() && (
+                    !considerAmount || item1.getAmount() == item2.getAmount());
     }
     public boolean LoreEqual(ItemMeta meta1, ItemMeta meta2) {
         if(meta1.getLore() == null && meta2.getLore() == null) return true;
@@ -213,14 +215,13 @@ public class CustomItemManager {
     }
 
 
-    private void TestAreEqual(ItemStack item1, ItemStack item2) {
+    public void TestAreEqual(ItemStack item1, ItemStack item2, boolean considerAmount) {
         ItemMeta meta1 = item1.getItemMeta();
         ItemMeta meta2 = item2.getItemMeta();
 
         TestLoreEqual(meta1,meta2);
         Bukkit.broadcastMessage("tests: " + (item1 != null && item2 != null) + "\n" + LoreEqual(meta1,meta2) + "\n" + (meta1.getDisplayName().equals(meta2.getDisplayName())) + "\n" +
-                (meta1.getItemFlags().equals(meta2.getItemFlags())) + "\n" + (item1.getType() == item2.getType()) + "\n" +
-                (item1.getAmount() == item2.getAmount()));
-        Bukkit.broadcastMessage("sigma");
+                (meta1.getItemFlags().equals(meta2.getItemFlags())) + "\n" + (item1.getType() == item2.getType()) + "\n(" +
+                considerAmount + " || " + (item1.getAmount() == item2.getAmount()) + ")");
     }
 }

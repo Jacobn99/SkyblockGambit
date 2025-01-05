@@ -75,7 +75,7 @@ public class GeneratorConstructor {
     public void GeneratorConstructorCheck(PlayerInteractEvent event) {
         Player p = event.getPlayer();
         if(event.getItem() != null) {
-            if(_gameManager._customItemManager.AreEqual(event.getItem(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
+            if(_gameManager._customItemManager.AreEqual(event.getItem(), _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")), false)) {
                 p.openInventory(generatorSelector);
                 event.setCancelled(true);
             }
@@ -92,12 +92,13 @@ public class GeneratorConstructor {
 
                 if(HasFunds(p.getInventory(), generator.GetCost()) && team != null) {
                     if(team.GetGeneratorCount() < _generateManager.maxGenerators) {
+                        ItemStack customItem = _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR"));
                         p.sendMessage("Creating a " + event.getCurrentItem().getType().name().toLowerCase() + " generator!");
                         generator.CreateGenerator(event.getWhoClicked().getLocation());
                         team.AddToGeneratorCount();
                         for(ItemStack item : event.getWhoClicked().getInventory()) {
-                            if(_itemManager.AreEqual(item, _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("GENERATOR_CONSTRUCTOR")))) {
-                                event.getWhoClicked().getInventory().remove(item);
+                            if(_itemManager.AreEqual(item, customItem, false)) {
+                                event.getWhoClicked().getInventory().removeItem(customItem);
                                 event.getWhoClicked().getInventory().removeItem(generator.GetCost());
                                 break;
                             }

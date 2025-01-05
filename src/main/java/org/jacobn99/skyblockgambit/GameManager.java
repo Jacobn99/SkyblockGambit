@@ -8,11 +8,11 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.*;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
+import org.jacobn99.skyblockgambit.CustomItems.NukeSheepItem;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillagerManager;
 import org.jacobn99.skyblockgambit.CustomWorlds.CustomWorld;
@@ -53,7 +53,7 @@ public class GameManager {
     private StarterChestManager _chestManager;
     public CustomVillagerManager _customVillagerManager;
     public CustomItemManager _customItemManager;
-    public AnimalSpawner _animalSpawner;
+    public EntitySpawner _animalSpawner;
     public GeneratorManager _generatorManager;
     public NetherManager netherManager;
     public XStacks xStacks;
@@ -72,6 +72,9 @@ public class GameManager {
     public Set<Inventory> nonClickableInventories;
     public Set<Inventory> nonAdditiveInventories;
     public World _world;
+    public List<NukeSheep> nukeSheeps;
+    public NukeSheepItem nukeSheepItem;
+
 //    public ItemStack delayItem;
 //    private DataManager _dataManager;
 //    private File _spawnFile;
@@ -89,6 +92,7 @@ public class GameManager {
         teams = new ArrayList<>();
         nonClickableInventories = new HashSet<>();
         nonAdditiveInventories = new HashSet<>();
+        nukeSheeps = new ArrayList<>();
 
         participatingPlayers = new HashSet<>();
         processes = new ArrayList<>();
@@ -105,10 +109,13 @@ public class GameManager {
         craftX = new CraftX(advancementManager, _mainPlugin);
         xStacks = new XStacks(advancementManager, this, _mainPlugin);
         getGlowing = new GetGlowing(this, advancementManager);
-        _animalSpawner = new AnimalSpawner(this, _worldManager, _processManager);
+        _animalSpawner = new EntitySpawner(this, _worldManager, _processManager);
         netherManager = new NetherManager(this, _processManager, _worldManager);
+        nukeSheepItem = new NukeSheepItem(this);
         tickRate = 3;
-        minWorldHeight = 94;
+
+//        minWorldHeight = 94;
+        minWorldHeight = -55;
         normalVillagerAmount = 9;
         canProceed = true;
         isWorldGenerated = false;
@@ -124,6 +131,11 @@ public class GameManager {
         for(Player p : participatingPlayers) {
             String command = "advancement revoke " + p.getName() + " everything";
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+            p.setHealth(p.getMaxHealth());
+            p.getInventory().clear();
+            p.setExp(0);
+            p.setLevel(0);
+            p.setFoodLevel(9);
         }
         String command = "kill @e[tag=disposable]";
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
@@ -131,8 +143,8 @@ public class GameManager {
         _customItemManager.LoadRequiredItems();
         InitializeTasks();
 
-        blueWorld = new CustomWorld(_worldManager, new Location(world, -160, 100, -136), customWorlds);
-        redWorld = new CustomWorld(_worldManager, new Location(world, 21,  100, 62), customWorlds);
+        blueWorld = new CustomWorld(_worldManager, new Location(world, 0, 0, 0), customWorlds);
+        redWorld = new CustomWorld(_worldManager, new Location(world, 1000,  0, 0), customWorlds);
 
         _worldManager.BuildWorld(redWorld, _processManager);
         _worldManager.BuildWorld(blueWorld, _processManager);
@@ -146,17 +158,17 @@ public class GameManager {
                 if(!isRunning) {
                     this.cancel();
                 }
-                _animalSpawner.SpawnAnimals(true);
+                _animalSpawner.SpawnEntities(true, _animalSpawner._animalTypes);
                 _processManager.HandleProcesses();
                 _generatorManager.RenewGenerators(tickRate);
                 portalManager.PortalUpdate(portals, tickRate);
+                nukeSheepItem.NukeSheepUpdate(tickRate);
             }
         }.runTaskTimer(_mainPlugin, 0, tickRate);
     }
     public Team FindWorldTeam(CustomWorld _customWorld) {
         for(Team team : teams) {
             if(team.GetTeamWorld() == _customWorld) {
-                Bukkit.broadcastMessage("world is not null");
                 return team;
             }
         }
@@ -446,22 +458,4 @@ public void UpdateSpawns() {
     public int GetPassiveMobCap() {
         return _passiveMobCap;
     }
-//    public void GetDefaultSpawn() {
-//        try {
-//            List<String> lines = Files.readAllLines(_spawnFile.toPath());
-//            for(String line : lines) {
-//                Bukkit.broadcastMessage(line);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    public void SetDefaultSpawn(Location location) {
-//        try {
-//            FileWriter writer = new FileWriter(_spawnFile.getAbsolutePath());
-//            writer.write(location.toString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

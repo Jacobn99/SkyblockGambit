@@ -1,11 +1,7 @@
 package org.jacobn99.skyblockgambit;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Zombie;
-import org.bukkit.entity.ZombieVillager;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -24,11 +20,6 @@ import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;
     CustomItemManager _itemManager;
@@ -46,6 +37,7 @@ public class EventManager implements Listener {
     private XStacks _xStacks;
     private GetGlowing _getGlowing;
     private GeneratorConstructor _generatorContructor;
+    private NukeSheepItem _nukeSheepItem;
     private NetherManager _netherManager;
     private PortalManager _portalManager;
 
@@ -58,14 +50,19 @@ public class EventManager implements Listener {
         _villagerManager = _gameManager._customVillagerManager;
         _processManager = _gameManager._processManager;
         _borderwall = new Borderwall(_mainPlugin, _gameManager);
+
         _portalOpener = new PortalOpener(_gameManager);
         _villagerTradeBoost = new VillagerTradeBoost(_gameManager);
         _rageSpell = new RageSpell(_gameManager);
+        _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager, _gameManager);
+
+        _nukeSheepItem = _gameManager.nukeSheepItem;
+
         _twoKillsTask = new TwoKillsTask(_gameManager, _advancementManager);
         _reachLevelX = new ReachLevelX(_gameManager, _advancementManager);
         _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
-        _generatorContructor = new GeneratorConstructor(_gameManager._generatorManager.generators, _gameManager._generatorManager, _itemManager, _gameManager);
         _xStacks = _gameManager.xStacks;
+
         _netherManager = _gameManager.netherManager;
         _getGlowing = _gameManager.getGlowing;
         _portalManager = _gameManager.portalManager;
@@ -131,6 +128,13 @@ public class EventManager implements Listener {
             if (_gameManager.isRunning && team != null) {
                 _processManager.CreateProcess(world.getFullTime() + 20, queueable);
             }
+        }
+    }
+
+    @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent event) {
+        if(event.getEntity() instanceof Slime) {
+            event.setCancelled(true);
         }
     }
 
@@ -201,6 +205,8 @@ public class EventManager implements Listener {
             _portalOpener.PortalOpenerCheck(event, _itemManager);
             _villagerTradeBoost.TradeBoostCheck(event, _itemManager);
             _rageSpell.RageSpellCheck(event, _itemManager);
+            _nukeSheepItem.NukeSheepCheck(event, _itemManager);
+
         }
     }
     @EventHandler
@@ -217,7 +223,7 @@ public class EventManager implements Listener {
 
     @EventHandler
     public void onVillagerAcquireTrade(VillagerAcquireTradeEvent event) {
-        MerchantRecipe recipe = _villagerManager.MakeTradeCheaper(event.getRecipe());
+        MerchantRecipe recipe = _villagerManager.MakeTradeCheaper(event.getRecipe(), 0.5);
         event.setRecipe(recipe);
     }
     @EventHandler

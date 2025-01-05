@@ -7,11 +7,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.checkerframework.checker.units.qual.A;
 import org.jacobn99.skyblockgambit.GameManager;
 import org.jacobn99.skyblockgambit.Team;
 
@@ -55,7 +51,7 @@ public class CustomVillagerManager {
             }
         }
     }
-    public void MakeTradesCheaper(Villager v) {
+    public void MakeTradesCheaper(Villager v, double multiplier) {
         List<MerchantRecipe> newRecipes = new ArrayList<>();
 
         for(MerchantRecipe recipe : v.getRecipes()) {
@@ -65,7 +61,7 @@ public class CustomVillagerManager {
                 int newAmount = 1;
                 ItemStack newIngredient;
                 if(amount > 1) {
-                    newAmount = Math.round((amount/2));
+                    newAmount = Math.round((long)(amount*multiplier));
                 }
                 newIngredient = new ItemStack(ingredient.getType(), newAmount);
                 newIngredients.add(newIngredient);
@@ -74,7 +70,7 @@ public class CustomVillagerManager {
             newRecipes.add(recipe);
         }
     }
-    public MerchantRecipe MakeTradeCheaper(MerchantRecipe recipe) {
+    public MerchantRecipe MakeTradeCheaper(MerchantRecipe recipe, double multiplier) {
         List<ItemStack> newIngredients = new ArrayList<>();
 
         for(ItemStack ingredient : recipe.getIngredients()) {
@@ -83,7 +79,7 @@ public class CustomVillagerManager {
             ItemStack newIngredient;
 
             if(amount > 1) {
-                newAmount = Math.round((amount/2));
+                newAmount = Math.round((long)(amount*multiplier));
             }
             newIngredient = new ItemStack(ingredient.getType(), newAmount);
             newIngredients.add(newIngredient);
@@ -91,8 +87,6 @@ public class CustomVillagerManager {
         recipe.setIngredients(newIngredients);
         return recipe;
     }
-
-
     public Integer GetRandomProfessionID(List<Integer> bannedProfessionIDs) {
         Random rand = new Random();
         int professionID;
@@ -113,11 +107,9 @@ public class CustomVillagerManager {
         Villager villager = custom.GetVillager();
 
         if(preset != null) {
-//            Bukkit.broadcastMessage(preset);
             custom.SetTrades(preset);
             custom.GetVillager().setCustomName(preset);
         }
-//        villager.addScoreboardTag("Customized");
         villager.setCustomNameVisible(true);
         _customs.add(custom);
         _gameManager.disposableEntities.add(custom.GetVillager());

@@ -39,6 +39,7 @@ public class WorldManager {
     final private int _pieceHeight;
     final private int _pieceLength;
     final private int _chunkWorldSize;
+    private World _world;
 
     public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager, CustomVillagerManager customVillagerManager) {
         rand = new Random();
@@ -50,19 +51,17 @@ public class WorldManager {
         // USE THIS IF GOING BACK TO NATURAL GEN
 //        _worldLength = _chunkWorldSize * _pieceLength;
         _worldLength = 176;
-
-
         _gameManager = gameManager;
         _portalManager = portalManager;
         _processManager = processManager;
         _worldCopier = new WorldCopier(_mainPlugin, _gameManager.processes, _processManager);
         _customWorlds = _gameManager.customWorlds;
         _villagerManager = customVillagerManager;
+        _world = Bukkit.getWorld("void_world");
     }
     public void ClearWorlds() {
         for(CustomWorld customWorld : _customWorlds) {
             _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength));
-//            _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 30, () ->_processManager.CreateProcess(_processes, _processManager.GetLatestExecutionTime(_processes) + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength)));
         }
     }
     public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY, int minY, int spawnRadius) {
@@ -71,10 +70,6 @@ public class WorldManager {
         for(int i = 0; i < 70; i++) {
             x = rand.nextInt(spawnRadius*2);
             z = rand.nextInt(spawnRadius*2);
-
-//            Bukkit.broadcastMessage("max: " + (middleLocation.getZ() + spawnRadius*2 - (double) spawnRadius) + ", radius: " + spawnRadius + ", middleZ: " + middleLocation.getZ());
-//            Bukkit.broadcastMessage("min: " + (middleLocation.getZ() + 0 - (double) spawnRadius) + ", radius: " + spawnRadius + ", middleZ: " + middleLocation.getZ());
-
             Location loc = new Location(world, middleLocation.getX() + x - (double) spawnRadius, middleLocation.getY(), middleLocation.getZ() + z - (double) spawnRadius);
             loc = _gameManager.FindSurface(loc, maxY, minY);
 
@@ -97,22 +92,22 @@ public class WorldManager {
         _gameManager.InitializeTeams();
         SpawnTeamVillagers(villagerManager);
         _gameManager.UpdateSpawns();
+        _processManager.CreateProcess(_world.getFullTime() + 20,() ->
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=item]"));
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                "title @a title {\"text\":\"Game Started!\",\"color\":\"red\"}");
+
+
     }
     public void SpawnTeamVillagers(CustomVillagerManager villagerManager) {
         List<CustomVillager> templateVillagers = new ArrayList<>();
         int extraVillagers = _villagerManager.get_presets().size() + 1;
         List<Integer> bannedProfessions = new ArrayList<>();
-        bannedProfessions.add(14); //Farmer
-        bannedProfessions.add(13); //Nitwit
-        bannedProfessions.add(8); //None
-        bannedProfessions.add(2); //Cartographer
-        bannedProfessions.add(6); //Fletcher
-        bannedProfessions.add(9); //Fisherman
+        ResetBannedVillagers(bannedProfessions);
 
 
         int iterations = 0;
         for(CustomWorld customWorld : _customWorlds) {
-//            Bukkit.broadcastMessage("customs size: " + customs.size());
             Location spawnLoc = customWorld.GetWorldSpawn(_gameManager);
             Team team = _gameManager.FindWorldTeam(customWorld);
 //            int j = 0;
@@ -121,30 +116,24 @@ public class WorldManager {
 //                j++;
 //            }
 
-
             if(iterations == 0) {
                 for (int i = 0; i < _gameManager.normalVillagerAmount - extraVillagers; i++) {
                     //Location spawnLoc = GenerateSpawnLocation(refreneceLoc, spawnRadius);
                     if(bannedProfessions.size() == 15) {
-                        bannedProfessions.clear();
-                        bannedProfessions.add(14); //Farmer
-                        bannedProfessions.add(13); //Nitwit
-                        bannedProfessions.add(8); //None
-                        bannedProfessions.add(2); //Cartographer
-                        bannedProfessions.add(6); //Fletcher
-                        bannedProfessions.add(9); //Fisherman
+                        ResetBannedVillagers(bannedProfessions);
                     }
 
                     int professionID = villagerManager.GetRandomProfessionID(bannedProfessions);
                     Villager.Profession profession = Villager.Profession.values()[professionID];
                     bannedProfessions.add(professionID);
                     Villager vil = villagerManager.SpawnVillager(spawnLoc, profession);
-                    _villagerManager.MakeTradesCheaper(vil);
+                    _villagerManager.MakeTradesCheaper(vil, 0.5);
                     CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), team, i);
                     templateVillagers.add(customVillager);
                 }
 
                 CustomVillager farmer = _villagerManager.CreateCustomVillager(null, spawnLoc, team, Villager.Profession.FARMER);
+                _villagerManager.MakeTradesCheaper(farmer.GetVillager(),0.75);
                 templateVillagers.add(farmer);
                 for(String preset : _villagerManager.get_presets()) {
                     CustomVillager c = _villagerManager.CreateCustomVillager(preset, spawnLoc, team, Villager.Profession.NITWIT);
@@ -168,6 +157,15 @@ public class WorldManager {
             }
             iterations++;
         }
+    }
+    private void ResetBannedVillagers(List<Integer> bannedProfessions) {
+        bannedProfessions.clear();
+        bannedProfessions.add(14); //Farmer
+        bannedProfessions.add(13); //Nitwit
+        bannedProfessions.add(8); //None
+        bannedProfessions.add(2); //Cartographer
+        bannedProfessions.add(6); //Fletcher
+        bannedProfessions.add(7); //Mason
     }
 
     public void SpawnStarterChests(StarterChestManager chestManager) {
@@ -206,12 +204,12 @@ public class WorldManager {
             Portal p = new Portal(_gameManager.portals, _portalManager,
                     currentOpposingWorld.GetWorldSpawn(_gameManager), portalLoc);
             customWorld.SetWorldPortal(p);
-
-            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc,
-                    EntityType.ARMOR_STAND);
-            armorStand.setGlowing(true);
-            armorStand.setGravity(false);
-            armorStand.addScoreboardTag("disposable");
+//
+//            ArmorStand armorStand = (ArmorStand) portalLoc.getWorld().spawnEntity(portalLoc,
+//                    EntityType.ARMOR_STAND);
+//            armorStand.setGlowing(true);
+//            armorStand.setGravity(false);
+//            armorStand.addScoreboardTag("disposable");
 
             portalLoc = null;
             worldSpawn = null;
