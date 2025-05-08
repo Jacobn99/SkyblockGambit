@@ -90,7 +90,7 @@ public class NetherManager {
         try {
             //Bukkit.broadcastMessage("bro");
             Player p = (Player) event.getPlayer();
-            _processManager.CreateProcess(Bukkit.getWorld("void_world").getFullTime() + 2,
+            _processManager.CreateProcess(_processManager.getCurrentTime() + 2,
                     () -> DimensionCheck(p));
         }
         catch(Exception e) {

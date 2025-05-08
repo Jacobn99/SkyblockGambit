@@ -17,6 +17,7 @@ public class EntitySpawner {
     GameManager _gameManager;
     WorldManager _worldManager;
     List<EntityType> _animalTypes;
+    List<EntityType> _hostileTypes;
     ProcessManager _processManager;
     World world;
     EntitySpawner(GameManager gameManager, WorldManager worldManager, ProcessManager processManager) {
@@ -24,10 +25,23 @@ public class EntitySpawner {
         _worldManager = worldManager;
         _processManager = processManager;
         _animalTypes = new ArrayList<>();
+        _hostileTypes = new ArrayList<>();
+
         _animalTypes.add(EntityType.COW);
         _animalTypes.add(EntityType.PIG);
         _animalTypes.add(EntityType.CHICKEN);
         _animalTypes.add(EntityType.SHEEP);
+
+        _hostileTypes.add(EntityType.ZOMBIE);
+        _hostileTypes.add(EntityType.SKELETON);
+        _hostileTypes.add(EntityType.CREEPER);
+        _hostileTypes.add(EntityType.SPIDER);
+        _hostileTypes.add(EntityType.ENDERMAN);
+        _hostileTypes.add(EntityType.WITCH);
+        _hostileTypes.add(EntityType.HUSK);
+        _hostileTypes.add(EntityType.STRAY);
+        _hostileTypes.add(EntityType.DROWNED);
+
         world = Bukkit.getWorld("void_world");
 
     }
@@ -40,7 +54,7 @@ public class EntitySpawner {
                 Make value (rand) a random value bound between 0 and the difference of animalCount and the passive mob cap
                 Spawn rand animals at random locations
          */
-        if (world.getFullTime() % 3600 == 0 || !isTimed) {
+        if ((_processManager.getCurrentTime() % 3600 == 0 || !isTimed) && _gameManager.isWorldGenerated) {
             int animalCount = 0;
             int spawnTarget = 0;
             Random rand = new Random();

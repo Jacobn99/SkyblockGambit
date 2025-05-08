@@ -64,11 +64,12 @@ public class GameManager {
     CustomWorld blueWorld;
     CustomWorld redWorld;
     //public List<ProcessGroup> processGroups;
-    public boolean canProceed;
     public boolean isWorldGenerated;
     public int minWorldHeight;
     public int normalVillagerAmount;
     private int _passiveMobCap;
+    private int _naturalHostileCap;
+    public int naturalHostileCount;
     public Set<Inventory> nonClickableInventories;
     public Set<Inventory> nonAdditiveInventories;
     public World _world;
@@ -117,9 +118,10 @@ public class GameManager {
 //        minWorldHeight = 94;
         minWorldHeight = -55;
         normalVillagerAmount = 9;
-        canProceed = true;
         isWorldGenerated = false;
         _passiveMobCap = 40;
+        _naturalHostileCap = 80;
+        naturalHostileCount = 0;
         _generatorManager = new GeneratorManager();
         _world = Bukkit.getWorld("void_world");
     }
@@ -147,8 +149,13 @@ public class GameManager {
         redWorld = new CustomWorld(_worldManager, new Location(world, 1000,  0, 0), customWorlds);
 
         _worldManager.BuildWorld(redWorld, _processManager);
-        _worldManager.BuildWorld(blueWorld, _processManager);
+        Bukkit.broadcastMessage("size: " + processes.size());
 
+        long executionTime = _processManager.GetLatestExecutionTime() + 10;
+        _processManager.CreateProcess(executionTime, ()->_worldManager.BuildWorld(blueWorld, _processManager));
+
+
+        Bukkit.broadcastMessage("latest execution time: " + _processManager.GetLatestExecutionTime());
         _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 
@@ -159,7 +166,7 @@ public class GameManager {
                     this.cancel();
                 }
                 _animalSpawner.SpawnEntities(true, _animalSpawner._animalTypes);
-                _processManager.HandleProcesses();
+                _processManager.HandleProcesses(tickRate);
                 _generatorManager.RenewGenerators(tickRate);
                 portalManager.PortalUpdate(portals, tickRate);
                 nukeSheepItem.NukeSheepUpdate(tickRate);
@@ -457,5 +464,8 @@ public void UpdateSpawns() {
     }
     public int GetPassiveMobCap() {
         return _passiveMobCap;
+    }
+    public int GetNaturalHostileCap() {
+        return _naturalHostileCap;
     }
 }

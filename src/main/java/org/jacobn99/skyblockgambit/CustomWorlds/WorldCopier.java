@@ -62,7 +62,8 @@ public class WorldCopier {
         for (int i = 0; i < list.size(); i += blocksGeneratedPerExecution) {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
-            executionTime = timeBetweenExecution * (loopIterations) + world.getFullTime();
+            executionTime = timeBetweenExecution * (loopIterations) + _processManager.getCurrentTime();
+            Bukkit.broadcastMessage("new execution time - time: " + (executionTime-_processManager.getCurrentTime()));
 
             Process process = new Process(executionTime, _queueable);
             _processManager.CreateProcess(process);
@@ -88,7 +89,7 @@ public class WorldCopier {
                     final int Y = y;
                     final int Z = z;
 
-                    _processManager.CreateProcess(2 * (loopIterations) + world.getFullTime(),
+                    _processManager.CreateProcess(2 * (loopIterations) + _processManager.getCurrentTime(),
                             () -> ClearChunk(corner, X, Y, Z, chunkX, chunkY, chunkZ));
                     loopIterations++;
                 }

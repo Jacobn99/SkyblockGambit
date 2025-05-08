@@ -41,7 +41,8 @@ public class WorldManager {
     final private int _chunkWorldSize;
     private World _world;
 
-    public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager, ProcessManager processManager, CustomVillagerManager customVillagerManager) {
+    public WorldManager(JavaPlugin mainPlugin, GameManager gameManager, PortalManager portalManager,
+                        ProcessManager processManager, CustomVillagerManager customVillagerManager) {
         rand = new Random();
         _mainPlugin = mainPlugin;
 
@@ -61,16 +62,20 @@ public class WorldManager {
     }
     public void ClearWorlds() {
         for(CustomWorld customWorld : _customWorlds) {
-            _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 30, () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength));
+            _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 30,
+                    () -> _worldCopier.ClearWorld(customWorld.GetMiddleLoc(), _worldLength));
         }
     }
-    public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY, int minY, int spawnRadius) {
+    public Location GenerateSpawnLocation(World world, Location middleLocation, int maxY,
+                                          int minY, int spawnRadius) {
         int x;
         int z;
         for(int i = 0; i < 70; i++) {
             x = rand.nextInt(spawnRadius*2);
             z = rand.nextInt(spawnRadius*2);
-            Location loc = new Location(world, middleLocation.getX() + x - (double) spawnRadius, middleLocation.getY(), middleLocation.getZ() + z - (double) spawnRadius);
+            Location loc = new Location(world, middleLocation.getX() + x -
+                    (double) spawnRadius, middleLocation.getY(),
+                    middleLocation.getZ() + z - (double) spawnRadius);
             loc = _gameManager.FindSurface(loc, maxY, minY);
 
             if(loc != null) {
@@ -80,7 +85,9 @@ public class WorldManager {
         Bukkit.broadcastMessage("Loc was null");
         return null;
     }
-    public void AddPostGenerationObjects(StarterChestManager _chestManager, CustomVillagerManager villagerManager, List<CustomVillager> customs) {
+    public void AddPostGenerationObjects(StarterChestManager _chestManager,
+                                         CustomVillagerManager villagerManager,
+                                         List<CustomVillager> customs) {
 //        try {
 
         Bukkit.broadcastMessage("World has been generated");
@@ -92,7 +99,7 @@ public class WorldManager {
         _gameManager.InitializeTeams();
         SpawnTeamVillagers(villagerManager);
         _gameManager.UpdateSpawns();
-        _processManager.CreateProcess(_world.getFullTime() + 20,() ->
+        _processManager.CreateProcess(_processManager.getCurrentTime() + 20,() ->
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=item]"));
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
                 "title @a title {\"text\":\"Game Started!\",\"color\":\"red\"}");
@@ -128,15 +135,18 @@ public class WorldManager {
                     bannedProfessions.add(professionID);
                     Villager vil = villagerManager.SpawnVillager(spawnLoc, profession);
                     _villagerManager.MakeTradesCheaper(vil, 0.5);
-                    CustomVillager customVillager = new CustomVillager(_mainPlugin, vil, _gameManager.getCustomVillagers(), team, i);
+                    CustomVillager customVillager = new CustomVillager(_mainPlugin, vil,
+                            _gameManager.getCustomVillagers(), team, i);
                     templateVillagers.add(customVillager);
                 }
 
-                CustomVillager farmer = _villagerManager.CreateCustomVillager(null, spawnLoc, team, Villager.Profession.FARMER);
+                CustomVillager farmer = _villagerManager.CreateCustomVillager(null, spawnLoc,
+                        team, Villager.Profession.FARMER);
                 _villagerManager.MakeTradesCheaper(farmer.GetVillager(),0.75);
                 templateVillagers.add(farmer);
                 for(String preset : _villagerManager.get_presets()) {
-                    CustomVillager c = _villagerManager.CreateCustomVillager(preset, spawnLoc, team, Villager.Profession.NITWIT);
+                    CustomVillager c = _villagerManager.CreateCustomVillager(preset, spawnLoc,
+                            team, Villager.Profession.NITWIT);
                     templateVillagers.add(c);
                 }
 //
@@ -148,8 +158,10 @@ public class WorldManager {
             }
             else {
                 for(CustomVillager customVillager : templateVillagers) {
-                    Villager villager = _villagerManager.SpawnVillager(spawnLoc, customVillager.GetVillager().getProfession());
-                    CustomVillager customVil = new CustomVillager(_mainPlugin, villager, _gameManager.getCustomVillagers(),
+                    Villager villager = _villagerManager.SpawnVillager(spawnLoc,
+                            customVillager.GetVillager().getProfession());
+                    CustomVillager customVil = new CustomVillager(_mainPlugin, villager,
+                            _gameManager.getCustomVillagers(),
                             team, customVillager.GetID());
                     villager.addScoreboardTag("villager" + iterations);
                     _villagerManager.ApplyTraits(customVillager.GetVillager(), villager);
@@ -172,7 +184,8 @@ public class WorldManager {
         for(CustomWorld customWorld : _customWorlds) {
             Location worldSpawn = customWorld.GetWorldSpawn(_gameManager);
             Location startChestLoc = new Location(Bukkit.getWorld("void_world"), worldSpawn.getX() + 1, worldSpawn.getY(), worldSpawn.getZ() + 1);
-            StarterChest starterChest = new StarterChest(startChestLoc, chestManager.GetInventory(), _gameManager.GetStarterChestList());
+            StarterChest starterChest = new StarterChest(startChestLoc, chestManager.GetInventory(),
+                    _gameManager.GetStarterChestList());
             starterChest.CreateChest();
         }
     }
@@ -183,7 +196,8 @@ public class WorldManager {
         int i = 0;
         for(CustomWorld customWorld : _customWorlds) {
             Location worldSpawn = customWorld.GetWorldSpawn(_gameManager);
-            portalLoc = new Location(worldSpawn.getWorld(), worldSpawn.getX() + 5, 0, worldSpawn.getZ() + 5);
+            portalLoc = new Location(worldSpawn.getWorld(), worldSpawn.getX() + 5, 0,
+                    worldSpawn.getZ() + 5);
             portalLoc = _gameManager.FindSurface(portalLoc, 300, _gameManager.minWorldHeight);
 
             if (portalLoc == null) {
@@ -217,9 +231,10 @@ public class WorldManager {
         }
     }
     public void BuildWorld(CustomWorld newWorld, ProcessManager processManager) {
-        long executionTime = processManager.GetLatestExecutionTime() + 10;
-        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength);
-        _processManager.CreateProcess(executionTime, queueable);
+        _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength);
+//        long executionTime = processManager.GetLatestExecutionTime() + 10;
+//        Queueable queueable = () -> _worldCopier.DuplicateLand(newWorld.GetMiddleLoc(), _worldLength);
+//        _processManager.CreateProcess(executionTime, queueable);
     }
     public int get_worldLength() {
         return _worldLength;

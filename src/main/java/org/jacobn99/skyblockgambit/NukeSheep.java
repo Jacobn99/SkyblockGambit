@@ -30,7 +30,7 @@ public class NukeSheep {
     public void Flash() {
         if(!_sheep.isDead()) {
             _sheep.setColor(DyeColor.RED);
-            _processManager.CreateProcess(_sheep.getWorld().getFullTime()
+            _processManager.CreateProcess(_processManager.getCurrentTime()
                     + _delayBetweenFlashes, ()-> this.RevertColor());
         }
     }

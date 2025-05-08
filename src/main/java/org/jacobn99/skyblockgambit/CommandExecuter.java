@@ -2,6 +2,8 @@ package org.jacobn99.skyblockgambit;
 
 import org.bukkit.*;
 import org.bukkit.command.Command;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jacobn99.skyblockgambit.Processes.Process;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -17,9 +19,11 @@ import org.jacobn99.skyblockgambit.CustomWorlds.WorldCopier;
 import org.jacobn99.skyblockgambit.CustomWorlds.WorldManager;
 import org.jacobn99.skyblockgambit.GearHierarchies.GearHierarchyManager;
 import org.jacobn99.skyblockgambit.Portals.PortalManager;
+import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.StarterChest.StarterChestManager;
 
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class CommandExecuter implements CommandExecutor {
     private JavaPlugin _mainPlugin;
@@ -60,6 +64,12 @@ public class CommandExecuter implements CommandExecutor {
 
             if (label.equalsIgnoreCase("start")) {
                 sender.sendMessage(ChatColor.RED + "start");
+//                new BukkitRunnable() {
+//                    @Override
+//                    public void run() {
+//                        _gameManager._processManager.HandleProcesses(_gameManager.tickRate);
+//                    }
+//                }.runTaskTimer(_mainPlugin, 0, _gameManager.tickRate);
                 _gameManager.Start();
                 return true;
             } if (label.equalsIgnoreCase("end")) {
@@ -80,8 +90,15 @@ public class CommandExecuter implements CommandExecutor {
                 return true;
             } else if (label.equalsIgnoreCase("debug")) {
                 sender.sendMessage(ChatColor.RED + "debug");
-                GearHierarchyManager gearHierarchyManager = new GearHierarchyManager(_mainPlugin, _DataManager, _itemManager);
-//                gearHierarchyManager.GetHierarchies();
+//                ProcessManager pm = _gameManager._processManager;
+//                pm.CreateProcess(pm.getCurrentTime() + 100, ()->Bukkit.broadcastMessage("forkdude3"));
+//                pm.CreateProcess(pm.getCurrentTime() + 30, ()->Bukkit.broadcastMessage("forkdude2"));
+//                pm.CreateProcess(pm.getCurrentTime() + 150, ()->Bukkit.broadcastMessage("forkdude4"));
+//                pm.CreateProcess(pm.getCurrentTime() + 10, ()->Bukkit.broadcastMessage("forkdude1"));
+//                _gameManager._processManager.HandleProcesses();
+
+//                GearHierarchyManager gearHierarchyManager = new GearHierarchyManager(_mainPlugin, _DataManager, _itemManager);
+////                gearHierarchyManager.GetHierarchies();
 
                 return true;
             } else if (label.equalsIgnoreCase("t")) {

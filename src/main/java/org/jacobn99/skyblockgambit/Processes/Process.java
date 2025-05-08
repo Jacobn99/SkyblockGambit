@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import java.lang.reflect.Executable;
 import java.util.HashMap;
 
-public class Process {
+public class Process implements Comparable<Process> {
     boolean _isDone;
 //    Process _previousProcess;
     private HashMap<Long, Process> _processGroup;
@@ -58,5 +58,10 @@ public class Process {
 
     public void set_executionTime(long _executionTime) {
         this._executionTime = _executionTime;
+    }
+
+    @Override
+    public int compareTo(Process o) {
+        return Long.compare(this.get_executionTime(), o.get_executionTime());
     }
 }

@@ -102,6 +102,16 @@ public class EventManager implements Listener {
             _killEnderdragon.KillEnderdragonCheck(event);
             _villagerManager.VillagerDeathCheck(event);
         }
+
+    }
+
+    @EventHandler
+    public void onEntityRemoval(EntityRemoveEvent event) {
+        if(_gameManager._animalSpawner._hostileTypes.contains(event.getEntity().getType()) &&
+        event.getEntity().getScoreboardTags().contains("spawned")) {
+            _gameManager.naturalHostileCount -= 1;
+        }
+
     }
 
     @EventHandler
@@ -126,15 +136,35 @@ public class EventManager implements Listener {
             Team team = _gameManager.FindPlayerTeam(p);
             Queueable queueable = () -> _gameManager.GrantCompass(p, team);
             if (_gameManager.isRunning && team != null) {
-                _processManager.CreateProcess(world.getFullTime() + 20, queueable);
+                _processManager.CreateProcess(_processManager.getCurrentTime() + 20, queueable);
             }
         }
     }
 
+//    @EventHandler
+//    public void onEntitySpawn(EntitySpawnEvent event) {
+//        if(event.getEntity() instanceof Slime) {
+//            event.setCancelled(true);
+//        }
+//    }
+
     @EventHandler
-    public void onEntitySpawn(EntitySpawnEvent event) {
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
         if(event.getEntity() instanceof Slime) {
             event.setCancelled(true);
+        }
+        if(event.getEntity().getWorld() == _gameManager._world &&
+                _gameManager._animalSpawner._hostileTypes.contains(event.getEntity().getType())) {
+            if (_gameManager.naturalHostileCount >= _gameManager.GetNaturalHostileCap()) {
+                if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL) {
+                    event.setCancelled(true);
+                }
+            } else {
+                event.getEntity().addScoreboardTag("spawned");
+                _gameManager.naturalHostileCount += 1;
+            }
+            Bukkit.broadcastMessage("naturalHostileCount: " + _gameManager.naturalHostileCount);
+//        }
         }
     }
 

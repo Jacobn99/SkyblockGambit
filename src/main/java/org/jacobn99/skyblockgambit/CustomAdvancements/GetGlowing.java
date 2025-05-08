@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.jacobn99.skyblockgambit.GameManager;
+import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 
 public class GetGlowing implements AdvancementType{
@@ -22,10 +23,10 @@ public class GetGlowing implements AdvancementType{
     }
 
     public void GetGlowingCheck(EntityPotionEffectEvent event) {
+        ProcessManager pm = _gameManager._processManager;
         if(event.getEntity() instanceof Player) {
             Player p = (Player) event.getEntity();
-            _gameManager._processManager.CreateProcess(
-                    _world.getFullTime() + 5, () -> CheckForEffect(p));
+            pm.CreateProcess(pm.getCurrentTime() + 5, () -> CheckForEffect(p));
         }
     }
 
