@@ -70,11 +70,17 @@ public class BundleInsurance {
     }
 
     public void UpdateMap(Player p, ItemStack bundle) {
-        if(bundle.getType() != _template.getType()) Bukkit.broadcastMessage("ERROR2: not of type bundle");
+        if(bundle == null || bundle.getType() != _template.getType())
+            Bukkit.broadcastMessage("ERROR2: not of type bundle");
         else {
             if(!inventories.containsKey(p)) inventories.put(p, bundle);
             else inventories.replace(p, bundle);
         }
+    }
+    public void SafeUpdateMap(Player p, ItemStack bundle, int slot) {
+        ItemStack slotItem = p.getInventory().getItem(slot);
+        if(!isBundleInsurance(slotItem)) UpdateMap(p, bundle);
+        else UpdateMap(p, p.getInventory().getItem(slot));
     }
     public ItemStack GetEmptyBundle(Player owner) {
         ItemStack bundle = _template.clone();
@@ -93,7 +99,11 @@ public class BundleInsurance {
         }
     }
     public void GrantOwnedBundle(Player owner) {
-        owner.getInventory().addItem(inventories.get(owner));
+        if(inventories.containsKey(owner)) owner.getInventory().addItem(inventories.get(owner));
+        else {
+            ItemStack bundle = SetOwner(owner, _template.clone());
+            owner.getInventory().addItem(bundle);
+        }
     }
     public ItemStack GetNormalBundle(ItemStack bundle) {
         ItemStack newBundle = bundle.clone();
@@ -122,28 +132,13 @@ public class BundleInsurance {
                     Player o = GetOwner(stack);
                     if (o == victim) {
                         if (count < 1 && isPvpDeath) item.setItemStack(GetNormalBundle(stack));
-                        else item.setItemStack(new ItemStack(Material.BUNDLE));
+                        else item.setItemStack(new ItemStack(Material.LEATHER));
                         count += 1;
-                    } else if (o != null) item.setItemStack(new ItemStack(Material.BUNDLE));
+                    } else if (o != null) item.setItemStack(new ItemStack(Material.LEATHER));
                 }
             }
         }
     }
-//        Inventory inventory = owner.getInventory();
-//        int count = 0;
-//        for(int i = 0; i < inventory.getSize(); i++) {
-//            Bukkit.broadcastMessage("count: " + count);
-//            ItemStack item = inventory.getItem(i);
-//            if(isBundleInsurance(item)) {
-//                Player o = GetOwner(item);
-//                if(o == owner) {
-//                    if(count < 1) ConvertToNormal(owner, i);
-//                    else inventory.setItem(i, new ItemStack(Material.BUNDLE));
-//                    count +=1;
-//                }
-//                else if(o != null) inventory.setItem(i, new ItemStack(Material.BUNDLE));
-//            }
-//        }
     public boolean HasDuplicates(Player owner) {
         Inventory inventory = owner.getInventory();
         int count = 0;

@@ -88,6 +88,7 @@ public class EventManager implements Listener {
                     action.equals(InventoryAction.PLACE_ONE) ||
                     action.equals(InventoryAction.PLACE_SOME) ||
                     action.equals(InventoryAction.SWAP_WITH_CURSOR)) {
+
                 if (_gameManager.nonAdditiveInventories.contains(event.getClickedInventory())) {
                     event.setCancelled(true);
                 }
@@ -102,22 +103,22 @@ public class EventManager implements Listener {
                         _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
                                 ()->event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.LEATHER)));
                     }
-                    else if (_bundleInsurance.HasDuplicates(owner)) {
-                        event.setCancelled(true);
-                        _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
-                                ()->event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.LEATHER)));
-                    }
                     else {
-                        _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
-                                ()->_bundleInsurance.UpdateMap(owner, bundle));
-                    }
+                        if (_bundleInsurance.HasDuplicates(owner)) {
+                            event.setCancelled(true);
+                            _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
+                                    () -> event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.LEATHER)));
+                        }
+                        Bukkit.broadcastMessage("Updating this slot: " + event.getSlot());
+                        int slot =  event.getSlot();
+//                        Queueable queueable;
+//                        if(_bundleInsurance.isBundleInsurance(owner.getInventory().getItem(slot)))
+//                            queueable = () -> _bundleInsurance.UpdateMap(owner, event.getSlot());
+//                        else queueable = () -> _bundleInsurance.UpdateMap(owner, bundle);
 
-//                    if (clicker == owner && (Player) event.getInventory().getHolder() == clicker
-//                            && event.getClickedInventory() != clicker.getInventory()) {
-//                        clicker.sendMessage("Can't move your bundle insurance out of your inventory");
-//                        event.setCancelled(true);
-////                    }
-//                    }
+                        _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
+                                () -> _bundleInsurance.SafeUpdateMap(owner, bundle, slot));
+                    }
                 }
             }
         }

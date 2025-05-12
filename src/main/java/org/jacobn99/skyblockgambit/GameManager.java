@@ -236,6 +236,7 @@ public class GameManager {
                 p.teleport(team.GetTeamWorld().GetWorldSpawn(this));
                 advancementManager.GrantRootAdvancement(p);
                 GrantCompass(p, team);
+                bundleInsurance.GrantOwnedBundle(p);
             }
         }
     }
