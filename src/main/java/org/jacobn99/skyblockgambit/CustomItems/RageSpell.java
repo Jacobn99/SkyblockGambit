@@ -25,7 +25,7 @@ public class RageSpell {
             p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, effectDuration, 2));
             p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, effectDuration, 2));
             p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, effectDuration, 2));
-            p.getInventory().removeItem(customItem);
+            p.getInventory().setItem(p.getInventory().getHeldItemSlot(), null);
         }
     }
 }

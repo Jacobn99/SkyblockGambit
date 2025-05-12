@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jacobn99.skyblockgambit.CustomAdvancements.*;
+import org.jacobn99.skyblockgambit.CustomItems.BundleInsurance;
 import org.jacobn99.skyblockgambit.CustomItems.CustomItemManager;
 import org.jacobn99.skyblockgambit.CustomItems.NukeSheepItem;
 import org.jacobn99.skyblockgambit.CustomVillagers.CustomVillager;
@@ -75,11 +76,7 @@ public class GameManager {
     public World _world;
     public List<NukeSheep> nukeSheeps;
     public NukeSheepItem nukeSheepItem;
-
-//    public ItemStack delayItem;
-//    private DataManager _dataManager;
-//    private File _spawnFile;
-//    private Reader _reader;
+    public BundleInsurance bundleInsurance;
 
 
     public GameManager(JavaPlugin mainPlugin) {
@@ -113,6 +110,7 @@ public class GameManager {
         _animalSpawner = new EntitySpawner(this, _worldManager, _processManager);
         netherManager = new NetherManager(this, _processManager, _worldManager);
         nukeSheepItem = new NukeSheepItem(this);
+        bundleInsurance = new BundleInsurance(this, _customItemManager);
         tickRate = 3;
 
 //        minWorldHeight = 94;
@@ -149,13 +147,10 @@ public class GameManager {
         redWorld = new CustomWorld(_worldManager, new Location(world, 1000,  0, 0), customWorlds);
 
         _worldManager.BuildWorld(redWorld, _processManager);
-        Bukkit.broadcastMessage("size: " + processes.size());
 
         long executionTime = _processManager.GetLatestExecutionTime() + 10;
         _processManager.CreateProcess(executionTime, ()->_worldManager.BuildWorld(blueWorld, _processManager));
 
-
-        Bukkit.broadcastMessage("latest execution time: " + _processManager.GetLatestExecutionTime());
         _processManager.CreateProcess(_processManager.GetLatestExecutionTime() + 50,
                 () -> _worldManager.AddPostGenerationObjects(_chestManager, _customVillagerManager, customVillagers));
 

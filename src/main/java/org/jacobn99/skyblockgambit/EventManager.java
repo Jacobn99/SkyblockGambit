@@ -20,6 +20,8 @@ import org.jacobn99.skyblockgambit.Portals.PortalManager;
 import org.jacobn99.skyblockgambit.Processes.ProcessManager;
 import org.jacobn99.skyblockgambit.Processes.Queueable;
 
+import java.util.Collection;
+
 public class EventManager implements Listener {
     JavaPlugin _mainPlugin;
     CustomItemManager _itemManager;
@@ -37,6 +39,7 @@ public class EventManager implements Listener {
     private XStacks _xStacks;
     private GetGlowing _getGlowing;
     private GeneratorConstructor _generatorContructor;
+    private BundleInsurance _bundleInsurance;
     private NukeSheepItem _nukeSheepItem;
     private NetherManager _netherManager;
     private PortalManager _portalManager;
@@ -62,6 +65,7 @@ public class EventManager implements Listener {
         _reachLevelX = new ReachLevelX(_gameManager, _advancementManager);
         _killEnderdragon = new KillEnderdragon(_gameManager, _advancementManager);
         _xStacks = _gameManager.xStacks;
+        _bundleInsurance = _gameManager.bundleInsurance;
 
         _netherManager = _gameManager.netherManager;
         _getGlowing = _gameManager.getGlowing;
@@ -70,6 +74,7 @@ public class EventManager implements Listener {
     }
     @EventHandler
     public void onInventoryInteract(InventoryClickEvent event) {
+        InventoryAction action = event.getAction();
         if(_gameManager.isRunning) {
             _generatorContructor.SelectGeneratorCheck(event);
             _xStacks.XStacksCheck(event);
@@ -79,16 +84,44 @@ public class EventManager implements Listener {
             if (_gameManager.nonAdditiveInventories.contains(event.getInventory()) && event.isShiftClick()) {
                 event.setCancelled(true);
             }
-            if (event.getAction().equals(InventoryAction.PLACE_ALL) ||
-                    event.getAction().equals(InventoryAction.PLACE_ONE) ||
-                    event.getAction().equals(InventoryAction.PLACE_SOME)) {
+            if (action.equals(InventoryAction.PLACE_ALL) ||
+                    action.equals(InventoryAction.PLACE_ONE) ||
+                    action.equals(InventoryAction.PLACE_SOME) ||
+                    action.equals(InventoryAction.SWAP_WITH_CURSOR)) {
                 if (_gameManager.nonAdditiveInventories.contains(event.getClickedInventory())) {
                     event.setCancelled(true);
+                }
+                else if(_bundleInsurance.isBundleInsurance(event.getCurrentItem()) &&
+                        !_bundleInsurance.isUnownedBundleInsurance(event.getCurrentItem())) {
+                    ItemStack bundle = event.getCurrentItem();
+                    Player clicker = (Player) event.getWhoClicked();
+                    Player owner = _bundleInsurance.GetOwner(bundle);
+
+                    if((owner != clicker && owner != null)) {
+                        event.setCancelled(true);
+                        _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
+                                ()->event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.LEATHER)));
+                    }
+                    else if (_bundleInsurance.HasDuplicates(owner)) {
+                        event.setCancelled(true);
+                        _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
+                                ()->event.getClickedInventory().setItem(event.getSlot(), new ItemStack(Material.LEATHER)));
+                    }
+                    else {
+                        _processManager.CreateProcess(_processManager.getCurrentTime() + 1,
+                                ()->_bundleInsurance.UpdateMap(owner, bundle));
+                    }
+
+//                    if (clicker == owner && (Player) event.getInventory().getHolder() == clicker
+//                            && event.getClickedInventory() != clicker.getInventory()) {
+//                        clicker.sendMessage("Can't move your bundle insurance out of your inventory");
+//                        event.setCancelled(true);
+////                    }
+//                    }
                 }
             }
         }
     }
-
     @EventHandler
     public void onPotionEffect(EntityPotionEffectEvent event) {
         if(_gameManager.isRunning) {
@@ -108,7 +141,7 @@ public class EventManager implements Listener {
     @EventHandler
     public void onEntityRemoval(EntityRemoveEvent event) {
         if(_gameManager._animalSpawner._hostileTypes.contains(event.getEntity().getType()) &&
-        event.getEntity().getScoreboardTags().contains("spawned")) {
+        event.getEntity().getScoreboardTags().contains("spawned") && _gameManager.naturalHostileCount > 0) {
             _gameManager.naturalHostileCount -= 1;
         }
 
@@ -136,17 +169,16 @@ public class EventManager implements Listener {
             Team team = _gameManager.FindPlayerTeam(p);
             Queueable queueable = () -> _gameManager.GrantCompass(p, team);
             if (_gameManager.isRunning && team != null) {
-                _processManager.CreateProcess(_processManager.getCurrentTime() + 20, queueable);
+                _processManager.CreateProcess(_processManager.getCurrentTime() + 2,
+                        ()-> p.teleport(team.GetTeamWorld().GetWorldSpawn(_gameManager)));
+                _processManager.CreateProcess(_processManager.getCurrentTime() + 10, queueable);
+                if(_bundleInsurance.inventories.containsKey(p)) {
+                    _processManager.CreateProcess(_processManager.getCurrentTime() + 10,
+                            () -> _bundleInsurance.GrantOwnedBundle(p));
+                }
             }
         }
     }
-
-//    @EventHandler
-//    public void onEntitySpawn(EntitySpawnEvent event) {
-//        if(event.getEntity() instanceof Slime) {
-//            event.setCancelled(true);
-//        }
-//    }
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
@@ -163,7 +195,7 @@ public class EventManager implements Listener {
                 event.getEntity().addScoreboardTag("spawned");
                 _gameManager.naturalHostileCount += 1;
             }
-            Bukkit.broadcastMessage("naturalHostileCount: " + _gameManager.naturalHostileCount);
+//            Bukkit.broadcastMessage("naturalHostileCount: " + _gameManager.naturalHostileCount);
 //        }
         }
     }
@@ -173,14 +205,17 @@ public class EventManager implements Listener {
         if(_gameManager.isRunning) {
             Player p = (Player) event.getEntity();
             Player killer = p.getKiller();
-
+            _processManager.CreateProcess(_processManager.getCurrentTime() + 2,
+                    ()-> _bundleInsurance.DeathCheck(p, false));
             if (_portalManager.invaders.containsKey(p)) {
                 _portalManager.invaders.remove(p);
             }
 
-            if (_gameManager.isRunning && killer instanceof Player && _gameManager.participatingPlayers.contains(killer)) {
+            if (_gameManager.isRunning && killer instanceof Player &&
+                    _gameManager.participatingPlayers.contains(killer)) {
                 if (_twoKillsTask.IsKillFromOtherTeam(killer, p)) {
-                    _gameManager.FindPlayerTeam(killer).killsInventory.addItem(_itemManager.GetCustomItem(_itemManager.ItemNameToIndex("KILL_SKULL")));
+                    _gameManager.FindPlayerTeam(killer).killsInventory.addItem(
+                            _itemManager.GetCustomItem(_itemManager.ItemNameToIndex("KILL_SKULL")));
                     _twoKillsTask.AddToKillCount(killer);
                 }
                 _twoKillsTask.TwoKillsCheck(killer);
@@ -195,12 +230,23 @@ public class EventManager implements Listener {
         org.bukkit.entity.Entity attacker = event.getDamager();
         org.bukkit.entity.Entity victim = event.getEntity();
 
+        if(victim instanceof Player) {
+            Player player = (Player) victim;
+            boolean isPvpDeath = false;
+
+            if (attacker != null && attacker instanceof Player &&
+                    _gameManager.FindPlayerTeam((Player) attacker) != _gameManager.FindPlayerTeam(player)) {
+                isPvpDeath = true;
+            }
+            _processManager.CreateProcess(_processManager.getCurrentTime() + 2,
+                    ()-> _bundleInsurance.DeathCheck(player, true));
+            _bundleInsurance.ResetBundleInsurance(player);
+
+        }
         if(victim instanceof Villager && victim.getScoreboardTags().contains("Customized") &&
             attacker instanceof Zombie && ((Villager) victim).getHealth() <= event.getDamage() &&
             _gameManager.isRunning) {
             CustomVillager v = _villagerManager.GetFromCustoms((Villager)victim);
-//            Bukkit.broadcastMessage("custom: " + v);
-
             if(v != null) {
                 Villager newVillager = _villagerManager.SpawnVillager(v.GetSpawnLocation(),
                         v.GetVillager().getProfession());
@@ -209,7 +255,6 @@ public class EventManager implements Listener {
                 v.SetVillager(newVillager);
                 event.setCancelled(true);
 
-//                Bukkit.broadcastMessage("new villager created");
             }
         }
     }
@@ -236,6 +281,14 @@ public class EventManager implements Listener {
             _villagerTradeBoost.TradeBoostCheck(event, _itemManager);
             _rageSpell.RageSpellCheck(event, _itemManager);
             _nukeSheepItem.NukeSheepCheck(event, _itemManager);
+            _bundleInsurance.BundleCheck(event);
+
+            Player p = event.getPlayer();
+            ItemStack mainItem = event.getItem();
+            if(_bundleInsurance.isBundleInsurance(mainItem) &&
+                    !_bundleInsurance.isUnownedBundleInsurance(mainItem)) {
+                _bundleInsurance.UpdateMap(_bundleInsurance.GetOwner(mainItem), mainItem);
+            }
 
         }
     }
@@ -258,8 +311,6 @@ public class EventManager implements Listener {
     }
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
-//        Villager villagerReference;
-//        Villager trader;
         if(event.getInventory() instanceof MerchantInventory) {
             MerchantInventory inventory = (MerchantInventory) event.getInventory();
             Merchant merchant = inventory.getMerchant();

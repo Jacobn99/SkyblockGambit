@@ -21,7 +21,9 @@ public class KillEnderdragon implements AdvancementType {
 
     public void KillEnderdragonCheck(EntityDeathEvent event) {
         //Bukkit.broadcastMessage("Exp level: " + p.getLevel());
+//        Bukkit.broadcastMessage("enderdragon killed");
         if(event.getEntity().getKiller() != null && event.getEntity() instanceof EnderDragon) {
+//            Bukkit.broadcastMessage("got herer");
             Player p = event.getEntity().getKiller();
             _advancementManager.GrantTeamAdvancement(p, _advancementManager.GetAdvancement("kill_enderdragon"), true);
         }

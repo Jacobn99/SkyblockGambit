@@ -25,7 +25,9 @@ public class PortalOpener {
                 if (team != null) {
                     if (team.GetTeamWorld().GetWorldPortal() != null) {
                         team.GetTeamWorld().GetWorldPortal().Activate();
-                        p.getInventory().removeItem(customItem);
+//                        Bukkit.broadcastMessage("holy fortnite");
+//                        Bukkit.broadcastMessage("slot: " + p.getInventory().getHeldItemSlot());
+                        p.getInventory().setItem(p.getInventory().getHeldItemSlot(), null);
                     }
                 }
             }

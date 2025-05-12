@@ -114,7 +114,7 @@ public class XStacks implements AdvancementType{
     }
     public void XStacksCheck(InventoryClickEvent event) {
         int count = 0;
-//        Bukkit.broadcastMessage("LETS GOO BROO YOYOYOY");
+//        Bukkit.broadcastMessage("item: " + _item.getType().name() + ", count: " + _itemMap.get(_item));
         Player p = (Player) event.getWhoClicked();
         Inventory inventory = event.getInventory();
         Inventory playerInventory = p.getInventory();

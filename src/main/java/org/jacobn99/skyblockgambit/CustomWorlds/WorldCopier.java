@@ -63,8 +63,6 @@ public class WorldCopier {
             final int finalI = i;
             _queueable = () -> PasteChunkPiece(list, finalI, newLoc);
             executionTime = timeBetweenExecution * (loopIterations) + _processManager.getCurrentTime();
-            Bukkit.broadcastMessage("new execution time - time: " + (executionTime-_processManager.getCurrentTime()));
-
             Process process = new Process(executionTime, _queueable);
             _processManager.CreateProcess(process);
             loopIterations++;

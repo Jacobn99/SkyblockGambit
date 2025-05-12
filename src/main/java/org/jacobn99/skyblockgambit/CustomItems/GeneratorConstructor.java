@@ -98,7 +98,8 @@ public class GeneratorConstructor {
                         team.AddToGeneratorCount();
                         for(ItemStack item : event.getWhoClicked().getInventory()) {
                             if(_itemManager.AreEqual(item, customItem, false)) {
-                                event.getWhoClicked().getInventory().removeItem(customItem);
+//                                event.getWhoClicked().getInventory().removeItem(customItem);
+                                p.getInventory().setItem(p.getInventory().getHeldItemSlot(), null);
                                 event.getWhoClicked().getInventory().removeItem(generator.GetCost());
                                 break;
                             }
